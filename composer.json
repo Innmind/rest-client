@@ -1,0 +1,27 @@
+
+{
+    "name": "innmind/rest-client",
+    "type": "library",
+    "description": "Library to consume REST APIs",
+    "keywords": ["rest", "api", "client"],
+    "homepage": "http://github.com/Innmind/rest-client",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Baptiste Langlade",
+            "email": "langlade.baptiste@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "http://github.com/Innmind/rest-client/issues"
+    },
+    "require": {
+        "php": ">=5.5",
+    },
+    "autoload": {
+        "psr-0": {
+            "Innmind\\Rest\\Client": ""
+        }
+    },
+    "target-dir": "Innmind/Rest/Client"
+}
