@@ -11,7 +11,9 @@ class FileCacheTest extends \PHPUnit_Framework_TestCase
     public function testDumpDefinitions()
     {
         $path = sys_get_temp_dir().'/resources.php';
-        unlink($path);
+        if (file_exists($path)) {
+            unlink($path);
+        }
         $c = new FileCache($path);
         $this->assertSame(
             [],
