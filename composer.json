@@ -1,4 +1,3 @@
-
 {
     "name": "innmind/rest-client",
     "type": "library",
@@ -16,7 +15,8 @@
         "issues": "http://github.com/Innmind/rest-client/issues"
     },
     "require": {
-        "php": ">=5.5"
+        "php": ">=5.5",
+        "symfony/filesystem": "~2.7"
     },
     "autoload": {
         "psr-0": {
