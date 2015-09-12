@@ -111,7 +111,7 @@ EOF;
 );
 EOF;
 
-        return $neededCode.$code;
+        return $neededCode . $code;
     }
 
     /**
