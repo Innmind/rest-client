@@ -6,20 +6,17 @@ class Resource
 {
     protected $id;
     protected $properties;
-    protected $methods;
     protected $meta;
     protected $isFresh;
 
     public function __construct(
         $id,
         array $properties,
-        array $methods,
         array $meta = [],
         $isFresh = false
     ) {
         $this->id = (string) $id;
         $this->properties = $properties;
-        $this->methods = $methods;
         $this->meta = $meta;
         $this->isFresh = (bool) $isFresh;
 
@@ -75,28 +72,6 @@ class Resource
         }
 
         return $this->properties[(string) $property];
-    }
-
-    /**
-     * Return all the methods allowed on this resource
-     *
-     * @return array
-     */
-    public function getMethods()
-    {
-        return $this->methods;
-    }
-
-    /**
-     * Check if method is allowed for the given resource
-     *
-     * @param string $method
-     *
-     * @return bool
-     */
-    public function hasMethod($method)
-    {
-        return in_array((string) $method, $this->methods, true);
     }
 
     /**
@@ -156,20 +131,14 @@ class Resource
      *
      * @param string $id
      * @param array $properties
-     * @param array $methods
      * @param array $meta
      *
      * @return Resource self
      */
-    public function refresh(
-        $id,
-        array $properties,
-        array $methods,
-        array $meta = []
-    ) {
+    public function refresh($id, array $properties, array $meta = [])
+    {
         $this->id = (string) $id;
         $this->properties = $properties;
-        $this->methods = $methods;
         $this->meta = $meta;
         $this->isFresh = true;
 

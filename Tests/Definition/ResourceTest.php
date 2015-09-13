@@ -22,7 +22,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $r = new Resource(
             'foo',
             [$this->p],
-            ['GET'],
             [],
             true
         );
@@ -40,8 +39,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             $r->getMetas()
         );
         $this->assertTrue($r->isFresh());
-        $this->assertTrue($r->hasMethod('GET'));
-        $this->assertFalse($r->hasMethod('POST'));
     }
 
     /**
@@ -50,7 +47,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function testThrowIfInvalidException()
     {
-        new Resource('foo', ['foo'], []);
+        new Resource('foo', ['foo']);
     }
 
     /**
@@ -63,8 +60,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             'foo',
             [
                 'bar' => $this->p,
-            ],
-            []
+            ]
         );
 
         $this->assertTrue($r->hasProperty('bar'));
@@ -83,7 +79,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function testThrowIfUnknownMeta()
     {
-        $r = new Resource('foo', [], [], ['bar' => 'baz']);
+        $r = new Resource('foo', [], ['bar' => 'baz']);
 
         $this->assertTrue($r->hasMeta('bar'));
         $this->assertFalse($r->hasMeta('foo'));
@@ -97,10 +93,10 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
     public function testRefresh()
     {
-        $r = new Resource('foo', [], []);
+        $r = new Resource('foo', []);
 
         $this->assertFalse($r->isFresh());
-        $r->refresh('bar', ['foo' => $this->p], [], ['foo' => 'bar']);
+        $r->refresh('bar', ['foo' => $this->p], ['foo' => 'bar']);
         $this->assertTrue($r->isFresh());
         $this->assertSame(
             'bar',

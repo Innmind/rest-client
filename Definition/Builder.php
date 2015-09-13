@@ -16,7 +16,6 @@ class Builder
         return new Resource(
             $definition['id'],
             $this->buildProperties($definition['properties']),
-            isset($definition['methods']) ? $definition['methods'] : [],
             isset($definition['meta']) ? $definition['meta'] : [],
             true
         );
