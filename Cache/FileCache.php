@@ -103,10 +103,12 @@ EOF;
             $code .= $this->buildPropertyCode($prop);
         }
 
+        $methods = var_export($resource->getMethods(), true);
         $meta = var_export($resource->getMetas(), true);
         $code .= <<<EOF
 
     ],
+    $methods,
     $meta
 );
 EOF;

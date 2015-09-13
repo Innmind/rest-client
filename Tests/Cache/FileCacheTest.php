@@ -19,7 +19,7 @@ class FileCacheTest extends \PHPUnit_Framework_TestCase
             [],
             $c->keys()
         );
-        $link = new Resource('uuid', [], []);
+        $link = new Resource('uuid', [], [], []);
         $c->save(
             'foo',
             new Resource(
@@ -34,6 +34,7 @@ class FileCacheTest extends \PHPUnit_Framework_TestCase
                         'string'
                     ),
                 ],
+                [],
                 [
                     'description' => 'some " weird \'stuff',
                 ],
@@ -53,7 +54,8 @@ class FileCacheTest extends \PHPUnit_Framework_TestCase
                         false,
                         'resource'
                     ))->linkTo($link)
-                ]
+                ],
+                []
             )
         );
         $c->save('bar', $link);
