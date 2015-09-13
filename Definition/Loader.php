@@ -40,7 +40,7 @@ class Loader
      *
      * @param string $url
      *
-     * @return Innmind\Rest\Client\Definition\Resource
+     * @return Resource
      */
     public function load($url)
     {

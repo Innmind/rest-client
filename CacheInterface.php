@@ -13,7 +13,7 @@ interface CacheInterface
      * Save a resource definition under the specified key
      *
      * @param string $key
-     * @param Innmind\Rest\Client\Definition\Resource $resource
+     * @param Definition\Resource $resource
      *
      * @return CacheInterface self
      */
@@ -40,7 +40,7 @@ interface CacheInterface
      *
      * @param string $key
      *
-     * @return Innmind\Rest\Client\Definition\Resource
+     * @return Definition\Resource
      */
     public function get($key);
 
