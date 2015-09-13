@@ -29,7 +29,7 @@ class Loader
         $this->cache = $cache;
         $this->builder = $builder ?: new Builder;
         $this->validator = $validator ?: Validation::createValidator();
-        $this->http = $http ?:  new Client;
+        $this->http = $http ?: new Client;
         $this->urlParser = new Parser(
             (new PublicSuffixListManager)->getList()
         );
