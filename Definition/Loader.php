@@ -127,7 +127,7 @@ class Loader
     {
         $link = substr($link, 1, -1);
 
-        if ($this->validator->validate($link, new Url)->count() === 0) {
+        if ($this->validator->validate($link, [new Url])->count() === 0) {
             return $link;
         }
 
