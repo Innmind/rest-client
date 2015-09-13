@@ -72,7 +72,6 @@ class Loader
         }
 
         if ($options->hasHeader('Link')) {
-            $links = $options->getHeaderAsArray('Link');
             $links = Request::parseHeader($options, 'Link');
 
             foreach ($links as $link) {
