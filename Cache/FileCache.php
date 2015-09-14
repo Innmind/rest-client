@@ -80,11 +80,13 @@ EOF;
     protected function buildResourceCode($key, Resource $resource)
     {
         $neededCode = '';
+        $url = $resource->getUrl();
         $id = $resource->getId();
         $var = $this->getResourceVarName($key);
         $code = <<<EOF
 
 \$$var = new Resource(
+    '$url',
     '$id',
     [
 EOF;

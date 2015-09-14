@@ -20,6 +20,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     public function testBuild()
     {
         $r = new Resource(
+            '',
             'foo',
             [$this->p],
             [],
@@ -47,7 +48,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function testThrowIfInvalidException()
     {
-        new Resource('foo', ['foo']);
+        new Resource('', 'foo', ['foo']);
     }
 
     /**
@@ -57,6 +58,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     public function testThrowIfUnknownProperty()
     {
         $r = new Resource(
+            '',
             'foo',
             [
                 'bar' => $this->p,
@@ -79,7 +81,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function testThrowIfUnknownMeta()
     {
-        $r = new Resource('foo', [], ['bar' => 'baz']);
+        $r = new Resource('', 'foo', [], ['bar' => 'baz']);
 
         $this->assertTrue($r->hasMeta('bar'));
         $this->assertFalse($r->hasMeta('foo'));
@@ -93,7 +95,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
     public function testRefresh()
     {
-        $r = new Resource('foo', []);
+        $r = new Resource('', 'foo', []);
 
         $this->assertFalse($r->isFresh());
         $r->refresh('bar', ['foo' => $this->p], ['foo' => 'bar']);
@@ -110,5 +112,15 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ['foo' => 'bar'],
             $r->getMetas()
         );
+    }
+
+    public function testBelongsTo()
+    {
+        $r = new Resource('http://example.com/foo/bar/', 'uuid', []);
+
+        $this->assertTrue($r->belongsTo('http://example.com/foo/bar/'));
+        $this->assertTrue($r->belongsTo('http://example.com/foo/bar/?offset=42&limit=42'));
+        $this->assertTrue($r->belongsTo('http://example.com/foo/bar/some-id'));
+        $this->assertFalse($r->belongsTo('http://example.com/foo/bar/subdir/some-id'));
     }
 }

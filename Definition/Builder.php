@@ -14,6 +14,7 @@ class Builder
     public function build(array $definition)
     {
         return new Resource(
+            $definition['url'],
             $definition['id'],
             $this->buildProperties($definition['properties']),
             isset($definition['meta']) ? $definition['meta'] : [],

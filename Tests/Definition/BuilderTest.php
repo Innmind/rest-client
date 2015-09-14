@@ -18,6 +18,7 @@ class BuilderTest extends \PHPUnit_Framework_TestCase
     public function testBuild()
     {
         $def = [
+            'url' => 'http://example.com/foo/bar/',
             'id' => 'uuid',
             'properties' => [
                 'foo' => [
@@ -27,6 +28,7 @@ class BuilderTest extends \PHPUnit_Framework_TestCase
                     'optional' => true,
                     'inner_type' => 'resource',
                     'resource' => [
+                        'url' => 'http://example.com/foo/baz/',
                         'id' => 'id',
                         'properties' => [
                             'foo' => [
@@ -41,7 +43,7 @@ class BuilderTest extends \PHPUnit_Framework_TestCase
                     'type' => 'resource',
                     'access' => ['CREATE'],
                     'variants' => [],
-                    'resource' => $known = new Resource('uuid', []),
+                    'resource' => $known = new Resource('', 'uuid', []),
                 ],
             ],
         ];
@@ -52,6 +54,10 @@ class BuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(
             'uuid',
             $resource->getId()
+        );
+        $this->assertSame(
+            'http://example.com/foo/bar/',
+            $resource->getUrl()
         );
         $this->assertTrue($resource->hasProperty('foo'));
         $this->assertTrue($resource->hasProperty('bar'));

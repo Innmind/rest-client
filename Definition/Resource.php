@@ -4,23 +4,55 @@ namespace Innmind\Rest\Client\Definition;
 
 class Resource
 {
+    protected $url;
     protected $id;
     protected $properties;
     protected $meta;
     protected $isFresh;
 
     public function __construct(
+        $url,
         $id,
         array $properties,
         array $meta = [],
         $isFresh = false
     ) {
+        $this->url = (string) $url;
         $this->id = (string) $id;
         $this->properties = $properties;
         $this->meta = $meta;
         $this->isFresh = (bool) $isFresh;
 
         $this->verifyProperties($properties);
+    }
+
+    /**
+     * Return the url of the resource definition
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * Check if the given url is attached to this resource definition
+     *
+     * @param string $url
+     *
+     * @return bool
+     */
+    public function belongsTo($url)
+    {
+        $pattern = sprintf(
+            '/^%s\/[^\/]*$/',
+            str_replace('/', '\/', rtrim($this->url, '/'))
+        );
+        $matches = [];
+        preg_match($pattern, $url, $matches);
+
+        return count($matches) > 0;
     }
 
     /**

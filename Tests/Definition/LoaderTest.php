@@ -80,6 +80,10 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
             $resource->getId()
         );
         $this->assertSame(
+            'http://xn--example.com/foo',
+            $resource->getUrl()
+        );
+        $this->assertSame(
             ['desc' => 'foo'],
             $resource->getMetas()
         );

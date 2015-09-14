@@ -71,6 +71,8 @@ class Loader
             ));
         }
 
+        $definition['resource']['url'] = $url;
+
         if ($options->hasHeader('Link')) {
             $links = Request::parseHeader($options, 'Link');
 

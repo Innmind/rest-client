@@ -19,10 +19,11 @@ class FileCacheTest extends \PHPUnit_Framework_TestCase
             [],
             $c->keys()
         );
-        $link = new Resource('uuid', [], []);
+        $link = new Resource('http://example.com/foo/bar/', 'uuid', [], []);
         $c->save(
             'foo',
             new Resource(
+                'http://example.com/foo/baz/',
                 'uuid',
                 [
                     'bar' => new Property(
@@ -43,6 +44,7 @@ class FileCacheTest extends \PHPUnit_Framework_TestCase
         $c->save(
             'baz',
             new Resource(
+                'http://example.com/foobar/',
                 'uuid',
                 [
                     'baz' => (new Property(
@@ -67,6 +69,10 @@ class FileCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(
             'uuid',
             $r->getId()
+        );
+        $this->assertSame(
+            'http://example.com/foo/baz/',
+            $r->getUrl()
         );
         $this->assertSame(
             ['description' => 'some " weird \'stuff'],
