@@ -44,6 +44,8 @@ class Loader
      */
     public function load($url)
     {
+        $url = $this->cleanUrl($url);
+
         if ($this->cache->has($url)) {
             return $this->cache->get($url);
         }
@@ -60,6 +62,8 @@ class Loader
      */
     public function refresh($url)
     {
+        $url = $this->cleanUrl($url);
+
         $options = $this->http->options((string) $url);
 
         if ($options->getStatusCode() !== 200) {
@@ -148,6 +152,26 @@ class Loader
             $parsedUrl->scheme,
             rtrim($host, '/'),
             ltrim($link, '/')
+        );
+    }
+
+    /**
+     * Clean the url from any query parameter or fragment
+     *
+     * @param string $url
+     *
+     * @return string
+     */
+    protected function cleanUrl($url)
+    {
+        $parsedUrl = $this->urlParser->parseUrl($url);
+
+        return sprintf(
+            '%s://%s%s/%s',
+            $parsedUrl->scheme,
+            rtrim((string) $parsedUrl->host, '/'),
+            !in_array($parsedUrl->port, [80, 443, null]) ? ':' . $parsedUrl->port : '',
+            ltrim($parsedUrl->path, '/')
         );
     }
 }
