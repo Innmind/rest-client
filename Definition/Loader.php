@@ -137,7 +137,8 @@ class Loader
         $host = (string) $parsedUrl->host;
 
         return sprintf(
-            '%s/%s',
+            '%s://%s/%s',
+            $parsedUrl->scheme,
             rtrim($host, '/'),
             ltrim($link, '/')
         );
