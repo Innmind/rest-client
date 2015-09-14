@@ -62,6 +62,13 @@ class Loader
     {
         $options = $this->http->options((string) $url);
 
+        if ($options->getStatusCode() !== 200) {
+            throw new DefinitionLoadException(sprintf(
+                'No resource definition found at "%s"',
+                $url
+            ));
+        }
+
         $definition = $options->json();
 
         if (!isset($definition['resource'])) {
