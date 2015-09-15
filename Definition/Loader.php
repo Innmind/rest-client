@@ -165,13 +165,18 @@ class Loader
     protected function cleanUrl($url)
     {
         $parsedUrl = $this->urlParser->parseUrl($url);
+        if (substr($parsedUrl->path, -1) !== '/') {
+            $path = dirname($parsedUrl->path) .'/';
+        } else {
+            $path = $parsedUrl->path;
+        }
 
         return sprintf(
             '%s://%s%s/%s',
             $parsedUrl->scheme,
             rtrim((string) $parsedUrl->host, '/'),
             !in_array($parsedUrl->port, [80, 443, null]) ? ':' . $parsedUrl->port : '',
-            ltrim($parsedUrl->path, '/')
+            ltrim($path, '/')
         );
     }
 }

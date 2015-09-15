@@ -72,7 +72,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testLoad()
     {
-        $resource = $this->l->load('http://xn--example.com/foo');
+        $resource = $this->l->load('http://xn--example.com/foo/');
 
         $this->assertInstanceOf(Resource::class, $resource);
         $this->assertSame(
@@ -80,7 +80,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
             $resource->getId()
         );
         $this->assertSame(
-            'http://xn--example.com/foo',
+            'http://xn--example.com/foo/',
             $resource->getUrl()
         );
         $this->assertSame(
@@ -124,8 +124,8 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame(
             $resource,
-            $this->l->load('http://xn--example.com/foo')
+            $this->l->load('http://xn--example.com/foo/')
         );
-        $this->assertTrue($this->c->has('http://xn--example.com/foo'));
+        $this->assertTrue($this->c->has('http://xn--example.com/foo/'));
     }
 }
