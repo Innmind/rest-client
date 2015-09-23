@@ -5,6 +5,7 @@ namespace Innmind\Rest\Client\Tests\Definition;
 use Innmind\Rest\Client\Definition\Loader;
 use Innmind\Rest\Client\Definition\Resource;
 use Innmind\Rest\Client\Cache\InMemoryCache;
+use Innmind\UrlResolver\UrlResolver;
 use GuzzleHttp\Client;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
@@ -18,6 +19,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->l = new Loader(
             $this->c = new InMemoryCache,
+            new UrlResolver(['http', 'https']),
             null,
             $http = $this
                 ->getMockBuilder(Client::class)

@@ -17,9 +17,9 @@
     "require": {
         "php": ">=5.5",
         "symfony/filesystem": "~2.7",
-        "jeremykendall/php-domain-parser": "~3.0",
         "symfony/validator": "~2.7",
-        "guzzlehttp/guzzle": "~5"
+        "guzzlehttp/guzzle": "~5",
+        "innmind/url-resolver": "^1.0"
     },
     "autoload": {
         "psr-0": {

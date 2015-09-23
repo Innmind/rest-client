@@ -4,13 +4,12 @@ namespace Innmind\Rest\Client\Definition;
 
 use Innmind\Rest\Client\CacheInterface;
 use Innmind\Rest\Client\Exception\DefinitionLoadException;
+use Innmind\UrlResolver\ResolverInterface;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints\Url;
 use GuzzleHttp\Client;
 use GuzzleHttp\Message\Request;
-use Pdp\PublicSuffixListManager;
-use Pdp\Parser;
 
 class Loader
 {
@@ -18,10 +17,11 @@ class Loader
     protected $builder;
     protected $validator;
     protected $http;
-    protected $urlParser;
+    protected $resolver;
 
     public function __construct(
         CacheInterface $cache,
+        ResolverInterface $resolver,
         Builder $builder = null,
         Client $http = null,
         ValidatorInterface $validator = null
@@ -30,9 +30,7 @@ class Loader
         $this->builder = $builder ?: new Builder;
         $this->validator = $validator ?: Validation::createValidator();
         $this->http = $http ?: new Client;
-        $this->urlParser = new Parser(
-            (new PublicSuffixListManager)->getList()
-        );
+        $this->resolver = $resolver;
     }
 
     /**
@@ -104,7 +102,10 @@ class Loader
                 }
 
                 $linkDef['resource'] = $this->refresh(
-                    $this->buildUrl($link[0], $url)
+                    $this->resolver->resolve(
+                        $url,
+                        substr($link[0], 1, -1)
+                    )
                 );
                 $definition['resource']['properties'][$link['name']] = $linkDef;
             }
@@ -129,33 +130,6 @@ class Loader
     }
 
     /**
-     * Normalize the url found in a link
-     *
-     * @param string $link
-     * @param string $url Original url where the link was found
-     *
-     * @return string
-     */
-    protected function buildUrl($link, $url)
-    {
-        $link = substr($link, 1, -1);
-
-        if ($this->validator->validate($link, [new Url])->count() === 0) {
-            return $link;
-        }
-
-        $parsedUrl = $this->urlParser->parseUrl($url);
-        $host = (string) $parsedUrl->host;
-
-        return sprintf(
-            '%s://%s/%s',
-            $parsedUrl->scheme,
-            rtrim($host, '/'),
-            ltrim($link, '/')
-        );
-    }
-
-    /**
      * Clean the url from any query parameter or fragment
      *
      * @param string $url
@@ -164,19 +138,10 @@ class Loader
      */
     protected function cleanUrl($url)
     {
-        $parsedUrl = $this->urlParser->parseUrl($url);
-        if (substr($parsedUrl->path, -1) !== '/') {
-            $path = dirname($parsedUrl->path) .'/';
-        } else {
-            $path = $parsedUrl->path;
+        if ($this->resolver->isFolder($url)) {
+            return $url;
         }
 
-        return sprintf(
-            '%s://%s%s/%s',
-            $parsedUrl->scheme,
-            rtrim((string) $parsedUrl->host, '/'),
-            !in_array($parsedUrl->port, [80, 443, null]) ? ':' . $parsedUrl->port : '',
-            ltrim($path, '/')
-        );
+        return $this->resolver->folder($url);
     }
 }
