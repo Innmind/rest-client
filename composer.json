@@ -19,7 +19,8 @@
         "symfony/filesystem": "~2.7",
         "symfony/validator": "~2.7",
         "guzzlehttp/guzzle": "~5",
-        "innmind/url-resolver": "^1.0"
+        "innmind/url-resolver": "^1.0",
+        "symfony/serializer": "~2.7"
     },
     "autoload": {
         "psr-0": {
