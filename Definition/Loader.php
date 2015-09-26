@@ -7,7 +7,6 @@ use Innmind\Rest\Client\Exception\DefinitionLoadException;
 use Innmind\UrlResolver\ResolverInterface;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\ValidatorInterface;
-use Symfony\Component\Validator\Constraints\Url;
 use GuzzleHttp\Client;
 use GuzzleHttp\Message\Request;
 
