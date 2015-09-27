@@ -36,6 +36,7 @@ use GuzzleHttp\Client as Http;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Validator\Validation;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 $resolver = new UrlResolver([]);
 $http = new Http;
@@ -59,6 +60,7 @@ $client = new Client(
     ),
     $resolver,
     new Validator(Validation::createValidator(), new ResourceNormalizer),
+    new EventDispatcher,
     $http
 );
 ```

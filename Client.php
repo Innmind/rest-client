@@ -10,9 +10,13 @@ use Innmind\Rest\Client\Exception\ResourceDeletionException;
 use Innmind\Rest\Client\Exception\ValidationException;
 use Innmind\Rest\Client\Server\CollectionInterface;
 use Innmind\Rest\Client\Server\Resource as ServerResource;
+use Innmind\Rest\Client\Event\RequestEvent;
 use Innmind\UrlResolver\ResolverInterface;
 use GuzzleHttp\Client as Http;
+use GuzzleHttp\Message\Request;
+use GuzzleHttp\Stream\Stream;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Client
 {
@@ -20,6 +24,7 @@ class Client
     protected $serializer;
     protected $resolver;
     protected $validator;
+    protected $dispatcher;
     protected $http;
 
     public function __construct(
@@ -27,12 +32,14 @@ class Client
         SerializerInterface $serializer,
         ResolverInterface $resolver,
         Validator $validator,
+        EventDispatcherInterface $dispatcher,
         Http $http = null
     ) {
         $this->loader = $loader;
         $this->serializer = $serializer;
         $this->resolver = $resolver;
         $this->validator = $validator;
+        $this->dispatcher = $dispatcher;
         $this->http = $http ?: new Http;
     }
 
@@ -46,12 +53,14 @@ class Client
     public function read($url)
     {
         $definition = $this->loader->load($url);
+        $request = new Request('GET', $url, ['Accept' => 'application/json']);
 
-        $response = $this->http->get($url, [
-            'headers' => [
-                'Accept' => 'application/json',
-            ],
-        ]);
+        $this->dispatcher->dispatch(
+            Events::REQUEST,
+            new RequestEvent($request, $definition)
+        );
+
+        $response = $this->http->send($request);
 
         if ($this->resolver->isFolder($url)) {
             $type = CollectionInterface::class;
@@ -87,17 +96,29 @@ class Client
         $definition = $this->loader->load($url);
 
         try {
-            $json = $this->serializer->serialize($resource, 'json', [
-                'definition' => $definition,
-                'action' => Action::CREATE,
-            ]);
-            $response = $this->http->post($url, [
-                'headers' => [
+            $request = new Request(
+                'POST',
+                $url,
+                [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
                 ],
-                'body' => $json,
-            ]);
+                Stream::factory($this->serializer->serialize(
+                    $resource,
+                    'json',
+                    [
+                        'definition' => $definition,
+                        'action' => Action::CREATE,
+                    ])
+                )
+            );
+
+            $this->dispatcher->dispatch(
+                Events::REQUEST,
+                new RequestEvent($request, $definition)
+            );
+
+            $response = $this->http->send($request);
 
             if ($response->getStatusCode() !== 201) {
                 throw new ResourceCreationException;
@@ -130,17 +151,29 @@ class Client
         $definition = $this->loader->load($url);
 
         try {
-            $json = $this->serializer->serialize($resource, 'json', [
-                'definition' => $definition,
-                'action' => Action::UPDATE,
-            ]);
-            $response = $this->http->put($url, [
-                'headers' => [
+            $request = new Request(
+                'PUT',
+                $url,
+                [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
                 ],
-                'body' => $json,
-            ]);
+                Stream::factory($this->serializer->serialize(
+                    $resource,
+                    'json',
+                    [
+                        'definition' => $definition,
+                        'action' => Action::UPDATE,
+                    ])
+                )
+            );
+
+            $this->dispatcher->dispatch(
+                Events::REQUEST,
+                new RequestEvent($request, $definition)
+            );
+
+            $response = $this->http->send($request);
 
             if ($response->getStatusCode() !== 200) {
                 throw new ResourceUpdateException;
@@ -169,7 +202,15 @@ class Client
      */
     public function remove($url)
     {
-        $response = $this->http->delete($url);
+        $definition = $this->loader->load($url);
+        $request = new Request('DELETE', $url);
+
+        $this->dispatcher->dispatch(
+            Events::REQUEST,
+            new RequestEvent($request, $definition)
+        );
+
+        $response = $this->http->send($request);
 
         if ($response->getStatusCode() !== 204) {
             throw new ResourceDeletionException;
