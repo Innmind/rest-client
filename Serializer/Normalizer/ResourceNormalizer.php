@@ -108,7 +108,7 @@ class ResourceNormalizer implements DenormalizerInterface, NormalizerInterface
                 }
             }
 
-            if (!$prop->hasAccess(strtoupper($context['action']))) {
+            if (!$prop->hasAccess($context['action'])) {
                 continue;
             }
 

@@ -10,9 +10,6 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class Validator
 {
-    const ACTION_CREATE = 'CREATE';
-    const ACTION_UPDATE = 'UPDATE';
-
     protected $validator;
     protected $normalizer;
 
@@ -38,11 +35,11 @@ class Validator
         Definition $definition,
         $action
     ) {
-        if (!in_array($action, [self::ACTION_CREATE, self::ACTION_UPDATE], true)) {
+        if (!in_array($action, [Action::CREATE, Action::UPDATE], true)) {
             throw new \InvalidArgumentException(sprintf(
                 'The action must either be "%s" or "%s"',
-                self::ACTION_CREATE,
-                self::ACTION_UPDATE
+                Action::CREATE,
+                Action::UPDATE
             ));
         }
 

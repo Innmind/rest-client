@@ -190,7 +190,7 @@ class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
             $expected,
             $this->n->normalize($r, null, [
                 'definition' => $def,
-                'action' => 'create',
+                'action' => 'CREATE',
             ])
         );
     }

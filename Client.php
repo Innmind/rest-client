@@ -89,7 +89,7 @@ class Client
         try {
             $json = $this->serializer->serialize($resource, 'json', [
                 'definition' => $definition,
-                'action' => 'create',
+                'action' => Action::CREATE,
             ]);
             $response = $this->http->post($url, [
                 'headers' => [
@@ -108,7 +108,7 @@ class Client
             }
 
             $this->loader->refresh($url);
-            $this->validate($resource, $definition, 'create');
+            $this->validate($resource, $definition, Action::CREATE);
             $this->create($url, $resource);
         }
 
@@ -132,7 +132,7 @@ class Client
         try {
             $json = $this->serializer->serialize($resource, 'json', [
                 'definition' => $definition,
-                'action' => 'update',
+                'action' => Action::UPDATE,
             ]);
             $response = $this->http->put($url, [
                 'headers' => [
@@ -151,7 +151,7 @@ class Client
             }
 
             $this->loader->refresh($url);
-            $this->validate($resource, $definition, 'update');
+            $this->validate($resource, $definition, Action::UPDATE);
             $this->update($url, $resource);
         }
 
@@ -197,7 +197,7 @@ class Client
         $violations = $this->validator->validate(
             $resource,
             $definition,
-            strtoupper($action)
+            $action
         );
 
         if ($violations->count() > 0) {
