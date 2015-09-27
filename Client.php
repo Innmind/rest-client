@@ -12,7 +12,6 @@ use Innmind\Rest\Client\Server\CollectionInterface;
 use Innmind\Rest\Client\Server\Resource as ServerResource;
 use Innmind\UrlResolver\ResolverInterface;
 use GuzzleHttp\Client as Http;
-use GuzzleHttp\Message\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class Client
