@@ -31,7 +31,7 @@ class Validator
      * @param Definition $definition
      * @param string $action
      *
-     * @return ConstraintViolationListInterface
+     * @return \Symfony\Component\Validator\ConstraintViolationListInterface
      */
     public function validate(
         Resource $resource,
@@ -52,7 +52,7 @@ class Validator
         ]);
         $constraint = $this->buildConstraint($definition, $action);
 
-        return $this->validator->validate($data['resource'], $constraint);
+        return $this->validator->validate($data['resource'], [$constraint]);
     }
 
     /**

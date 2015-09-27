@@ -20,7 +20,7 @@ interface DecoderInterface
      *
      * @param ResponseInterface $response
      *
-     * @return Resource|CollectionInterface
+     * @return mixed
      */
     public function decode(ResponseInterface $response);
 }

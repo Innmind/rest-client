@@ -2,7 +2,7 @@
 
 namespace Innmind\Rest\Client;
 
-use Innmind\Rest\Client\Definition\Resource;
+use Innmind\Rest\Client\Definition\Resource as Definition;
 
 /**
  * Describe the interface to store resource definitions
@@ -13,11 +13,11 @@ interface CacheInterface
      * Save a resource definition under the specified key
      *
      * @param string $key
-     * @param Definition\Resource $resource
+     * @param Definition $resource
      *
      * @return CacheInterface self
      */
-    public function save($key, Resource $resource);
+    public function save($key, Definition $resource);
 
     /**
      * Check if the named resource exist
@@ -40,7 +40,7 @@ interface CacheInterface
      *
      * @param string $key
      *
-     * @return Definition\Resource
+     * @return Definition
      */
     public function get($key);
 
