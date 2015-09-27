@@ -24,6 +24,7 @@ use GuzzleHttp\Stream\Stream;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Validator\Validation;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
@@ -37,7 +38,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $http = $this
             ->getMockBuilder(Http::class)
             ->disableOriginalConstructor()
-            ->setMethods(['get', 'post', 'put', 'delete', 'options'])
+            ->setMethods(['send', 'options'])
             ->getMock();
 
         $this->c = new Client(
@@ -59,12 +60,15 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             ),
             $resolver,
             new Validator(Validation::createValidator(), new ResourceNormalizer),
+            new EventDispatcher,
             $http
         );
 
         $http
-            ->method('get')
-            ->will($this->returnCallback(function($url) {
+            ->method('send')
+            ->will($this->returnCallback(function($request) {
+                $url = $request->getUrl();
+
                 switch ($url) {
                     case 'http://xn--example.com/read/':
                         $response = new Response(
@@ -83,48 +87,18 @@ class ClientTest extends \PHPUnit_Framework_TestCase
                             ]))
                         );
                         break;
-                }
-
-                $response->setEffectiveUrl($url);
-
-                return $response;
-            }));
-        $http
-            ->method('post')
-            ->will($this->returnCallback(function($url) {
-                switch ($url) {
                     case 'http://xn--example.com/create/':
                         $response = new Response(201);
                         break;
                     case 'http://xn--example.com/create/fail/':
                         $response = new Response(400);
                         break;
-                }
-
-                $response->setEffectiveUrl($url);
-
-                return $response;
-            }));
-        $http
-            ->method('put')
-            ->will($this->returnCallback(function($url) {
-                switch ($url) {
                     case 'http://xn--example.com/update/42':
                         $response = new Response(200);
                         break;
                     case 'http://xn--example.com/update/fail/42':
                         $response = new Response(400);
                         break;
-                }
-
-                $response->setEffectiveUrl($url);
-
-                return $response;
-            }));
-        $http
-            ->method('delete')
-            ->will($this->returnCallback(function($url) {
-                switch ($url) {
                     case 'http://xn--example.com/delete/42':
                         $response = new Response(204);
                         break;
