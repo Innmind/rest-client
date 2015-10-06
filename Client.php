@@ -121,7 +121,7 @@ class Client
             $response = $this->http->send($request);
 
             if ($response->getStatusCode() !== 201) {
-                throw new ResourceCreationException;
+                throw new ResourceCreationException($response);
             }
         } catch (ResourceCreationException $e) {
             if ($definition->isFresh()) {
@@ -176,7 +176,7 @@ class Client
             $response = $this->http->send($request);
 
             if ($response->getStatusCode() !== 200) {
-                throw new ResourceUpdateException;
+                throw new ResourceUpdateException($response);
             }
         } catch (ResourceUpdateException $e) {
             if ($definition->isFresh()) {
@@ -213,7 +213,7 @@ class Client
         $response = $this->http->send($request);
 
         if ($response->getStatusCode() !== 204) {
-            throw new ResourceDeletionException;
+            throw new ResourceDeletionException($response);
         }
 
         return $this;
