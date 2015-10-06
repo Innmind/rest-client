@@ -2,6 +2,6 @@
 
 namespace Innmind\Rest\Client\Exception;
 
-class ResourceDeletionException extends \Exception
+class ResourceDeletionException extends AbstractResourceException
 {
 }
