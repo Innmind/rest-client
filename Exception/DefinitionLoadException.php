@@ -2,6 +2,6 @@
 
 namespace Innmind\Rest\Client\Exception;
 
-class DefinitionLoadException extends \Exception implements ClientExceptionInterface
+class DefinitionLoadException extends \Exception implements ExceptionInterface
 {
 }

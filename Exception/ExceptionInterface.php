@@ -2,6 +2,6 @@
 
 namespace Innmind\Rest\Client\Exception;
 
-interface ClientExceptionInterface
+interface ExceptionInterface
 {
 }
