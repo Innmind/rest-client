@@ -2,7 +2,7 @@
 
 namespace Innmind\Rest\Client\Event;
 
-use Innmind\Rest\Client\Definition\Resource;
+use Innmind\Rest\Client\Definition\ResourceDefinition;
 use Symfony\Component\EventDispatcher\Event;
 use GuzzleHttp\Message\RequestInterface;
 
@@ -11,8 +11,10 @@ class RequestEvent extends Event
     protected $request;
     protected $definition;
 
-    public function __construct(RequestInterface $request, Resource $definition)
-    {
+    public function __construct(
+        RequestInterface $request,
+        ResourceDefinition $definition
+    ) {
         $this->request = $request;
         $this->definition = $definition;
     }
@@ -30,7 +32,7 @@ class RequestEvent extends Event
     /**
      * Return the definition for the resource that is handled
      *
-     * @return Resource
+     * @return ResourceDefinition
      */
     public function getDefinition()
     {

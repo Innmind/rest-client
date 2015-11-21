@@ -2,6 +2,6 @@
 
 namespace Innmind\Rest\Client\Exception;
 
-class ResourceUpdateException extends AbstractResourceException
+class ResourceUpdateException extends AbstractResourceException implements ExceptionInterface
 {
 }

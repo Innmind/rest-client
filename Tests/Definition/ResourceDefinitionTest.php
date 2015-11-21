@@ -2,10 +2,10 @@
 
 namespace Innmind\Rest\Client\Tests\Definition;
 
-use Innmind\Rest\Client\Definition\Resource;
+use Innmind\Rest\Client\Definition\ResourceDefinition;
 use Innmind\Rest\Client\Definition\Property;
 
-class ResourceTest extends \PHPUnit_Framework_TestCase
+class ResourceDefinitionTest extends \PHPUnit_Framework_TestCase
 {
     protected $p;
 
@@ -19,7 +19,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
     public function testBuild()
     {
-        $r = new Resource(
+        $r = new ResourceDefinition(
             '',
             'foo',
             [$this->p],
@@ -48,7 +48,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function testThrowIfInvalidException()
     {
-        new Resource('', 'foo', ['foo']);
+        new ResourceDefinition('', 'foo', ['foo']);
     }
 
     /**
@@ -57,7 +57,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function testThrowIfUnknownProperty()
     {
-        $r = new Resource(
+        $r = new ResourceDefinition(
             '',
             'foo',
             [
@@ -81,7 +81,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function testThrowIfUnknownMeta()
     {
-        $r = new Resource('', 'foo', [], ['bar' => 'baz']);
+        $r = new ResourceDefinition('', 'foo', [], ['bar' => 'baz']);
 
         $this->assertTrue($r->hasMeta('bar'));
         $this->assertFalse($r->hasMeta('foo'));
@@ -95,7 +95,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
     public function testRefresh()
     {
-        $r = new Resource('', 'foo', []);
+        $r = new ResourceDefinition('', 'foo', []);
 
         $this->assertFalse($r->isFresh());
         $r->refresh('bar', ['foo' => $this->p], ['foo' => 'bar']);
@@ -116,7 +116,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
     public function testBelongsTo()
     {
-        $r = new Resource('http://example.com/foo/bar/', 'uuid', []);
+        $r = new ResourceDefinition('http://example.com/foo/bar/', 'uuid', []);
 
         $this->assertTrue($r->belongsTo('http://example.com/foo/bar/'));
         $this->assertTrue($r->belongsTo('http://example.com/foo/bar/?offset=42&limit=42'));

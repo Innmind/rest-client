@@ -2,13 +2,14 @@
 
 namespace Innmind\Rest\Client\Tests;
 
-use Innmind\Rest\Client\Resource;
+use Innmind\Rest\Client\HttpResource;
+use Innmind\Rest\Client\HttpResourceInterface;
 
-class ResourceTest extends \PHPUnit_Framework_TestCase
+class HttpResourceTest extends \PHPUnit_Framework_TestCase
 {
     public function testSet()
     {
-        $r = new Resource;
+        $r = new HttpResource;
 
         $this->assertFalse($r->has('foo'));
         $this->assertSame($r, $r->set('foo', 'bar'));
@@ -18,7 +19,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
     public function testRemove()
     {
-        $r = new Resource;
+        $r = new HttpResource;
 
         $r->set('foo', 'bar');
         $this->assertSame($r, $r->remove('foo'));
@@ -31,8 +32,13 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function testThrowIfTryingToGetUndefinedProperty()
     {
-        $r = new Resource;
+        $r = new HttpResource;
 
         $r->get('foo');
+    }
+
+    public function testInterface()
+    {
+        $this->assertInstanceOf(HttpResourceInterface::class, new HttpResource);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Innmind\Rest\Client\Cache;
 
-use Innmind\Rest\Client\Definition\Resource;
+use Innmind\Rest\Client\Definition\ResourceDefinition;
 use Innmind\Rest\Client\Definition\Property;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -33,7 +33,7 @@ class FileCache extends InMemoryCache
         $code = <<<EOF
 <?php
 
-use Innmind\Rest\Client\Definition\Resource;
+use Innmind\Rest\Client\Definition\ResourceDefinition;
 use Innmind\Rest\Client\Definition\Property;
 
 EOF;
@@ -73,11 +73,11 @@ EOF;
      * Return code to build a resource
      *
      * @param string $key
-     * @param Innmind\Rest\Client\Definition\Resource $resource
+     * @param ResourceDefinition $resource
      *
      * @return string
      */
-    protected function buildResourceCode($key, Resource $resource)
+    protected function buildResourceCode($key, ResourceDefinition $resource)
     {
         $neededCode = '';
         $url = $resource->getUrl();
@@ -85,7 +85,7 @@ EOF;
         $var = $this->getResourceVarName($key);
         $code = <<<EOF
 
-\$$var = new Resource(
+\$$var = new ResourceDefinition(
     '$url',
     '$id',
     [

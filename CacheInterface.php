@@ -2,7 +2,7 @@
 
 namespace Innmind\Rest\Client;
 
-use Innmind\Rest\Client\Definition\Resource as Definition;
+use Innmind\Rest\Client\Definition\ResourceDefinition as Definition;
 
 /**
  * Describe the interface to store resource definitions

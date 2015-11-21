@@ -37,7 +37,7 @@ class Loader
      *
      * @param string $url
      *
-     * @return Resource
+     * @return ResourceDefinition
      */
     public function load($url)
     {
@@ -55,7 +55,7 @@ class Loader
      *
      * @param string $url
      *
-     * @return Innmind\Rest\Client\Definition\Resource
+     * @return ResourceDefinition
      */
     public function refresh($url)
     {

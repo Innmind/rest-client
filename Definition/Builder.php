@@ -9,11 +9,11 @@ class Builder
      *
      * @param array $definition
      *
-     * @return Innmind\Rest\Client\Definition\Resource
+     * @return ResourceDefinition
      */
     public function build(array $definition)
     {
-        return new Resource(
+        return new ResourceDefinition(
             $definition['url'],
             $definition['id'],
             $this->buildProperties($definition['properties']),
@@ -60,7 +60,7 @@ class Builder
         );
 
         if ($property->containsResource()) {
-            if ($definition['resource'] instanceof Resource) {
+            if ($definition['resource'] instanceof ResourceDefinition) {
                 $resource = $definition['resource'];
             } else {
                 $resource = $this->build($definition['resource']);

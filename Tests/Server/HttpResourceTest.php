@@ -2,20 +2,21 @@
 
 namespace Innmind\Rest\Client\Tests\Server;
 
-use Innmind\Rest\Client\Server\Resource;
+use Innmind\Rest\Client\Server\HttpResource;
+use Innmind\Rest\Client\Server\HttpResourceInterface;
 use Innmind\Rest\Client\Server\Collection;
-use Innmind\Rest\Client\Definition\Resource as Definition;
+use Innmind\Rest\Client\Definition\ResourceDefinition as Definition;
 use Innmind\Rest\Client\Definition\Property;
 use Innmind\Rest\Client\Client;
 
-class ResourceTest extends \PHPUnit_Framework_TestCase
+class HttpResourceTest extends \PHPUnit_Framework_TestCase
 {
     protected $r;
     protected $d;
 
     public function setUp()
     {
-        $this->r = new Resource(
+        $this->r = new HttpResource(
             $this->d = new Definition('', '', [
                 'foobar' => (new Property('foobar', 'resource', [], ['baz']))
                     ->linkTo(
@@ -40,7 +41,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ->method('read')
             ->willReturn(
                 $this
-                    ->getMockBuilder(Resource::class)
+                    ->getMockBuilder(HttpResource::class)
                     ->disableOriginalConstructor()
                     ->getMock()
             );
@@ -66,7 +67,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame('bar', $this->r->get('foo'));
         $bar = $this->r->get('bar');
-        $this->assertInstanceOf(Resource::class, $bar);
+        $this->assertInstanceOf(HttpResource::class, $bar);
         $this->assertSame($bar, $this->r->get('bar'));
         $foobar = $this->r->get('foobar');
         $this->assertInstanceOf(Collection::class, $foobar);
@@ -83,5 +84,10 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     public function testThrowIfTryingToAccessUnknownProperty()
     {
         $this->r->get('foobaz');
+    }
+
+    public function testInterface()
+    {
+        $this->assertInstanceOf(HttpResourceInterface::class, $this->r);
     }
 }

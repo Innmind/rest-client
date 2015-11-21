@@ -2,7 +2,7 @@
 
 namespace Innmind\Rest\Client;
 
-use Innmind\Rest\Client\Definition\Resource as Definition;
+use Innmind\Rest\Client\Definition\ResourceDefinition as Definition;
 use Innmind\Rest\Client\Serializer\Normalizer\ResourceNormalizer;
 use Symfony\Component\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -24,14 +24,14 @@ class Validator
     /**
      * Validate the resource against the given definition
      *
-     * @param Resource $resource
+     * @param HttpResourceInterface $resource
      * @param Definition $definition
      * @param string $action
      *
      * @return \Symfony\Component\Validator\ConstraintViolationListInterface
      */
     public function validate(
-        Resource $resource,
+        HttpResourceInterface $resource,
         Definition $definition,
         $action
     ) {

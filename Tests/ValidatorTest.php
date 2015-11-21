@@ -3,8 +3,8 @@
 namespace Innmind\Rest\Client\Tests;
 
 use Innmind\Rest\Client\Validator;
-use Innmind\Rest\Client\Resource;
-use Innmind\Rest\Client\Definition\Resource as Definition;
+use Innmind\Rest\Client\HttpResource;
+use Innmind\Rest\Client\Definition\ResourceDefinition as Definition;
 use Innmind\Rest\Client\Definition\Property;
 use Innmind\Rest\Client\Serializer\Normalizer\ResourceNormalizer;
 use Symfony\Component\Validator\Validation;
@@ -42,7 +42,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
             ]
         );
         $date = new \DateTime;
-        $r = new Resource;
+        $r = new HttpResource;
         $r
             ->set('a', 'foo')
             ->set('b', 42)
@@ -83,6 +83,6 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testThrowIfInvalidAction()
     {
-        $this->v->validate(new Resource, new Definition('', '', []), 'foo');
+        $this->v->validate(new HttpResource, new Definition('', '', []), 'foo');
     }
 }

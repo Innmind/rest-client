@@ -2,7 +2,7 @@
 
 namespace Innmind\Rest\Client\Definition;
 
-class Resource
+class ResourceDefinition
 {
     protected $url;
     protected $id;
@@ -165,7 +165,7 @@ class Resource
      * @param array $properties
      * @param array $meta
      *
-     * @return Resource self
+     * @return ResourceDefinition self
      */
     public function refresh($id, array $properties, array $meta = [])
     {

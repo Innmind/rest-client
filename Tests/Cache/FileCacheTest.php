@@ -3,7 +3,7 @@
 namespace Innmind\Rest\Client\Tests\Cache;
 
 use Innmind\Rest\Client\Cache\FileCache;
-use Innmind\Rest\Client\Definition\Resource;
+use Innmind\Rest\Client\Definition\ResourceDefinition;
 use Innmind\Rest\Client\Definition\Property;
 
 class FileCacheTest extends \PHPUnit_Framework_TestCase
@@ -19,10 +19,10 @@ class FileCacheTest extends \PHPUnit_Framework_TestCase
             [],
             $c->keys()
         );
-        $link = new Resource('http://example.com/foo/bar/', 'uuid', [], []);
+        $link = new ResourceDefinition('http://example.com/foo/bar/', 'uuid', [], []);
         $c->save(
             'foo',
-            new Resource(
+            new ResourceDefinition(
                 'http://example.com/foo/baz/',
                 'uuid',
                 [
@@ -43,7 +43,7 @@ class FileCacheTest extends \PHPUnit_Framework_TestCase
         );
         $c->save(
             'baz',
-            new Resource(
+            new ResourceDefinition(
                 'http://example.com/foobar/',
                 'uuid',
                 [

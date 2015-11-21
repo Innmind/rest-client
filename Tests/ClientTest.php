@@ -4,12 +4,12 @@ namespace Innmind\Rest\Client\Tests;
 
 use Innmind\Rest\Client\Client;
 use Innmind\Rest\Client\Validator;
-use Innmind\Rest\Client\Resource;
+use Innmind\Rest\Client\HttpResource;
 use Innmind\Rest\Client\Serializer\Normalizer\CollectionNormalizer;
 use Innmind\Rest\Client\Serializer\Normalizer\ResourceNormalizer;
 use Innmind\Rest\Client\Serializer\Encoder\ResponseEncoder;
 use Innmind\Rest\Client\Server\Collection;
-use Innmind\Rest\Client\Server\Resource as ServerResource;
+use Innmind\Rest\Client\Server\HttpResource as ServerResource;
 use Innmind\Rest\Client\Server\Decoder\DelegationDecoder;
 use Innmind\Rest\Client\Server\Decoder\CollectionDecoder;
 use Innmind\Rest\Client\Server\Decoder\ResourceDecoder;
@@ -149,7 +149,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testCreate()
     {
-        $r = new Resource;
+        $r = new HttpResource;
         $r->set('foo', 'bar');
         $this->assertSame($this->c, $this->c->create(
             'http://xn--example.com/create/',
@@ -162,7 +162,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $url = 'http://xn--example.com/create/fail/';
 
         try {
-            $r = new Resource;
+            $r = new HttpResource;
             $r->set('foo', 'bar');
             $def = $this->l->load($url);
             $refl = new \ReflectionObject($def);
@@ -182,7 +182,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testUpdate()
     {
-        $r = new Resource;
+        $r = new HttpResource;
         $r->set('foo', 'bar');
         $this->assertSame($this->c, $this->c->update(
             'http://xn--example.com/update/42',
@@ -193,7 +193,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testRefreshDefinitionOnUpdateFailure()
     {
         try {
-            $r = new Resource;
+            $r = new HttpResource;
             $r->set('foo', 'bar');
             $url = 'http://xn--example.com/update/fail/42';
             $def = $this->l->load($url);

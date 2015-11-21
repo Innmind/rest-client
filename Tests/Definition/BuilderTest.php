@@ -3,7 +3,7 @@
 namespace Innmind\Rest\Client\Tests\Definition;
 
 use Innmind\Rest\Client\Definition\Builder;
-use Innmind\Rest\Client\Definition\Resource;
+use Innmind\Rest\Client\Definition\ResourceDefinition;
 use Innmind\Rest\Client\Definition\Property;
 
 class BuilderTest extends \PHPUnit_Framework_TestCase
@@ -43,14 +43,14 @@ class BuilderTest extends \PHPUnit_Framework_TestCase
                     'type' => 'resource',
                     'access' => ['CREATE'],
                     'variants' => [],
-                    'resource' => $known = new Resource('', 'uuid', []),
+                    'resource' => $known = new ResourceDefinition('', 'uuid', []),
                 ],
             ],
         ];
 
         $resource = $this->b->build($def);
 
-        $this->assertInstanceOf(Resource::class, $resource);
+        $this->assertInstanceOf(ResourceDefinition::class, $resource);
         $this->assertSame(
             'uuid',
             $resource->getId()

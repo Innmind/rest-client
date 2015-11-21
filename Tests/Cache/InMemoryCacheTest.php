@@ -3,7 +3,7 @@
 namespace Innmind\Rest\Client\Tests\Cache;
 
 use Innmind\Rest\Client\Cache\InMemoryCache;
-use Innmind\Rest\Client\Definition\Resource;
+use Innmind\Rest\Client\Definition\ResourceDefinition;
 
 class InMemoryCacheTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,7 +19,7 @@ class InMemoryCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->c->has('foo'));
         $this->assertSame(
             $this->c,
-            $this->c->save('foo', $r = new Resource('', 'foo', []))
+            $this->c->save('foo', $r = new ResourceDefinition('', 'foo', []))
         );
         $this->assertTrue($this->c->has('foo'));
         $this->assertSame(
@@ -30,7 +30,7 @@ class InMemoryCacheTest extends \PHPUnit_Framework_TestCase
 
     public function testKeys()
     {
-        $this->c->save('bar', new Resource('', 'foo', []));
+        $this->c->save('bar', new ResourceDefinition('', 'foo', []));
 
         $this->assertSame(
             ['bar'],
@@ -40,7 +40,7 @@ class InMemoryCacheTest extends \PHPUnit_Framework_TestCase
 
     public function testRemove()
     {
-        $this->c->save('foo', new Resource('', 'foo', []));
+        $this->c->save('foo', new ResourceDefinition('', 'foo', []));
         $this->assertTrue($this->c->has('foo'));
         $this->assertSame(
             $this->c,

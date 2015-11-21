@@ -2,10 +2,10 @@
 
 namespace Innmind\Rest\Client\Server;
 
-use Innmind\Rest\Client\Definition\Resource as Definition;
+use Innmind\Rest\Client\Definition\ResourceDefinition as Definition;
 use Innmind\Rest\Client\Client;
 
-class Resource
+class HttpResource implements HttpResourceInterface
 {
     protected $definition;
     protected $properties;
@@ -25,9 +25,7 @@ class Resource
     }
 
     /**
-     * Return the resource definition
-     *
-     * @return Definition
+     * {@inheritdoc}
      */
     public function getDefinition()
     {
@@ -35,11 +33,7 @@ class Resource
     }
 
     /**
-     * Return the value of a property
-     *
-     * @param string $property
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function get($property)
     {
@@ -81,11 +75,7 @@ class Resource
     }
 
     /**
-     * Check the resource has the given property
-     *
-     * @param string $property
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function has($property)
     {
