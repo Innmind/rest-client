@@ -3,6 +3,7 @@
 namespace Innmind\Rest\Client\Tests;
 
 use Innmind\Rest\Client\HttpResource;
+use Innmind\Rest\Client\HttpResourceInterface;
 
 class HttpResourceTest extends \PHPUnit_Framework_TestCase
 {
@@ -34,5 +35,10 @@ class HttpResourceTest extends \PHPUnit_Framework_TestCase
         $r = new HttpResource;
 
         $r->get('foo');
+    }
+
+    public function testInterface()
+    {
+        $this->assertInstanceOf(HttpResourceInterface::class, new HttpResource);
     }
 }

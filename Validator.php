@@ -24,14 +24,14 @@ class Validator
     /**
      * Validate the resource against the given definition
      *
-     * @param HttpResource $resource
+     * @param HttpResourceInterface $resource
      * @param Definition $definition
      * @param string $action
      *
      * @return \Symfony\Component\Validator\ConstraintViolationListInterface
      */
     public function validate(
-        HttpResource $resource,
+        HttpResourceInterface $resource,
         Definition $definition,
         $action
     ) {

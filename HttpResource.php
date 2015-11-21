@@ -2,17 +2,12 @@
 
 namespace Innmind\Rest\Client;
 
-class HttpResource
+class HttpResource implements HttpResourceInterface
 {
     protected $data = [];
 
     /**
-     * Set a property on the resource
-     *
-     * @param string $property
-     * @param mixed $data
-     *
-     * @return Resource self
+     * {@inheritdoc}
      */
     public function set($property, $data)
     {
@@ -22,11 +17,7 @@ class HttpResource
     }
 
     /**
-     * Check if property is set in this resource
-     *
-     * @param string $property
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function has($property)
     {
@@ -34,11 +25,7 @@ class HttpResource
     }
 
     /**
-     * Return the value for the given data
-     *
-     * @param string $property
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function get($property)
     {
@@ -53,11 +40,7 @@ class HttpResource
     }
 
     /**
-     * Remove the given groperty
-     *
-     * @param string $property
-     *
-     * @return Resource self
+     * {@inheritdoc}
      */
     public function remove($property)
     {

@@ -4,6 +4,7 @@ namespace Innmind\Rest\Client\Tests\Serializer\Normalizer;
 
 use Innmind\Rest\Client\Serializer\Normalizer\ResourceNormalizer;
 use Innmind\Rest\Client\Server\HttpResource as ServerResource;
+use Innmind\Rest\Client\Server\HttpResourceInterface as ServerResourceInterface;
 use Innmind\Rest\Client\Definition\ResourceDefinition as Definition;
 use Innmind\Rest\Client\Definition\Property;
 use Innmind\Rest\Client\Client;
@@ -32,7 +33,7 @@ class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
                     'subResources' => [],
                 ],
             ],
-            ServerResource::class
+            ServerResourceInterface::class
         ));
         $this->assertFalse($this->n->supportsDenormalization(
             [
@@ -40,7 +41,7 @@ class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
                     'properties' => [],
                 ],
             ],
-            ServerResource::class
+            ServerResourceInterface::class
         ));
         $this->assertFalse($this->n->supportsDenormalization(
             [
@@ -48,7 +49,7 @@ class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
                     'subResources' => [],
                 ],
             ],
-            ServerResource::class
+            ServerResourceInterface::class
         ));
         $this->assertFalse($this->n->supportsDenormalization(
             [
@@ -57,7 +58,7 @@ class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
                     'subResources' => [],
                 ],
             ],
-            ServerResource::class
+            ServerResourceInterface::class
         ));
         $this->assertFalse($this->n->supportsDenormalization(
             [
@@ -66,7 +67,7 @@ class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
                     'subResources' => '',
                 ],
             ],
-            ServerResource::class
+            ServerResourceInterface::class
         ));
         $this->assertFalse($this->n->supportsDenormalization(
             [
@@ -116,7 +117,7 @@ class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
                     ],
                 ],
             ],
-            ServerResource::class,
+            ServerResourceInterface::class,
             null,
             [
                 'definition' => $def = new Definition('', '', []),

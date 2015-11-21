@@ -3,6 +3,7 @@
 namespace Innmind\Rest\Client\Tests\Server;
 
 use Innmind\Rest\Client\Server\HttpResource;
+use Innmind\Rest\Client\Server\HttpResourceInterface;
 use Innmind\Rest\Client\Server\Collection;
 use Innmind\Rest\Client\Definition\ResourceDefinition as Definition;
 use Innmind\Rest\Client\Definition\Property;
@@ -83,5 +84,10 @@ class HttpResourceTest extends \PHPUnit_Framework_TestCase
     public function testThrowIfTryingToAccessUnknownProperty()
     {
         $this->r->get('foobaz');
+    }
+
+    public function testInterface()
+    {
+        $this->assertInstanceOf(HttpResourceInterface::class, $this->r);
     }
 }
