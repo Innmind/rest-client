@@ -2,7 +2,7 @@
 
 namespace Innmind\Rest\Client\Server;
 
-use Innmind\Rest\Client\Definition\Resource as Definition;
+use Innmind\Rest\Client\Definition\ResourceDefinition as Definition;
 use Innmind\Rest\Client\Client;
 
 class HttpResource

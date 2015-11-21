@@ -3,7 +3,7 @@
 namespace Innmind\Rest\Client\Tests\Definition;
 
 use Innmind\Rest\Client\Definition\Property;
-use Innmind\Rest\Client\Definition\Resource;
+use Innmind\Rest\Client\Definition\ResourceDefinition;
 
 class PropertyTest extends \PHPUnit_Framework_TestCase
 {
@@ -50,7 +50,7 @@ class PropertyTest extends \PHPUnit_Framework_TestCase
         $p = new Property('foo', 'resource', [], []);
         $this->assertSame(
             $p,
-            $p->linkTo($r = new Resource('', 'foo', []))
+            $p->linkTo($r = new ResourceDefinition('', 'foo', []))
         );
         $this->assertSame(
             $r,
@@ -59,7 +59,7 @@ class PropertyTest extends \PHPUnit_Framework_TestCase
         $p = new Property('foo', 'array', [], [], false, 'resource');
         $this->assertSame(
             $p,
-            $p->linkTo($r = new Resource('', 'foo', []))
+            $p->linkTo($r = new ResourceDefinition('', 'foo', []))
         );
         $this->assertSame(
             $r,
@@ -74,7 +74,7 @@ class PropertyTest extends \PHPUnit_Framework_TestCase
     public function testThrowIfTryingToAssociateAResourceOnWrongProperty()
     {
         $p = new Property('foo', 'int', [], []);
-        $p->linkTo(new Resource('', 'foo', []));
+        $p->linkTo(new ResourceDefinition('', 'foo', []));
     }
 
     /**

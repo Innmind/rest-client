@@ -3,7 +3,7 @@
 namespace Innmind\Rest\Client;
 
 use Innmind\Rest\Client\Definition\Loader;
-use Innmind\Rest\Client\Definition\Resource as Definition;
+use Innmind\Rest\Client\Definition\ResourceDefinition as Definition;
 use Innmind\Rest\Client\Exception\ResourceCreationException;
 use Innmind\Rest\Client\Exception\ResourceUpdateException;
 use Innmind\Rest\Client\Exception\ResourceDeletionException;

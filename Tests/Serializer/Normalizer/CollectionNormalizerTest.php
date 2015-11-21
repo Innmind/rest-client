@@ -4,7 +4,7 @@ namespace Innmind\Rest\Client\Tests\Serializer\Normalizer;
 
 use Innmind\Rest\Client\Serializer\Normalizer\CollectionNormalizer;
 use Innmind\Rest\Client\Server\Collection;
-use Innmind\Rest\Client\Definition\Resource;
+use Innmind\Rest\Client\Definition\ResourceDefinition;
 use Innmind\Rest\Client\Client;
 
 class CollectionNormalizerTest extends \PHPUnit_Framework_TestCase
@@ -60,7 +60,7 @@ class CollectionNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testThrowIfNoClientInContext()
     {
         $this->n->denormalize([], Collection::class, null, [
-            'definition' => new Resource('', '', []),
+            'definition' => new ResourceDefinition('', '', []),
         ]);
     }
 
@@ -87,7 +87,7 @@ class CollectionNormalizerTest extends \PHPUnit_Framework_TestCase
             Collection::class,
             null,
             [
-                'definition' => $def = new Resource('', '', []),
+                'definition' => $def = new ResourceDefinition('', '', []),
                 'client' => $this->client,
             ]
         );

@@ -4,7 +4,7 @@ namespace Innmind\Rest\Client\Tests\Server;
 
 use Innmind\Rest\Client\Server\HttpResource;
 use Innmind\Rest\Client\Server\Collection;
-use Innmind\Rest\Client\Definition\Resource as Definition;
+use Innmind\Rest\Client\Definition\ResourceDefinition as Definition;
 use Innmind\Rest\Client\Definition\Property;
 use Innmind\Rest\Client\Client;
 

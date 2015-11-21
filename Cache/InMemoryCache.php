@@ -3,7 +3,7 @@
 namespace Innmind\Rest\Client\Cache;
 
 use Innmind\Rest\Client\CacheInterface;
-use Innmind\Rest\Client\Definition\Resource;
+use Innmind\Rest\Client\Definition\ResourceDefinition;
 
 class InMemoryCache implements CacheInterface
 {
@@ -12,7 +12,7 @@ class InMemoryCache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function save($key, Resource $resource)
+    public function save($key, ResourceDefinition $resource)
     {
         $this->resources[(string) $key] = $resource;
 

@@ -4,7 +4,7 @@ namespace Innmind\Rest\Client\Tests;
 
 use Innmind\Rest\Client\Validator;
 use Innmind\Rest\Client\HttpResource;
-use Innmind\Rest\Client\Definition\Resource as Definition;
+use Innmind\Rest\Client\Definition\ResourceDefinition as Definition;
 use Innmind\Rest\Client\Definition\Property;
 use Innmind\Rest\Client\Serializer\Normalizer\ResourceNormalizer;
 use Symfony\Component\Validator\Validation;

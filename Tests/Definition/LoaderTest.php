@@ -3,7 +3,7 @@
 namespace Innmind\Rest\Client\Tests\Definition;
 
 use Innmind\Rest\Client\Definition\Loader;
-use Innmind\Rest\Client\Definition\Resource;
+use Innmind\Rest\Client\Definition\ResourceDefinition;
 use Innmind\Rest\Client\Cache\InMemoryCache;
 use Innmind\UrlResolver\UrlResolver;
 use GuzzleHttp\Client;
@@ -76,7 +76,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         $resource = $this->l->load('http://xn--example.com/foo/');
 
-        $this->assertInstanceOf(Resource::class, $resource);
+        $this->assertInstanceOf(ResourceDefinition::class, $resource);
         $this->assertSame(
             'uuid',
             $resource->getId()
@@ -114,7 +114,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertTrue($foo->isOptional());
         $sub = $foo->getResource();
-        $this->assertInstanceOf(Resource::class, $sub);
+        $this->assertInstanceOf(ResourceDefinition::class, $sub);
         $this->assertSame(
             'id',
             $sub->getId()

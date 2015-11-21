@@ -4,7 +4,7 @@ namespace Innmind\Rest\Client\Tests\Serializer\Normalizer;
 
 use Innmind\Rest\Client\Serializer\Normalizer\ResourceNormalizer;
 use Innmind\Rest\Client\Server\HttpResource as ServerResource;
-use Innmind\Rest\Client\Definition\Resource as Definition;
+use Innmind\Rest\Client\Definition\ResourceDefinition as Definition;
 use Innmind\Rest\Client\Definition\Property;
 use Innmind\Rest\Client\Client;
 use Innmind\Rest\Client\HttpResource;

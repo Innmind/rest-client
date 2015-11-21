@@ -119,11 +119,11 @@ class Property
     /**
      * Associate this property to another resource
      *
-     * @param Innmind\Rest\Client\Definition\Resource $resource
+     * @param ResourceDefinition $resource
      *
      * @return Property self
      */
-    public function linkTo(Resource $resource)
+    public function linkTo(ResourceDefinition $resource)
     {
         if (!$this->containsResource()) {
             throw new \BadMethodCallException(
@@ -151,7 +151,7 @@ class Property
     /**
      * Return the resource definition the property is linked to
      *
-     * @return Innmind\Rest\Client\Definition\Resource
+     * @return ResourceDefinition
      */
     public function getResource()
     {
