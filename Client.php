@@ -9,7 +9,7 @@ use Innmind\Rest\Client\Exception\ResourceUpdateException;
 use Innmind\Rest\Client\Exception\ResourceDeletionException;
 use Innmind\Rest\Client\Exception\ValidationException;
 use Innmind\Rest\Client\Server\CollectionInterface;
-use Innmind\Rest\Client\Server\Resource as ServerResource;
+use Innmind\Rest\Client\Server\HttpResource as ServerResource;
 use Innmind\Rest\Client\Event\RequestEvent;
 use Innmind\UrlResolver\ResolverInterface;
 use GuzzleHttp\Client as Http;
@@ -85,13 +85,13 @@ class Client
      * Create a resource at the given url
      *
      * @param string $url
-     * @param Resource $resource
+     * @param HttpResource $resource
      *
      * @throws ResourceCreationException If the resource creation fails
      *
      * @return Client self
      */
-    public function create($url, Resource $resource)
+    public function create($url, HttpResource $resource)
     {
         $definition = $this->loader->load($url);
 
@@ -140,13 +140,13 @@ class Client
      * Update the resource at the given url
      *
      * @param string $url
-     * @param Resource $resource
+     * @param HttpResource $resource
      *
      * @throws ResourceUpdateException If the update fails
      *
      * @return Client self
      */
-    public function update($url, Resource $resource)
+    public function update($url, HttpResource $resource)
     {
         $definition = $this->loader->load($url);
 
@@ -222,7 +222,7 @@ class Client
     /**
      * Validate the given resource against the given definition
      *
-     * @param Resource $resource
+     * @param HttpResource $resource
      * @param Definition $definition
      * @param string $action
      *
@@ -231,7 +231,7 @@ class Client
      * @return void
      */
     protected function validate(
-        Resource $resource,
+        HttpResource $resource,
         Definition $definition,
         $action
     ) {

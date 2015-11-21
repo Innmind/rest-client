@@ -84,9 +84,9 @@ $resource = $client->read('http://example.com/collection/resource/42');
 ### Creating a resource
 
 ```php
-use Innmind\Rest\Client\Resource;
+use Innmind\Rest\Client\HttpResource;
 
-$resource = new Resource;
+$resource = new HttpResource;
 $resource->set('some', 'property');
 $client->create('http://example.com/collection/resource/', $resource);
 ```
@@ -96,9 +96,9 @@ $client->create('http://example.com/collection/resource/', $resource);
 ### Updating a resource
 
 ```php
-use Innmind\Rest\Client\Resource;
+use Innmind\Rest\Client\HttpResource;
 
-$resource = new Resource;
+$resource = new HttpResource;
 $resource->set('some', 'property');
 $client->update('http://example.com/collection/resource/42', $resource);
 ```

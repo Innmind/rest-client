@@ -2,8 +2,8 @@
 
 namespace Innmind\Rest\Client\Serializer\Normalizer;
 
-use Innmind\Rest\Client\Resource;
-use Innmind\Rest\Client\Server\Resource as ServerResource;
+use Innmind\Rest\Client\HttpResource;
+use Innmind\Rest\Client\Server\HttpResource as ServerResource;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Exception\LogicException;
@@ -159,6 +159,6 @@ class ResourceNormalizer implements DenormalizerInterface, NormalizerInterface
      */
     public function supportsNormalization($data, $format = null)
     {
-        return $data instanceof Resource;
+        return $data instanceof HttpResource;
     }
 }

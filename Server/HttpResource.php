@@ -5,7 +5,7 @@ namespace Innmind\Rest\Client\Server;
 use Innmind\Rest\Client\Definition\Resource as Definition;
 use Innmind\Rest\Client\Client;
 
-class Resource
+class HttpResource
 {
     protected $definition;
     protected $properties;

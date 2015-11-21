@@ -2,7 +2,7 @@
 
 namespace Innmind\Rest\Client;
 
-class Resource
+class HttpResource
 {
     protected $data = [];
 

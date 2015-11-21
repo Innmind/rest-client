@@ -3,11 +3,11 @@
 namespace Innmind\Rest\Client\Tests\Serializer\Normalizer;
 
 use Innmind\Rest\Client\Serializer\Normalizer\ResourceNormalizer;
-use Innmind\Rest\Client\Server\Resource as ServerResource;
+use Innmind\Rest\Client\Server\HttpResource as ServerResource;
 use Innmind\Rest\Client\Definition\Resource as Definition;
 use Innmind\Rest\Client\Definition\Property;
 use Innmind\Rest\Client\Client;
-use Innmind\Rest\Client\Resource;
+use Innmind\Rest\Client\HttpResource;
 
 class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
 {
@@ -132,15 +132,15 @@ class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
 
     public function testSupportsNormalization()
     {
-        $this->assertTrue($this->n->supportsNormalization(new Resource));
+        $this->assertTrue($this->n->supportsNormalization(new HttpResource));
         $this->assertFalse($this->n->supportsNormalization(['resource' => []]));
     }
 
     public function testNormalization()
     {
-        $sub = new Resource;
+        $sub = new HttpResource;
         $sub->set('foo', 'bar');
-        $r = new Resource;
+        $r = new HttpResource;
         $r->set('foo', 'bar');
         $r->set('bar', $sub);
         $r->set('baz', 'foo');
