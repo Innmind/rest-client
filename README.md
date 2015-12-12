@@ -1,8 +1,8 @@
 # RestClient
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Innmind/rest-client/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/rest-client/?branch=develop)
-[![Code Coverage](https://scrutinizer-ci.com/g/Innmind/rest-client/badges/coverage.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/rest-client/?branch=develop)
-[![Build Status](https://scrutinizer-ci.com/g/Innmind/rest-client/badges/build.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/rest-client/build-status/develop)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Innmind/rest-client/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Innmind/rest-client/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/Innmind/rest-client/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Innmind/rest-client/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/Innmind/rest-client/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Innmind/rest-client/build-status/master)
 
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/cc996425-8db6-4b92-98e7-ec38f65d643e/big.png)](https://insight.sensiolabs.com/projects/cc996425-8db6-4b92-98e7-ec38f65d643e)
 

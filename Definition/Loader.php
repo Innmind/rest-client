@@ -61,7 +61,14 @@ class Loader
     {
         $url = $this->cleanUrl($url);
 
-        $options = $this->http->options((string) $url);
+        $options = $this->http->options(
+            (string) $url,
+            [
+                'headers' => [
+                    'Accept' => 'application/json',
+                ],
+            ]
+        );
 
         if ($options->getStatusCode() !== 200) {
             throw new DefinitionLoadException(sprintf(
