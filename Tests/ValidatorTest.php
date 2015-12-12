@@ -72,7 +72,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $violations = $this->v->validate($r, $d, 'CREATE');
         $this->assertSame(1, $violations->count());
         $this->assertSame(
-            'Array[b]:' . "\n" . '    This value should be of type int.' . "\n",
+            'Array[b]:' . "\n" . '    This value should be of type int. (code ba785a8c-82cb-4283-967c-3cf342181b40)' . "\n",
             (string) $violations
         );
     }
