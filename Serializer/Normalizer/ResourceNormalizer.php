@@ -122,6 +122,7 @@ class ResourceNormalizer implements DenormalizerInterface, NormalizerInterface
                 $data = $data->format(\DateTime::ISO8601);
             } else if ($prop->containsResource()) {
                 $context['is_sub_resource'] = true;
+                $context['definition'] = $prop->getResource();
 
                 if ($prop->getType() === 'array') {
                     $collection = [];
@@ -140,6 +141,7 @@ class ResourceNormalizer implements DenormalizerInterface, NormalizerInterface
                 }
 
                 unset($context['is_sub_resource']);
+                $context['definition'] = $definition;
             }
 
             $normalized[(string) $prop] = $data;

@@ -140,14 +140,14 @@ class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testNormalization()
     {
         $sub = new HttpResource;
-        $sub->set('foo', 'bar');
+        $sub->set('foobar', 'bar');
         $r = new HttpResource;
         $r->set('foo', 'bar');
         $r->set('bar', $sub);
         $r->set('baz', 'foo');
         $r->set('collz', [
             [
-                'foo' => 'bar',
+                'foobar' => 'bar',
             ],
             $sub
         ]);
@@ -156,7 +156,7 @@ class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
             '',
             'id',
             [
-                'foo' => new Property('foo', 'string', ['CREATE'], []),
+                'foobar' => new Property('foobar', 'string', ['CREATE'], []),
             ]
         );
         $def = new Definition(
@@ -177,11 +177,11 @@ class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
             'resource' => [
                 'foo' => 'bar',
                 'bar' => [
-                    'foo' => 'bar',
+                    'foobar' => 'bar',
                 ],
                 'coll' => [
-                    ['foo' => 'bar'],
-                    ['foo' => 'bar'],
+                    ['foobar' => 'bar'],
+                    ['foobar' => 'bar'],
                 ],
                 'date' => $date->format(\DateTime::ISO8601)
             ],
