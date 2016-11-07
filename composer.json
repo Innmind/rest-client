@@ -15,18 +15,12 @@
         "issues": "http://github.com/Innmind/rest-client/issues"
     },
     "require": {
-        "php": ">=5.5",
-        "symfony/filesystem": "~2.7|~3.0",
-        "symfony/validator": "~2.7|~3.0",
-        "guzzlehttp/guzzle": "~5",
-        "innmind/url-resolver": "^1.0",
-        "symfony/serializer": "~2.7|~3.0",
-        "symfony/event-dispatcher": "~2.7|~3.0"
+        "php": "~7.0"
     },
     "autoload": {
-        "psr-0": {
-            "Innmind\\Rest\\Client": ""
+        "psr-4": {
+            "Innmind\\Rest\\Client\\": "src/",
+            "Tests\\Innmind\\Rest\\Client\\": "tests/"
         }
-    },
-    "target-dir": "Innmind/Rest/Client"
+    }
 }
