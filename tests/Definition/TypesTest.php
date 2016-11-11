@@ -6,8 +6,16 @@ namespace Tests\Innmind\Rest\Client\Definition;
 use Innmind\Rest\Client\{
     Definition\Types,
     Definition\TypeInterface,
+    Definition\Type\BoolType,
+    Definition\Type\DateType,
+    Definition\Type\FloatType,
+    Definition\Type\IntType,
+    Definition\Type\MapType,
+    Definition\Type\SetType,
+    Definition\Type\StringType,
     Exception\InvalidArgumentException
 };
+use Innmind\Immutable\SetInterface;
 
 class TypesTest extends \PHPUnit_Framework_TestCase
 {
@@ -92,5 +100,26 @@ class TypesTest extends \PHPUnit_Framework_TestCase
     public function testThrowWhenBuildingUnknownType()
     {
         (new Types)->build('type1');
+    }
+
+    public function testDefaults()
+    {
+        $defaults = Types::defaults();
+
+        $this->assertInstanceOf(SetInterface::class, $defaults);
+        $this->assertSame('string', (string) $defaults->type());
+        $this->assertCount(7, $defaults);
+        $this->assertSame(
+            [
+                BoolType::class,
+                DateType::class,
+                FloatType::class,
+                IntType::class,
+                MapType::class,
+                SetType::class,
+                StringType::class,
+            ],
+            $defaults->toPrimitive()
+        );
     }
 }
