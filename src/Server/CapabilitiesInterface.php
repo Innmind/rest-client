@@ -12,7 +12,7 @@ use Innmind\Immutable\{
 interface CapabilitiesInterface
 {
     /**
-     * @return SetInterface<Name>
+     * @return SetInterface<string>
      */
     public function names(): SetInterface;
     public function get(string $name): HttpResource;
