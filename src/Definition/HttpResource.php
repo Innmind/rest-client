@@ -25,7 +25,7 @@ final class HttpResource
             empty($name) ||
             (string) $properties->keyType() !== 'string' ||
             (string) $properties->valueType() !== Property::class ||
-            (string) $metas->keyType() !== 'string' ||
+            (string) $metas->keyType() !== 'scalar' ||
             (string) $metas->valueType() !== 'variable'
         ) {
             throw new InvalidArgumentException;

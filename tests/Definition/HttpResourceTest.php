@@ -18,7 +18,7 @@ class HttpResourceTest extends \PHPUnit_Framework_TestCase
             'foo',
             $identity = new Identity('uuid'),
             $properties = new Map('string', Property::class),
-            $metas = new Map('string', 'variable'),
+            $metas = new Map('scalar', 'variable'),
             true
         );
 
@@ -39,7 +39,7 @@ class HttpResourceTest extends \PHPUnit_Framework_TestCase
             '',
             new Identity('uuid'),
             new Map('string', Property::class),
-            new Map('string', 'variable'),
+            new Map('scalar', 'variable'),
             true
         );
     }
@@ -53,7 +53,7 @@ class HttpResourceTest extends \PHPUnit_Framework_TestCase
             'foo',
             new Identity('uuid'),
             new Map('int', Property::class),
-            new Map('string', 'variable'),
+            new Map('scalar', 'variable'),
             true
         );
     }
