@@ -21,4 +21,10 @@ interface CapabilitiesInterface
      * @return MapInterface<string, HttpResource>
      */
     public function definitions(): MapInterface;
+
+    /**
+     * Clear all definition references it holds, in order to be sure next time
+     * we access one it is a fresh definition
+     */
+    public function refresh(): self;
 }
