@@ -4,11 +4,13 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Definition;
 
 use Innmind\Rest\Client\Exception\InvalidArgumentException;
+use Innmind\url\UrlInterface;
 use Innmind\Immutable\MapInterface;
 
 final class HttpResource
 {
     private $name;
+    private $url;
     private $identity;
     private $properties;
     private $metas;
@@ -16,6 +18,7 @@ final class HttpResource
 
     public function __construct(
         string $name,
+        UrlInterface $url,
         Identity $identity,
         MapInterface $properties,
         MapInterface $metas,
@@ -32,6 +35,7 @@ final class HttpResource
         }
 
         $this->name = $name;
+        $this->url = $url;
         $this->identity = $identity;
         $this->properties = $properties;
         $this->metas = $metas;
@@ -41,6 +45,11 @@ final class HttpResource
     public function name(): string
     {
         return $this->name;
+    }
+
+    public function url(): UrlInterface
+    {
+        return $this->url;
     }
 
     public function identity(): Identity

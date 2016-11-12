@@ -59,6 +59,7 @@ class CacheCapabilitiesTest extends \PHPUnit_Framework_TestCase
         );
         $this->directory = md5('http://example.com/');
         $this->raw = [
+            'url' => 'http://example.com/foo',
             'identity' => 'uuid',
             'properties' => [
                 'uuid' => [

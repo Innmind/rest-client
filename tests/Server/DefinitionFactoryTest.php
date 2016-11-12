@@ -133,12 +133,13 @@ class DefinitionFactoryTest extends \PHPUnit_Framework_TestCase
         $response
             ->expects($this->once())
             ->method('body')
-            ->willReturn(new StringStream('{"identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"rangeable":true}'));
+            ->willReturn(new StringStream('{"url":"http://example.com/foo","identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"rangeable":true}'));
 
         $definition = $this->factory->make('foo', $response);
 
         $this->assertInstanceOf(HttpResource::class, $definition);
         $this->assertSame('foo', $definition->name());
+        $this->assertSame('http://example.com/foo', (string) $definition->url());
         $this->assertSame('uuid', (string) $definition->identity());
         $this->assertSame(
             'uuid',

@@ -27,6 +27,7 @@ class DefinitionNormalizerTest extends \PHPUnit_Framework_TestCase
 
         $this->normalizer = new DefinitionNormalizer($types);
         $this->raw = [
+            'url' => 'http://example.com/foo',
             'identity' => 'uuid',
             'properties' => [
                 'uuid' => [
@@ -122,6 +123,7 @@ class DefinitionNormalizerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf(HttpResource::class, $definition);
         $this->assertSame('foo', $definition->name());
+        $this->assertSame('http://example.com/foo', (string) $definition->url());
         $this->assertSame('uuid', (string) $definition->identity());
         $this->assertSame(
             'uuid',

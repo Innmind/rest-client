@@ -11,6 +11,7 @@ use Innmind\Rest\Client\{
     Definition\Access,
     Definition\Types
 };
+use Innmind\Url\Url;
 use Innmind\Immutable\{
     Map,
     Set
@@ -57,6 +58,7 @@ final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInt
 
         return new HttpResource(
             $context['name'],
+            Url::fromString($definition['url']),
             new Identity($definition['identity']),
             $properties,
             $metas,
@@ -76,6 +78,7 @@ final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInt
         }
 
         return [
+            'url' => (string) $data->url(),
             'identity' => (string) $data->identity(),
             'properties' => $data
                 ->properties()

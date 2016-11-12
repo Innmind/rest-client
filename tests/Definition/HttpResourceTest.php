@@ -8,6 +8,7 @@ use Innmind\Rest\Client\Definition\{
     Identity,
     Property
 };
+use Innmind\Url\UrlInterface;
 use Innmind\Immutable\Map;
 
 class HttpResourceTest extends \PHPUnit_Framework_TestCase
@@ -16,6 +17,7 @@ class HttpResourceTest extends \PHPUnit_Framework_TestCase
     {
         $resource = new HttpResource(
             'foo',
+            $url = $this->createMock(UrlInterface::class),
             $identity = new Identity('uuid'),
             $properties = new Map('string', Property::class),
             $metas = new Map('scalar', 'variable'),
@@ -24,6 +26,7 @@ class HttpResourceTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame('foo', $resource->name());
         $this->assertSame('foo', (string) $resource);
+        $this->assertSame($url, $resource->url());
         $this->assertSame($identity, $resource->identity());
         $this->assertSame($properties, $resource->properties());
         $this->assertSame($metas, $resource->metas());
@@ -37,6 +40,7 @@ class HttpResourceTest extends \PHPUnit_Framework_TestCase
     {
         new HttpResource(
             '',
+            $this->createMock(UrlInterface::class),
             new Identity('uuid'),
             new Map('string', Property::class),
             new Map('scalar', 'variable'),
@@ -51,6 +55,7 @@ class HttpResourceTest extends \PHPUnit_Framework_TestCase
     {
         new HttpResource(
             'foo',
+            $this->createMock(UrlInterface::class),
             new Identity('uuid'),
             new Map('int', Property::class),
             new Map('scalar', 'variable'),
@@ -65,6 +70,7 @@ class HttpResourceTest extends \PHPUnit_Framework_TestCase
     {
         new HttpResource(
             'foo',
+            $this->createMock(UrlInterface::class),
             new Identity('uuid'),
             new Map('string', Property::class),
             new Map('string', 'scalar'),

@@ -223,7 +223,7 @@ class CapabilitiesTest extends \PHPUnit_Framework_TestCase
         $response
             ->expects($this->once())
             ->method('body')
-            ->willReturn(new StringStream('{"identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"rangeable":true}'));
+            ->willReturn(new StringStream('{"url":"http://example.com/foo","identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"rangeable":true}'));
 
         $definition = $this->capabilities->get('foo');
 
@@ -310,7 +310,7 @@ class CapabilitiesTest extends \PHPUnit_Framework_TestCase
         $response
             ->expects($this->once())
             ->method('body')
-            ->willReturn(new StringStream('{"identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"rangeable":true}'));
+            ->willReturn(new StringStream('{"url":"http://example.com/foo","identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"rangeable":true}'));
         $this
             ->transport
             ->expects($this->at(2))
@@ -347,7 +347,7 @@ class CapabilitiesTest extends \PHPUnit_Framework_TestCase
         $response
             ->expects($this->once())
             ->method('body')
-            ->willReturn(new StringStream('{"identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false}},"metas":[],"rangeable":true}'));
+            ->willReturn(new StringStream('{"url":"http://example.com/foo","identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false}},"metas":[],"rangeable":true}'));
 
         $definitions = $this->capabilities->definitions();
 
