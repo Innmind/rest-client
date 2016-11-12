@@ -8,11 +8,15 @@ use Innmind\Rest\Client\{
     Definition\Types,
     Definition\HttpResource
 };
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\{
+    DenormalizerInterface,
+    NormalizerInterface
+};
 
 class DefinitionNormalizerTest extends \PHPUnit_Framework_TestCase
 {
     private $normalizer;
+    private $raw;
 
     public function setUp()
     {
@@ -22,12 +26,37 @@ class DefinitionNormalizerTest extends \PHPUnit_Framework_TestCase
         });
 
         $this->normalizer = new DefinitionNormalizer($types);
+        $this->raw = [
+            'identity' => 'uuid',
+            'properties' => [
+                'uuid' => [
+                    'type' => 'string',
+                    'access' => ['READ'],
+                    'variants' => ['guid'],
+                    'optional' => false,
+                ],
+                'url' => [
+                    'type' => 'string',
+                    'access' => ['READ', 'CREATE', 'UPDATE'],
+                    'variants' => [],
+                    'optional' => true,
+                ],
+            ],
+            'metas' => [
+                'foo' => ['bar' => 'baz'],
+            ],
+            'rangeable' => true,
+        ];
     }
 
     public function testInterface()
     {
         $this->assertInstanceOf(
             DenormalizerInterface::class,
+            $this->normalizer
+        );
+        $this->assertInstanceOf(
+            NormalizerInterface::class,
             $this->normalizer
         );
     }
@@ -85,27 +114,7 @@ class DefinitionNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testDenormalize()
     {
         $definition = $this->normalizer->denormalize(
-            [
-                'identity' => 'uuid',
-                'properties' => [
-                    'uuid' => [
-                        'type' => 'string',
-                        'access' => ['READ'],
-                        'variants' => ['guid'],
-                        'optional' => false,
-                    ],
-                    'url' => [
-                        'type' => 'string',
-                        'access' => ['READ', 'CREATE', 'UPDATE'],
-                        'variants' => [],
-                        'optional' => true,
-                    ],
-                ],
-                'metas' => [
-                    'foo' => ['bar' => 'baz'],
-                ],
-                'rangeable' => true,
-            ],
+            $this->raw,
             HttpResource::class,
             null,
             ['name' => 'foo']
@@ -157,5 +166,44 @@ class DefinitionNormalizerTest extends \PHPUnit_Framework_TestCase
             $definition->metas()->get('foo')
         );
         $this->assertTrue($definition->isRangeable());
+    }
+
+    public function testSupportsNormalization()
+    {
+        $this->assertTrue(
+            $this->normalizer->supportsNormalization(
+                $this->normalizer->denormalize(
+                    $this->raw,
+                    HttpResource::class,
+                    null,
+                    ['name' => 'foo']
+                )
+            )
+        );
+        $this->assertFalse(
+            $this->normalizer->supportsNormalization([])
+        );
+    }
+
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\LogicException
+     */
+    public function testThrowWhenNormalizingInvalidData()
+    {
+        $this->normalizer->normalize([]);
+    }
+
+    public function testNormalize()
+    {
+        $definition = $this->normalizer->denormalize(
+            $this->raw,
+            HttpResource::class,
+            null,
+            ['name' => 'foo']
+        );
+
+        $data = $this->normalizer->normalize($definition);
+
+        $this->assertSame($this->raw, $data);
     }
 }

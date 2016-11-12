@@ -15,9 +15,12 @@ use Innmind\Immutable\{
     Map,
     Set
 };
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\{
+    DenormalizerInterface,
+    NormalizerInterface
+};
 
-final class DefinitionNormalizer implements DenormalizerInterface
+final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInterface
 {
     private $types;
 
@@ -64,6 +67,42 @@ final class DefinitionNormalizer implements DenormalizerInterface
     public function supportsDenormalization($data, $type, $format = null)
     {
         return is_array($data) && $type === HttpResource::class;
+    }
+
+    public function normalize($data, $format = null, array $context = [])
+    {
+        if (!$this->supportsNormalization($data, $format)) {
+            throw new LogicException;
+        }
+
+        return [
+            'identity' => (string) $data->identity(),
+            'properties' => $data
+                ->properties()
+                ->reduce(
+                    [],
+                    function(array $properties, string $name, Property $property): array {
+                        $properties[$name] = [
+                            'type' => (string) $property->type(),
+                            'access' => $property->access()->mask()->toPrimitive(),
+                            'variants' => $property->variants()->toPrimitive(),
+                            'optional' => $property->isOptional(),
+                        ];
+
+                        return $properties;
+                    }
+                ),
+            'metas' => array_combine(
+                $data->metas()->keys()->toPrimitive(),
+                $data->metas()->values()->toPrimitive()
+            ),
+            'rangeable' => $data->isRangeable(),
+        ];
+    }
+
+    public function supportsNormalization($data, $format = null)
+    {
+        return $data instanceof HttpResource;
     }
 
     private function buildProperty(string $name, array $definition): Property
