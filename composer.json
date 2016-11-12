@@ -20,7 +20,9 @@
         "innmind/specification": "^1.0",
         "guzzlehttp/guzzle": "^6.2",
         "innmind/http": "^1.4",
-        "symfony/serializer": "~3.0"
+        "symfony/serializer": "~3.0",
+        "innmind/filesystem": "^1.5",
+        "innmind/url-resolver": "^2.0"
     },
     "autoload": {
         "psr-4": {
