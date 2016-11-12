@@ -118,9 +118,10 @@ final class Capabilities implements CapabilitiesInterface
             (string) $this->host,
             (string) $this->paths->get($name)
         );
+        $url = Url::fromString($url);
         $response = $this->transport->fulfill(
             new Request(
-                Url::fromString($url),
+                $url,
                 new Method(Method::OPTIONS),
                 new ProtocolVersion(1, 1),
                 new Headers(
@@ -131,6 +132,7 @@ final class Capabilities implements CapabilitiesInterface
         );
         $definition = $this->factory->make(
             $name,
+            $url,
             $response
         );
         $this->definitions = $this->definitions->put(

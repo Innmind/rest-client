@@ -12,6 +12,7 @@ use Innmind\Http\Message\{
     ResponseInterface,
     StatusCode
 };
+use Innmind\Url\UrlInterface;
 
 final class DefinitionFactory
 {
@@ -22,8 +23,11 @@ final class DefinitionFactory
         $this->denormalizer = $denormalizer;
     }
 
-    public function make(string $name, ResponseInterface $response): HttpResource
-    {
+    public function make(
+        string $name,
+        UrlInterface $url,
+        ResponseInterface $response
+    ): HttpResource {
         $headers = $response->headers();
 
         if (
@@ -35,6 +39,7 @@ final class DefinitionFactory
         }
 
         $data = json_decode((string) $response->body(), true);
+        $data['url'] = (string) $url;
 
         return $this->denormalizer->denormalize(
             $data,

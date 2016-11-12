@@ -19,6 +19,7 @@ use Innmind\Http\{
     Header\ParameterInterface
 };
 use Innmind\Filesystem\Stream\StringStream;
+use Innmind\Url\Url;
 use Innmind\Immutable\Map;
 
 class DefinitionFactoryTest extends \PHPUnit_Framework_TestCase
@@ -48,7 +49,7 @@ class DefinitionFactoryTest extends \PHPUnit_Framework_TestCase
             ->method('statusCode')
             ->willReturn(new StatusCode(404));
 
-        $this->factory->make('foo', $response);
+        $this->factory->make('foo', Url::fromString('/'), $response);
     }
 
     /**
@@ -70,7 +71,7 @@ class DefinitionFactoryTest extends \PHPUnit_Framework_TestCase
                 )
             );
 
-        $this->factory->make('foo', $response);
+        $this->factory->make('foo', Url::fromString('/'), $response);
     }
 
     /**
@@ -102,7 +103,7 @@ class DefinitionFactoryTest extends \PHPUnit_Framework_TestCase
                 )
             );
 
-        $this->factory->make('foo', $response);
+        $this->factory->make('foo', Url::fromString('/'), $response);
     }
 
     public function testMake()
@@ -133,9 +134,13 @@ class DefinitionFactoryTest extends \PHPUnit_Framework_TestCase
         $response
             ->expects($this->once())
             ->method('body')
-            ->willReturn(new StringStream('{"url":"http://example.com/foo","identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"rangeable":true}'));
+            ->willReturn(new StringStream('{"identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"rangeable":true}'));
 
-        $definition = $this->factory->make('foo', $response);
+        $definition = $this->factory->make(
+            'foo',
+            Url::fromString('http://example.com/foo'),
+            $response
+        );
 
         $this->assertInstanceOf(HttpResource::class, $definition);
         $this->assertSame('foo', $definition->name());
