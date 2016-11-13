@@ -31,7 +31,6 @@ final class ResourceNormalizer implements DenormalizerInterface
 
         $definition = $context['definition'];
         $access = $context['access'];
-        $properties = new Map('string', Property::class);
         $data = $data['resource'];
 
         $properties = $definition
