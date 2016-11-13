@@ -7,12 +7,19 @@ use Innmind\Rest\Client\{
     Serializer\Normalizer\ResourceNormalizer,
     Serializer\Normalizer\DefinitionNormalizer,
     HttpResource,
+    HttpResource\Property,
     Definition\HttpResource as ResourceDefinition,
     Definition\Access,
     Definition\Types
 };
-use Innmind\Immutable\Set;
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Innmind\Immutable\{
+    Set,
+    Map
+};
+use Symfony\Component\Serializer\Normalizer\{
+    DenormalizerInterface,
+    NormalizerInterface
+};
 
 class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
 {
@@ -40,7 +47,7 @@ class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
                     'url' => [
                         'type' => 'string',
                         'access' => ['READ', 'CREATE', 'UPDATE'],
-                        'variants' => [],
+                        'variants' => ['uri'],
                         'optional' => true,
                     ],
                     'unwanted' => [
@@ -48,7 +55,13 @@ class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
                         'access' => ['UPDATE'],
                         'variants' => [],
                         'optional' => true,
-                    ]
+                    ],
+                    'onCreate' => [
+                        'type' => 'int',
+                        'access' => ['CREATE'],
+                        'variants' => [],
+                        'optional' => false,
+                    ],
                 ],
                 'metas' => [
                     'foo' => ['bar' => 'baz'],
@@ -65,6 +78,10 @@ class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
             DenormalizerInterface::class,
+            $this->normalizer
+        );
+        $this->assertInstanceOf(
+            NormalizerInterface::class,
             $this->normalizer
         );
     }
@@ -282,6 +299,246 @@ class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
                 'access' => new Access(
                     (new Set('string'))->add('READ')
                 ),
+            ]
+        );
+    }
+
+    public function testSupportsNormalization()
+    {
+        $this->assertTrue(
+            $this->normalizer->supportsNormalization(
+                new HttpResource(
+                    'foo',
+                    new Map('string', Property::class)
+                )
+            )
+        );
+        $this->assertFalse(
+            $this->normalizer->supportsNormalization(
+                new \stdClass
+            )
+        );
+    }
+
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\LogicException
+     */
+    public function testThrowWhenNormalizingInvalidData()
+    {
+        $this->normalizer->normalize(
+            new \stdClass,
+            null,
+            [
+                'definition' => $this->definition,
+                'access' => new Access(
+                    (new Set('string'))->add('CREATE')
+                )
+            ]
+        );
+    }
+
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\LogicException
+     */
+    public function testThrowWhenNormalizingWithoutDefinition()
+    {
+        $this->normalizer->normalize(
+            new HttpResource(
+                'foo',
+                new Map('string', Property::class)
+            ),
+            null,
+            [
+                'access' => new Access(
+                    (new Set('string'))->add('CREATE')
+                )
+            ]
+        );
+    }
+
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\LogicException
+     */
+    public function testThrowWhenNormalizingWithInvalidDefinition()
+    {
+        $this->normalizer->normalize(
+            new HttpResource(
+                'foo',
+                new Map('string', Property::class)
+            ),
+            null,
+            [
+                'definition' => [],
+                'access' => new Access(
+                    (new Set('string'))->add('CREATE')
+                )
+            ]
+        );
+    }
+
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\LogicException
+     */
+    public function testThrowWhenNormalizingWithoutAccess()
+    {
+        $this->normalizer->normalize(
+            new HttpResource(
+                'foo',
+                new Map('string', Property::class)
+            ),
+            null,
+            [
+                'definition' => $this->definition,
+            ]
+        );
+    }
+
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\LogicException
+     */
+    public function testThrowWhenNormalizingWithInvalidAccess()
+    {
+        $this->normalizer->normalize(
+            new HttpResource(
+                'foo',
+                new Map('string', Property::class)
+            ),
+            null,
+            [
+                'definition' => $this->definition,
+                'access' => ['CREATE'],
+            ]
+        );
+    }
+
+    public function testNormalize()
+    {
+        $resource = $this->normalizer->normalize(
+            new HttpResource(
+                'foo',
+                (new Map('string', Property::class))
+                    ->put(
+                        'url',
+                        new Property(
+                            'url',
+                            'http://example.com/'
+                        )
+                    )
+                    ->put(
+                        'onCreate',
+                        new Property(
+                            'onCreate',
+                            '42'
+                        )
+                    )
+            ),
+            null,
+            [
+                'definition' => $this->definition,
+                'access' => new Access(
+                    (new Set('string'))->add('CREATE')
+                )
+            ]
+        );
+
+        $this->assertSame(
+            [
+                'resource' => [
+                    'url' => 'http://example.com/',
+                    'onCreate' => 42,
+                ],
+            ],
+            $resource
+        );
+    }
+
+    public function testNormalizeWithVariant()
+    {
+        $resource = $this->normalizer->normalize(
+            new HttpResource(
+                'foo',
+                (new Map('string', Property::class))
+                    ->put(
+                        'uri',
+                        new Property(
+                            'uri',
+                            'http://example.com/'
+                        )
+                    )
+                    ->put(
+                        'onCreate',
+                        new Property(
+                            'onCreate',
+                            '42'
+                        )
+                    )
+            ),
+            null,
+            [
+                'definition' => $this->definition,
+                'access' => new Access(
+                    (new Set('string'))->add('CREATE')
+                )
+            ]
+        );
+
+        $this->assertSame(
+            [
+                'resource' => [
+                    'url' => 'http://example.com/',
+                    'onCreate' => 42,
+                ],
+            ],
+            $resource
+        );
+    }
+
+    public function testNormalizeWithOptionalProperty()
+    {
+        $resource = $this->normalizer->normalize(
+            new HttpResource(
+                'foo',
+                (new Map('string', Property::class))
+                    ->put(
+                        'onCreate',
+                        new Property(
+                            'onCreate',
+                            '42'
+                        )
+                    )
+            ),
+            null,
+            [
+                'definition' => $this->definition,
+                'access' => new Access(
+                    (new Set('string'))->add('CREATE')
+                )
+            ]
+        );
+
+        $this->assertSame(
+            ['resource' => ['onCreate' => 42]],
+            $resource
+        );
+    }
+
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\MissingPropertyException
+     * @expectedExceptionMessage Missing property "onCreate"
+     */
+    public function testThrowWhenNormalizingWithMissingProperty()
+    {
+        $this->normalizer->normalize(
+            new HttpResource(
+                'foo',
+                new Map('string', Property::class)
+            ),
+            null,
+            [
+                'definition' => $this->definition,
+                'access' => new Access(
+                    (new Set('string'))->add('CREATE')
+                )
             ]
         );
     }
