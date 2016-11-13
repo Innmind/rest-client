@@ -33,7 +33,7 @@ final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInt
     /**
      * {@inheritdoc}
      */
-    public function denormalize($definition, $class, $format = null, array $context = [])
+    public function denormalize($definition, $class, $format = null, array $context = []): HttpResource
     {
         if (
             !$this->supportsDenormalization($definition, $class) ||
@@ -66,12 +66,12 @@ final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInt
         );
     }
 
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
         return is_array($data) && $type === HttpResource::class;
     }
 
-    public function normalize($data, $format = null, array $context = [])
+    public function normalize($data, $format = null, array $context = []): array
     {
         if (!$this->supportsNormalization($data, $format)) {
             throw new LogicException;
@@ -103,7 +103,7 @@ final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInt
         ];
     }
 
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof HttpResource;
     }

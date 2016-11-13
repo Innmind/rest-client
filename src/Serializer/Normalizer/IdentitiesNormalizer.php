@@ -13,12 +13,15 @@ use Innmind\Http\{
     Header\HeaderValueInterface,
     Header\LinkValue
 };
-use Innmind\Immutable\Set;
+use Innmind\Immutable\{
+    Set,
+    SetInterface
+};
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 final class IdentitiesNormalizer implements DenormalizerInterface
 {
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize($data, $type, $format = null, array $context = []): SetInterface
     {
         if (!$this->supportsDenormalization($data, $type, $format)) {
             throw new LogicException;
@@ -51,7 +54,7 @@ final class IdentitiesNormalizer implements DenormalizerInterface
             );
     }
 
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
         return $data instanceof ResponseInterface && $type === 'rest_identities';
     }

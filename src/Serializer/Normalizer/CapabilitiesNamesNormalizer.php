@@ -4,12 +4,15 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Serializer\Normalizer;
 
 use Innmind\Rest\Client\Exception\LogicException;
-use Innmind\Immutable\Set;
+use Innmind\Immutable\{
+    Set,
+    SetInterface
+};
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 final class CapabilitiesNamesNormalizer implements DenormalizerInterface
 {
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize($data, $type, $format = null, array $context = []): SetInterface
     {
         if (!$this->supportsDenormalization($data, $type)) {
             throw new LogicException;
@@ -24,7 +27,7 @@ final class CapabilitiesNamesNormalizer implements DenormalizerInterface
         return $set;
     }
 
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
         return is_array($data) && $type === 'capabilities_names';
     }
