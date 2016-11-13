@@ -27,11 +27,7 @@ final class BoolType implements TypeInterface
      */
     public function normalize($data)
     {
-        try {
-            return (bool) $data;
-        } catch (\Throwable $e) {
-            throw new NormalizationException('The value must be a boolean');
-        }
+        return (bool) $data;
     }
 
     /**
@@ -39,11 +35,7 @@ final class BoolType implements TypeInterface
      */
     public function denormalize($data)
     {
-        try {
-            return (bool) $data;
-        } catch (\Throwable $e) {
-            throw new DenormalizationException('The value must be a boolean');
-        }
+        return (bool) $data;
     }
 
     public function __toString(): string
