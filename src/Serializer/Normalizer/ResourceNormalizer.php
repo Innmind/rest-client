@@ -35,21 +35,24 @@ final class ResourceNormalizer implements DenormalizerInterface
 
         $properties = $definition
             ->properties()
+            ->filter(function(string $name, PropertyDefinition $property) use ($access): bool {
+                return $property->access()->matches($access);
+            })
+            ->filter(function(string $name, PropertyDefinition $property) use ($data): bool {
+                if (!$property->isOptional()) {
+                    return true;
+                }
+
+                return isset($data[$name]);
+            })
+            ->foreach(function(string $name) use ($data) {
+                if (!isset($data[$name])) {
+                    throw new MissingPropertyException($name);
+                }
+            })
             ->reduce(
                 new Map('string', Property::class),
-                function(Map $properties, string $name, PropertyDefinition $property) use ($data, $access): Map {
-                    if (!$property->access()->matches($access)) {
-                        return $properties;
-                    }
-
-                    if ($property->isOptional() && !isset($data[$name])) {
-                        return $properties;
-                    }
-
-                    if (!isset($data[$name])) {
-                        throw new MissingPropertyException($name);
-                    }
-
+                function(Map $properties, string $name, PropertyDefinition $property) use ($data): Map {
                     return $properties->put(
                         $name,
                         new Property(
