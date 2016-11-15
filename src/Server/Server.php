@@ -5,7 +5,6 @@ namespace Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\{
     ServerInterface,
-    TransportInterface,
     Server\CapabilitiesInterface,
     Request\Range,
     IdentityInterface,
@@ -17,6 +16,7 @@ use Innmind\Rest\Client\{
     Exception\IdentityNotFoundException,
     Definition\Access
 };
+use Innmind\HttpTransport\TransportInterface;
 use Innmind\Url\{
     UrlInterface,
     Url

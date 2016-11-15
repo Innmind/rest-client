@@ -7,7 +7,6 @@ use Innmind\Rest\Client\{
     Server\Server,
     ServerInterface,
     Server\CapabilitiesInterface,
-    TransportInterface,
     Serializer\Normalizer\IdentitiesNormalizer,
     Serializer\Normalizer\DefinitionNormalizer,
     Serializer\Normalizer\ResourceNormalizer,
@@ -22,6 +21,7 @@ use Innmind\Rest\Client\{
     HttpResource\Property,
     Translator\SpecificationTranslator
 };
+use Innmind\HttpTransport\TransportInterface;
 use Innmind\UrlResolver\UrlResolver;
 use Innmind\Url\{
     Url,

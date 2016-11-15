@@ -9,9 +9,9 @@ use Innmind\Rest\Client\{
     Server\DefinitionFactory,
     Definition\Types,
     Definition\HttpResource,
-    TransportInterface,
     Serializer\Normalizer\DefinitionNormalizer
 };
+use Innmind\HttpTransport\TransportInterface;
 use Innmind\Url\Url;
 use Innmind\UrlResolver\UrlResolver;
 use Innmind\Http\{

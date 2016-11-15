@@ -5,9 +5,9 @@ namespace Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\{
     Definition\HttpResource,
-    TransportInterface,
     Exception\InvalidArgumentException
 };
+use Innmind\HttpTransport\TransportInterface;
 use Innmind\Url\{
     UrlInterface,
     Url

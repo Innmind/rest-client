@@ -22,7 +22,8 @@
         "innmind/http": "^1.4",
         "symfony/serializer": "~3.0",
         "innmind/filesystem": "^1.5",
-        "innmind/url-resolver": "^2.0"
+        "innmind/url-resolver": "^2.0",
+        "innmind/http-transport": "^1.0"
     },
     "autoload": {
         "psr-4": {
