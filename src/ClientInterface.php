@@ -5,5 +5,5 @@ namespace Innmind\Rest\Client;
 
 interface ClientInterface
 {
-    public function server(UrlInterface $server): ServerInterface;
+    public function server(string $server): ServerInterface;
 }
