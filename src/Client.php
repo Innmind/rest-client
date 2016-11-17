@@ -31,6 +31,7 @@ final class Client implements ClientInterface
     private $definitionFactory;
     private $filesystem;
     private $servers;
+    private $formats;
 
     public function __construct(
         TransportInterface $transport,
@@ -38,7 +39,8 @@ final class Client implements ClientInterface
         Serializer $serializer,
         SpecificationTranslatorInterface $translator,
         DefinitionFactory $definitionFactory,
-        AdapterInterface $filesystem
+        AdapterInterface $filesystem,
+        Formats $formats
     ) {
         $this->transport = $transport;
         $this->resolver = $resolver;
@@ -46,6 +48,7 @@ final class Client implements ClientInterface
         $this->translator = $translator;
         $this->definitionFactory = $definitionFactory;
         $this->filesystem = $filesystem;
+        $this->formats = $formats;
         $this->servers = new Map('string', ServerInterface::class);
     }
 
@@ -73,7 +76,8 @@ final class Client implements ClientInterface
                 $this->makeCapabilities($url),
                 $this->resolver,
                 $this->serializer,
-                $this->translator
+                $this->translator,
+                $this->formats
             )
         );
     }

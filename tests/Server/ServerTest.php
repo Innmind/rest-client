@@ -17,6 +17,9 @@ use Innmind\Rest\Client\{
     Request\Range,
     IdentityInterface,
     Identity,
+    Formats,
+    Format\Format,
+    Format\MediaType,
     HttpResource,
     HttpResource\Property,
     Translator\SpecificationTranslator
@@ -75,7 +78,30 @@ class ServerTest extends \PHPUnit_Framework_TestCase
                 ],
                 [new JsonEncoder]
             ),
-            new SpecificationTranslator
+            new SpecificationTranslator,
+            new Formats(
+                (new Map('string', Format::class))
+                    ->put(
+                        'json',
+                        new Format(
+                            'json',
+                            (new Set(MediaType::class))->add(
+                                new MediaType('application/json', 0)
+                            ),
+                            1
+                        )
+                    )
+                    ->put(
+                        'xml',
+                        new Format(
+                            'xml',
+                            (new Set(MediaType::class))->add(
+                                new MediaType('text/xml', 0)
+                            ),
+                            0
+                        )
+                    )
+            )
         );
 
         $types = new Types;
@@ -530,7 +556,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException Innmind\Rest\Client\Exception\UnsupportedResponseException
      */
-    public function testThrowWhenReadResponseNotJson()
+    public function testThrowWhenReadResponseContentTypeNotSupported()
     {
         $this
             ->capabilities
@@ -583,7 +609,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
                 return (string) $request->url() === 'http://example.com/foo/bar' &&
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 1 &&
-                    (string) $request->headers()->get('Accept') === 'Accept : application/json' &&
+                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
                     (string) $request->body() === '';
             }))
             ->willReturn(

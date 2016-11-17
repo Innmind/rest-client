@@ -14,7 +14,9 @@ use Innmind\Rest\Client\{
     Exception\ResourceNotRangeableException,
     Exception\UnsupportedResponseException,
     Exception\IdentityNotFoundException,
-    Definition\Access
+    Definition\Access,
+    Formats,
+    Format\Format
 };
 use Innmind\HttpTransport\TransportInterface;
 use Innmind\Url\{
@@ -59,6 +61,7 @@ final class Server implements ServerInterface
     private $resolver;
     private $serializer;
     private $specificationTranslator;
+    private $formats;
 
     public function __construct(
         UrlInterface $url,
@@ -66,7 +69,8 @@ final class Server implements ServerInterface
         CapabilitiesInterface $capabilities,
         ResolverInterface $resolver,
         Serializer $serializer,
-        SpecificationTranslatorInterface $specificationTranslator
+        SpecificationTranslatorInterface $specificationTranslator,
+        Formats $formats
     ) {
         $this->url = $url;
         $this->transport = $transport;
@@ -74,6 +78,7 @@ final class Server implements ServerInterface
         $this->resolver = $resolver;
         $this->serializer = $serializer;
         $this->specificationTranslator = $specificationTranslator;
+        $this->formats = $formats;
     }
 
     /**
@@ -146,13 +151,23 @@ final class Server implements ServerInterface
                         ->put(
                             'Accept',
                             new Accept(
-                                (new Set(HeaderValueInterface::class))->add(
-                                    new AcceptValue(
-                                        'application',
-                                        'json',
-                                        new Map('string', ParameterInterface::class)
+                                $this
+                                    ->formats
+                                    ->all()
+                                    ->values()
+                                    ->sort(function(Format $a, Format $b): bool {
+                                        return $a->priority() < $b->priority();
+                                    })
+                                    ->reduce(
+                                        new Set(HeaderValueInterface::class),
+                                        function(Set $values, Format $format): Set {
+                                            return $values->add(new AcceptValue(
+                                                $format->preferredMediaType()->topLevel(),
+                                                $format->preferredMediaType()->subType(),
+                                                new Map('string', ParameterInterface::class)
+                                            ));
+                                        }
                                     )
-                                )
                             )
                         )
                 ),
@@ -160,19 +175,22 @@ final class Server implements ServerInterface
             )
         );
 
-        $headers = $response->headers();
-
-        if (
-            !$headers->has('Content-Type') ||
-            (string) $headers->get('Content-Type')->values()->current() !== 'application/json'
-        ) {
-            throw new UnsupportedResponseException;
+        try {
+            $format = $this->formats->matching(
+                (string) $response
+                    ->headers()
+                    ->get('Content-Type')
+                    ->values()
+                    ->join(', ')
+            );
+        } catch (\Exception $e) {
+            throw new UnsupportedResponseException('', 0, $e);
         }
 
         return $this->serializer->deserialize(
             (string) $response->body(),
             HttpResource::class,
-            'json',
+            $format->name(),
             [
                 'definition' => $definition,
                 'response' => $response,

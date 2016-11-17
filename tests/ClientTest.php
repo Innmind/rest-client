@@ -10,11 +10,18 @@ use Innmind\Rest\Client\{
     Server\DefinitionFactory,
     Server\RetryServer,
     Serializer\Normalizer\DefinitionNormalizer,
-    Definition\Types
+    Definition\Types,
+    Formats,
+    Format\Format,
+    Format\MediaType
 };
 use Innmind\HttpTransport\TransportInterface;
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Filesystem\AdapterInterface;
+use Innmind\Immutable\{
+    Map,
+    Set
+};
 use Symfony\Component\Serializer\Serializer;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
@@ -31,7 +38,20 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             new DefinitionFactory(
                 new DefinitionNormalizer(new Types)
             ),
-            $this->createMock(AdapterInterface::class)
+            $this->createMock(AdapterInterface::class),
+            new Formats(
+                (new Map('string', Format::class))
+                    ->put(
+                        'json',
+                        new Format(
+                            'json',
+                            (new Set(MediaType::class))->add(
+                                new MediaType('application/json', 0)
+                            ),
+                            1
+                        )
+                    )
+            )
         );
     }
 
