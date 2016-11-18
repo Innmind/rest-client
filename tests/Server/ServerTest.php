@@ -192,7 +192,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->method('get')
             ->with('foo')
             ->willReturn(
-                new HttpResourceDefinition(
+                $definition = new HttpResourceDefinition(
                     'foo',
                     Url::fromString('http://example.com/foo'),
                     new IdentityDefinition('uuid'),
@@ -225,7 +225,12 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->identitiesNormalizer
             ->expects($this->once())
             ->method('denormalize')
-            ->with($response)
+            ->with(
+                $response,
+                'rest_identities',
+                null,
+                ['definition' => $definition]
+            )
             ->willReturn($expected = new Set(IdentityInterface::class));
 
         $all = $this->server->all('foo');
@@ -241,7 +246,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->method('get')
             ->with('foo')
             ->willReturn(
-                new HttpResourceDefinition(
+                $definition = new HttpResourceDefinition(
                     'foo',
                     Url::fromString('http://example.com/foo'),
                     new IdentityDefinition('uuid'),
@@ -276,7 +281,12 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->identitiesNormalizer
             ->expects($this->once())
             ->method('denormalize')
-            ->with($response)
+            ->with(
+                $response,
+                'rest_identities',
+                null,
+                ['definition' => $definition]
+            )
             ->willReturn($expected = new Set(IdentityInterface::class));
 
         $all = $this->server->all('foo', null, new Range(10, 20));
@@ -292,7 +302,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->method('get')
             ->with('foo')
             ->willReturn(
-                new HttpResourceDefinition(
+                $definition = new HttpResourceDefinition(
                     'foo',
                     Url::fromString('http://example.com/foo'),
                     new IdentityDefinition('uuid'),
@@ -338,7 +348,12 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->identitiesNormalizer
             ->expects($this->once())
             ->method('denormalize')
-            ->with($response)
+            ->with(
+                $response,
+                'rest_identities',
+                null,
+                ['definition' => $definition]
+            )
             ->willReturn($expected = new Set(IdentityInterface::class));
 
         $all = $this->server->all('foo', $specification);
@@ -354,7 +369,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->method('get')
             ->with('foo')
             ->willReturn(
-                new HttpResourceDefinition(
+                $definition = new HttpResourceDefinition(
                     'foo',
                     Url::fromString('http://example.com/foo'),
                     new IdentityDefinition('uuid'),
@@ -402,7 +417,12 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->identitiesNormalizer
             ->expects($this->once())
             ->method('denormalize')
-            ->with($response)
+            ->with(
+                $response,
+                'rest_identities',
+                null,
+                ['definition' => $definition]
+            )
             ->willReturn($expected = new Set(IdentityInterface::class));
 
         $all = $this->server->all('foo', $specification, new Range(10, 20));
@@ -575,6 +595,12 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->identityNormalizer
             ->expects($this->once())
             ->method('denormalize')
+            ->with(
+                $response,
+                'rest_identity',
+                null,
+                ['definition' => $this->definition]
+            )
             ->willReturn($expected = new Identity('some-uuid'));
 
         $identity = $this->server->create(

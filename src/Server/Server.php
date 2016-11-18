@@ -130,7 +130,9 @@ final class Server implements ServerInterface
 
         return $this->serializer->denormalize(
             $response,
-            'rest_identities'
+            'rest_identities',
+            null,
+            ['definition' => $definition]
         );
     }
 
@@ -238,7 +240,9 @@ final class Server implements ServerInterface
 
         return $this->serializer->denormalize(
             $response,
-            'rest_identity'
+            'rest_identity',
+            null,
+            ['definition' => $definition]
         );
     }
 
