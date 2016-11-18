@@ -6,7 +6,9 @@ namespace Innmind\Rest\Client\Serializer\Normalizer;
 use Innmind\Rest\Client\{
     IdentityInterface,
     Identity,
-    Exception\LogicException
+    Exception\LogicException,
+    Definition\HttpResource,
+    Visitor\ResolveIdentity
 };
 use Innmind\Http\{
     Message\ResponseInterface,
@@ -21,12 +23,24 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 final class IdentitiesNormalizer implements DenormalizerInterface
 {
+    private $resolveIdentity;
+
+    public function __construct(ResolveIdentity $resolveIdentity)
+    {
+        $this->resolveIdentity = $resolveIdentity;
+    }
+
     public function denormalize($data, $type, $format = null, array $context = []): SetInterface
     {
-        if (!$this->supportsDenormalization($data, $type, $format)) {
+        if (
+            !$this->supportsDenormalization($data, $type, $format) ||
+            !isset($context['definition']) ||
+            !$context['definition'] instanceof HttpResource
+        ) {
             throw new LogicException;
         }
 
+        $definition = $context['definition'];
         $headers = $data->headers();
 
         if (!$headers->has('Link')) {
@@ -44,10 +58,14 @@ final class IdentitiesNormalizer implements DenormalizerInterface
             })
             ->reduce(
                 new Set(IdentityInterface::class),
-                function(Set $identities, LinkValue $link): Set {
+                function(Set $identities, LinkValue $link) use ($definition): Set {
                     return $identities->add(
                         new Identity(
-                            basename((string) $link->url())
+                            call_user_func(
+                                $this->resolveIdentity,
+                                $definition->url(),
+                                $link->url()
+                            )
                         )
                     );
                 }
