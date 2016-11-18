@@ -7,8 +7,6 @@ use Innmind\Rest\Client\{
     Server\Server,
     ServerInterface,
     Server\CapabilitiesInterface,
-    Serializer\Normalizer\IdentitiesNormalizer,
-    Serializer\Normalizer\IdentityNormalizer,
     Serializer\Normalizer\DefinitionNormalizer,
     Serializer\Normalizer\ResourceNormalizer,
     Definition\HttpResource as HttpResourceDefinition,
@@ -54,7 +52,8 @@ use Innmind\Immutable\{
 use Innmind\Specification\ComparatorInterface;
 use Symfony\Component\Serializer\{
     Serializer,
-    Encoder\JsonEncoder
+    Encoder\JsonEncoder,
+    Normalizer\DenormalizerInterface
 };
 
 class ServerTest extends \PHPUnit_Framework_TestCase
@@ -63,6 +62,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     private $url;
     private $transport;
     private $capabilities;
+    private $identitiesNormalizer;
+    private $identityNormalizer;
     private $definition;
 
     public function setUp()
@@ -74,8 +75,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             new UrlResolver,
             new Serializer(
                 [
-                    new IdentitiesNormalizer,
-                    new IdentityNormalizer,
+                    $this->identitiesNormalizer = $this->createMock(DenormalizerInterface::class),
+                    $this->identityNormalizer = $this->createMock(DenormalizerInterface::class),
                     new ResourceNormalizer,
                 ],
                 [new JsonEncoder]
@@ -213,52 +214,23 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->willReturn(
                 $response = $this->createMock(ResponseInterface::class)
             );
-        $response
+        $this
+            ->identitiesNormalizer
             ->expects($this->once())
-            ->method('headers')
-            ->willReturn(
-                new Headers(
-                    (new Map('string', HeaderInterface::class))
-                        ->put(
-                            'Link',
-                            new Link(
-                                (new Set(HeaderValueInterface::class))
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo/42'),
-                                            'resource',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo/66'),
-                                            'resource',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo?range[]=10&range[]=20'),
-                                            'next',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                            )
-                        )
-                )
-            );
+            ->method('supportsDenormalization')
+            ->will($this->returnCallback(function($data, $format) {
+                return $data instanceof ResponseInterface && $format === 'rest_identities';
+            }));
+        $this
+            ->identitiesNormalizer
+            ->expects($this->once())
+            ->method('denormalize')
+            ->with($response)
+            ->willReturn($expected = new Set(IdentityInterface::class));
+
         $all = $this->server->all('foo');
 
-        $this->assertInstanceOf(SetInterface::class, $all);
-        $this->assertSame(
-            IdentityInterface::class,
-            (string) $all->type()
-        );
-        $this->assertCount(2, $all);
-        $this->assertSame('42', (string) $all->current());
-        $all->next();
-        $this->assertSame('66', (string) $all->current());
+        $this->assertSame($expected, $all);
     }
 
     public function testAllWithRange()
@@ -293,52 +265,23 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->willReturn(
                 $response = $this->createMock(ResponseInterface::class)
             );
-        $response
+        $this
+            ->identitiesNormalizer
             ->expects($this->once())
-            ->method('headers')
-            ->willReturn(
-                new Headers(
-                    (new Map('string', HeaderInterface::class))
-                        ->put(
-                            'Link',
-                            new Link(
-                                (new Set(HeaderValueInterface::class))
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo/42'),
-                                            'resource',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo/66'),
-                                            'resource',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo?range[]=20&range[]=30'),
-                                            'next',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                            )
-                        )
-                )
-            );
+            ->method('supportsDenormalization')
+            ->will($this->returnCallback(function($data, $format) {
+                return $data instanceof ResponseInterface && $format === 'rest_identities';
+            }));
+        $this
+            ->identitiesNormalizer
+            ->expects($this->once())
+            ->method('denormalize')
+            ->with($response)
+            ->willReturn($expected = new Set(IdentityInterface::class));
+
         $all = $this->server->all('foo', null, new Range(10, 20));
 
-        $this->assertInstanceOf(SetInterface::class, $all);
-        $this->assertSame(
-            IdentityInterface::class,
-            (string) $all->type()
-        );
-        $this->assertCount(2, $all);
-        $this->assertSame('42', (string) $all->current());
-        $all->next();
-        $this->assertSame('66', (string) $all->current());
+        $this->assertSame($expected, $all);
     }
 
     public function testAllWithQuery()
@@ -371,41 +314,6 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->willReturn(
                 $response = $this->createMock(ResponseInterface::class)
             );
-        $response
-            ->expects($this->once())
-            ->method('headers')
-            ->willReturn(
-                new Headers(
-                    (new Map('string', HeaderInterface::class))
-                        ->put(
-                            'Link',
-                            new Link(
-                                (new Set(HeaderValueInterface::class))
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo/42'),
-                                            'resource',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo/66'),
-                                            'resource',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo?range[]=10&range[]=20'),
-                                            'next',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                            )
-                        )
-                )
-            );
         $specification = $this->createMock(ComparatorInterface::class);
         $specification
             ->expects($this->once())
@@ -419,17 +327,23 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('value')
             ->willReturn('baz');
+        $this
+            ->identitiesNormalizer
+            ->expects($this->once())
+            ->method('supportsDenormalization')
+            ->will($this->returnCallback(function($data, $format) {
+                return $data instanceof ResponseInterface && $format === 'rest_identities';
+            }));
+        $this
+            ->identitiesNormalizer
+            ->expects($this->once())
+            ->method('denormalize')
+            ->with($response)
+            ->willReturn($expected = new Set(IdentityInterface::class));
+
         $all = $this->server->all('foo', $specification);
 
-        $this->assertInstanceOf(SetInterface::class, $all);
-        $this->assertSame(
-            IdentityInterface::class,
-            (string) $all->type()
-        );
-        $this->assertCount(2, $all);
-        $this->assertSame('42', (string) $all->current());
-        $all->next();
-        $this->assertSame('66', (string) $all->current());
+        $this->assertSame($expected, $all);
     }
 
     public function testAllWithQueryAndRange()
@@ -464,41 +378,6 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->willReturn(
                 $response = $this->createMock(ResponseInterface::class)
             );
-        $response
-            ->expects($this->once())
-            ->method('headers')
-            ->willReturn(
-                new Headers(
-                    (new Map('string', HeaderInterface::class))
-                        ->put(
-                            'Link',
-                            new Link(
-                                (new Set(HeaderValueInterface::class))
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo/42'),
-                                            'resource',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo/66'),
-                                            'resource',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo?range[]=20&range[]=30'),
-                                            'next',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                            )
-                        )
-                )
-            );
         $specification = $this->createMock(ComparatorInterface::class);
         $specification
             ->expects($this->once())
@@ -512,17 +391,23 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('value')
             ->willReturn('baz');
+        $this
+            ->identitiesNormalizer
+            ->expects($this->once())
+            ->method('supportsDenormalization')
+            ->will($this->returnCallback(function($data, $format) {
+                return $data instanceof ResponseInterface && $format === 'rest_identities';
+            }));
+        $this
+            ->identitiesNormalizer
+            ->expects($this->once())
+            ->method('denormalize')
+            ->with($response)
+            ->willReturn($expected = new Set(IdentityInterface::class));
+
         $all = $this->server->all('foo', $specification, new Range(10, 20));
 
-        $this->assertInstanceOf(SetInterface::class, $all);
-        $this->assertSame(
-            IdentityInterface::class,
-            (string) $all->type()
-        );
-        $this->assertCount(2, $all);
-        $this->assertSame('42', (string) $all->current());
-        $all->next();
-        $this->assertSame('66', (string) $all->current());
+        $this->assertSame($expected, $all);
     }
 
     /**
@@ -657,41 +542,6 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\IdentityNotFoundException
-     */
-    public function testThrowWhenNoLocationInTheResponse()
-    {
-        $this
-            ->capabilities
-            ->expects($this->once())
-            ->method('get')
-            ->with('foo')
-            ->willReturn($this->definition);
-        $this
-            ->transport
-            ->expects($this->once())
-            ->method('fulfill')
-            ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
-            );
-        $response
-            ->expects($this->once())
-            ->method('headers')
-            ->willReturn(
-                new Headers(
-                    new Map('string', HeaderInterface::class)
-                )
-            );
-
-        $this->server->create(
-            new HttpResource(
-                'foo',
-                new Map('string', Property::class)
-            )
-        );
-    }
-
     public function testCreate()
     {
         $this
@@ -714,22 +564,18 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->willReturn(
                 $response = $this->createMock(ResponseInterface::class)
             );
-        $response
+        $this
+            ->identityNormalizer
             ->expects($this->once())
-            ->method('headers')
-            ->willReturn(
-                new Headers(
-                    (new Map('string', HeaderInterface::class))
-                        ->put(
-                            'Location',
-                            new Location(
-                                new LocationValue(
-                                    Url::fromString('/foo/some-uuid')
-                                )
-                            )
-                        )
-                )
-            );
+            ->method('supportsDenormalization')
+            ->will($this->returnCallback(function($data, $format) {
+                return $data instanceof ResponseInterface && $format === 'rest_identity';
+            }));
+        $this
+            ->identityNormalizer
+            ->expects($this->once())
+            ->method('denormalize')
+            ->willReturn($expected = new Identity('some-uuid'));
 
         $identity = $this->server->create(
             new HttpResource(
@@ -745,8 +591,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertInstanceOf(IdentityInterface::class, $identity);
-        $this->assertSame('some-uuid', (string) $identity);
+        $this->assertSame($expected, $identity);
     }
 
     public function testUpdate()
