@@ -7,7 +7,6 @@ use Innmind\Rest\Client\{
     ServerInterface,
     IdentityInterface,
     HttpResource,
-    Server\CapabilitiesInterface,
     Request\Range
 };
 use Innmind\Url\UrlInterface;

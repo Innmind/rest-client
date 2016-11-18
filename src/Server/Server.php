@@ -5,7 +5,6 @@ namespace Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\{
     ServerInterface,
-    Server\CapabilitiesInterface,
     Request\Range,
     IdentityInterface,
     Identity,
