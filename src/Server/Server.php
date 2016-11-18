@@ -236,22 +236,9 @@ final class Server implements ServerInterface
             )
         );
 
-        $headers = $response->headers();
-
-        if (
-            !$headers->has('Location') ||
-            !$headers->get('Location') instanceof Location
-        ) {
-            throw new IdentityNotFoundException;
-        }
-
-        return new Identity(
-            basename(
-                (string) $headers
-                    ->get('Location')
-                    ->values()
-                    ->current()
-            )
+        return $this->serializer->denormalize(
+            $response,
+            'rest_identity'
         );
     }
 

@@ -8,6 +8,7 @@ use Innmind\Rest\Client\{
     ServerInterface,
     Server\CapabilitiesInterface,
     Serializer\Normalizer\IdentitiesNormalizer,
+    Serializer\Normalizer\IdentityNormalizer,
     Serializer\Normalizer\DefinitionNormalizer,
     Serializer\Normalizer\ResourceNormalizer,
     Definition\HttpResource as HttpResourceDefinition,
@@ -74,6 +75,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             new Serializer(
                 [
                     new IdentitiesNormalizer,
+                    new IdentityNormalizer,
                     new ResourceNormalizer,
                 ],
                 [new JsonEncoder]
