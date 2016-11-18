@@ -5,7 +5,11 @@ namespace Tests\Innmind\Rest\Client\Serializer\Normalizer;
 
 use Innmind\Rest\Client\{
     Serializer\Normalizer\IdentityNormalizer,
-    IdentityInterface
+    IdentityInterface,
+    Visitor\ResolveIdentity,
+    Definition\HttpResource,
+    Definition\Identity,
+    Definition\Property
 };
 use Innmind\Http\{
     Message\ResponseInterface,
@@ -19,6 +23,7 @@ use Innmind\Http\{
     Header\ParameterInterface
 };
 use Innmind\Url\Url;
+use Innmind\UrlResolver\UrlResolver;
 use Innmind\Immutable\{
     Map,
     Set,
@@ -28,32 +33,50 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class IdentityNormalizerTest extends \PHPUnit_Framework_TestCase
 {
+    private $normalizer;
+    private $definition;
+
+    public function setUp()
+    {
+        $this->normalizer = new IdentityNormalizer(
+            new ResolveIdentity(
+                new UrlResolver
+            )
+        );
+        $this->definition = new HttpResource(
+            'foo',
+            Url::fromString('http://example.com/foo'),
+            new Identity('uuid'),
+            new Map('string', Property::class),
+            new Map('scalar', 'variable'),
+            false
+        );
+    }
+
     public function testInterface()
     {
         $this->assertInstanceOf(
             DenormalizerInterface::class,
-            new IdentityNormalizer
+            $this->normalizer
         );
     }
 
     public function testSupportsDenormalization()
     {
-        $normalizer = new IdentityNormalizer;
-
         $this->assertTrue(
-            $normalizer->supportsDenormalization(
+            $this->normalizer->supportsDenormalization(
                 $this->createMock(ResponseInterface::class),
                 'rest_identity'
             )
         );
         $this->assertFalse(
-            $normalizer->supportsDenormalization(
+            $this->normalizer->supportsDenormalization(
                 new \stdClass,
                 'rest_identity'
             )
         );
         $this->assertFalse(
-            $normalizer->supportsDenormalization(
+            $this->normalizer->supportsDenormalization(
                 $this->createMock(ResponseInterface::class),
                 'identity'
             )
@@ -65,9 +88,11 @@ class IdentityNormalizerTest extends \PHPUnit_Framework_TestCase
      */
     public function testThrowWhenDenormalizingInvalidData()
     {
-        (new IdentityNormalizer)->denormalize(
+        $this->normalizer->denormalize(
             new \stdClass,
-            'rest_identity'
+            'rest_identity',
+            null,
+            ['definition' => $this->definition]
         );
     }
 
@@ -76,9 +101,35 @@ class IdentityNormalizerTest extends \PHPUnit_Framework_TestCase
      */
     public function testThrowWhenDenormalizingInvalidType()
     {
-        (new IdentityNormalizer)->denormalize(
+        $this->normalizer->denormalize(
+            $this->createMock(ResponseInterface::class),
+            'identity',
+            null,
+            ['definition' => $this->definition]
+        );
+    }
+
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\LogicException
+     */
+    public function testThrowWhenDenormalizingWhithoutDefinition()
+    {
+        $this->normalizer->denormalize(
             $this->createMock(ResponseInterface::class),
             'identity'
+        );
+    }
+
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\LogicException
+     */
+    public function testThrowWhenDenormalizingWhithInvalidDefinition()
+    {
+        $this->normalizer->denormalize(
+            $this->createMock(ResponseInterface::class),
+            'identity',
+            null,
+            ['definition' => []]
         );
     }
 
@@ -97,9 +148,11 @@ class IdentityNormalizerTest extends \PHPUnit_Framework_TestCase
                 )
             );
 
-        (new IdentityNormalizer)->denormalize(
+        $this->normalizer->denormalize(
             $response,
-            'rest_identity'
+            'rest_identity',
+            null,
+            ['definition' => $this->definition]
         );
     }
 
@@ -126,15 +179,16 @@ class IdentityNormalizerTest extends \PHPUnit_Framework_TestCase
                 )
             );
 
-        (new IdentityNormalizer)->denormalize(
+        $this->normalizer->denormalize(
             $response,
-            'rest_identity'
+            'rest_identity',
+            null,
+            ['definition' => $this->definition]
         );
     }
 
     public function testDenormalize()
     {
-        $normalizer = new IdentityNormalizer;
         $response = $this->createMock(ResponseInterface::class);
         $response
             ->expects($this->once())
@@ -153,7 +207,12 @@ class IdentityNormalizerTest extends \PHPUnit_Framework_TestCase
                 )
             );
 
-        $identity = $normalizer->denormalize($response, 'rest_identity');
+        $identity = $this->normalizer->denormalize(
+            $response,
+            'rest_identity',
+            null,
+            ['definition' => $this->definition]
+        );
 
         $this->assertInstanceOf(IdentityInterface::class, $identity);
         $this->assertSame('42', (string) $identity);
