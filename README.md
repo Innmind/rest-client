@@ -9,6 +9,8 @@
 
 This library is intended to consume APIs built with the [`RestServer`](https://github.com/Innmind/rest-server).
 
+You can refer to the associated [bundle](https://packagist.org/packages/innmind/rest-client-bundle) to check a concrete implementation.
+
 ## Installation
 
 ```sh
