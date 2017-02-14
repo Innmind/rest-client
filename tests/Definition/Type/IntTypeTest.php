@@ -8,8 +8,9 @@ use Innmind\Rest\Client\Definition\{
     Types,
     TypeInterface
 };
+use PHPUnit\Framework\TestCase;
 
-class IntTypeTest extends \PHPUnit_Framework_TestCase
+class IntTypeTest extends TestCase
 {
     public function testInterface()
     {

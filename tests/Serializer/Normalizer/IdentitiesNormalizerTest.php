@@ -28,8 +28,9 @@ use Innmind\Immutable\{
     SetInterface
 };
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use PHPUnit\Framework\TestCase;
 
-class IdentitiesNormalizerTest extends \PHPUnit_Framework_TestCase
+class IdentitiesNormalizerTest extends TestCase
 {
     private $normalizer;
     private $definition;

@@ -8,8 +8,9 @@ use Innmind\Rest\Client\Definition\{
     Types,
     TypeInterface
 };
+use PHPUnit\Framework\TestCase;
 
-class StringTypeTest extends \PHPUnit_Framework_TestCase
+class StringTypeTest extends TestCase
 {
     public function testInterface()
     {

@@ -9,8 +9,9 @@ use Innmind\Rest\Client\Definition\{
     Access
 };
 use Innmind\Immutable\Set;
+use PHPUnit\Framework\TestCase;
 
-class PropertyTest extends \PHPUnit_Framework_TestCase
+class PropertyTest extends TestCase
 {
     /**
      * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException

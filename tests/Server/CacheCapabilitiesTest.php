@@ -27,8 +27,9 @@ use Symfony\Component\Serializer\{
     Serializer,
     Encoder\JsonEncoder
 };
+use PHPUnit\Framework\TestCase;
 
-class CacheCapabilitiesTest extends \PHPUnit_Framework_TestCase
+class CacheCapabilitiesTest extends TestCase
 {
     private $capabilities;
     private $inner;

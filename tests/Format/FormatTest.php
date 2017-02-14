@@ -8,8 +8,9 @@ use Innmind\Rest\Client\Format\{
     MediaType
 };
 use Innmind\Immutable\Set;
+use PHPUnit\Framework\TestCase;
 
-class FormatTest extends \PHPUnit_Framework_TestCase
+class FormatTest extends TestCase
 {
     public function testInterface()
     {

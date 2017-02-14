@@ -21,8 +21,9 @@ use Innmind\Http\{
 use Innmind\Filesystem\Stream\StringStream;
 use Innmind\Url\Url;
 use Innmind\Immutable\Map;
+use PHPUnit\Framework\TestCase;
 
-class DefinitionFactoryTest extends \PHPUnit_Framework_TestCase
+class DefinitionFactoryTest extends TestCase
 {
     private $factory;
 

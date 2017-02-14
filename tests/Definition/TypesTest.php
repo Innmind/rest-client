@@ -16,8 +16,9 @@ use Innmind\Rest\Client\{
     Exception\InvalidArgumentException
 };
 use Innmind\Immutable\SetInterface;
+use PHPUnit\Framework\TestCase;
 
-class TypesTest extends \PHPUnit_Framework_TestCase
+class TypesTest extends TestCase
 {
     public function testRegister()
     {

@@ -10,8 +10,9 @@ use Innmind\Rest\Client\Definition\{
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\Map;
+use PHPUnit\Framework\TestCase;
 
-class HttpResourceTest extends \PHPUnit_Framework_TestCase
+class HttpResourceTest extends TestCase
 {
     public function testInterface()
     {

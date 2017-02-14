@@ -12,8 +12,9 @@ use Symfony\Component\Serializer\Normalizer\{
     DenormalizerInterface,
     NormalizerInterface
 };
+use PHPUnit\Framework\TestCase;
 
-class DefinitionNormalizerTest extends \PHPUnit_Framework_TestCase
+class DefinitionNormalizerTest extends TestCase
 {
     private $normalizer;
     private $raw;

@@ -34,8 +34,9 @@ use Innmind\Immutable\{
     Set,
     MapInterface
 };
+use PHPUnit\Framework\TestCase;
 
-class CapabilitiesTest extends \PHPUnit_Framework_TestCase
+class CapabilitiesTest extends TestCase
 {
     private $capabilities;
     private $transport;
