@@ -8,8 +8,9 @@ use Innmind\Rest\Client\Definition\{
     Types,
     TypeInterface
 };
+use PHPUnit\Framework\TestCase;
 
-class FloatTypeTest extends \PHPUnit_Framework_TestCase
+class FloatTypeTest extends TestCase
 {
     public function testInterface()
     {

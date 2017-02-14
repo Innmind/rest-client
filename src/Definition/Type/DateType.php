@@ -10,7 +10,7 @@ use Innmind\Rest\Client\{
     Exception\NormalizationException,
     Exception\DenormalizationException
 };
-use Innmind\Immutable\StringPrimitive as Str;
+use Innmind\Immutable\Str;
 
 final class DateType implements TypeInterface
 {
@@ -31,13 +31,13 @@ final class DateType implements TypeInterface
     {
         $type = new Str($type);
 
-        if (!$type->match(self::PATTERN)) {
+        if (!$type->matches(self::PATTERN)) {
             throw new InvalidArgumentException;
         }
 
         return new self(
             (string) $type
-                ->getMatches(self::PATTERN)
+                ->capture(self::PATTERN)
                 ->get('format')
         );
     }

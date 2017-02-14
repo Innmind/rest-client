@@ -20,8 +20,9 @@ use Symfony\Component\Serializer\Normalizer\{
     DenormalizerInterface,
     NormalizerInterface
 };
+use PHPUnit\Framework\TestCase;
 
-class ResourceNormalizerTest extends \PHPUnit_Framework_TestCase
+class ResourceNormalizerTest extends TestCase
 {
     private $normalizer;
     private $definition;

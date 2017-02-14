@@ -4,8 +4,9 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Rest\Client\Format;
 
 use Innmind\Rest\Client\Format\MediaType;
+use PHPUnit\Framework\TestCase;
 
-class MediaTypeTest extends \PHPUnit_Framework_TestCase
+class MediaTypeTest extends TestCase
 {
     public function testInterface()
     {

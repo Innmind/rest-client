@@ -4,8 +4,9 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Rest\Client\Definition;
 
 use Innmind\Rest\Client\Definition\Identity;
+use PHPUnit\Framework\TestCase;
 
-class IdentityTest extends \PHPUnit_Framework_TestCase
+class IdentityTest extends TestCase
 {
     /**
      * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException

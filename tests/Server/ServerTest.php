@@ -55,8 +55,9 @@ use Symfony\Component\Serializer\{
     Encoder\JsonEncoder,
     Normalizer\DenormalizerInterface
 };
+use PHPUnit\Framework\TestCase;
 
-class ServerTest extends \PHPUnit_Framework_TestCase
+class ServerTest extends TestCase
 {
     private $server;
     private $url;

@@ -18,8 +18,9 @@ use Innmind\Immutable\{
     SetInterface,
     Map
 };
+use PHPUnit\Framework\TestCase;
 
-class RetryServerTest extends \PHPUnit_Framework_TestCase
+class RetryServerTest extends TestCase
 {
     private $server;
     private $inner;

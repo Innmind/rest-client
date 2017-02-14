@@ -8,8 +8,9 @@ use Innmind\Rest\Client\Definition\{
     Types,
     TypeInterface
 };
+use PHPUnit\Framework\TestCase;
 
-class BoolTypeTest extends \PHPUnit_Framework_TestCase
+class BoolTypeTest extends TestCase
 {
     public function testInterface()
     {

@@ -14,8 +14,9 @@ use Innmind\Specification\{
     NotInterface,
     SpecificationInterface
 };
+use PHPUnit\Framework\TestCase;
 
-class SpecificationTranslatorTest extends \PHPUnit_Framework_TestCase
+class SpecificationTranslatorTest extends TestCase
 {
     public function testInterface()
     {

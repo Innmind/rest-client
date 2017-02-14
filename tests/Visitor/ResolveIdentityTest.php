@@ -6,8 +6,9 @@ namespace Tests\Innmind\Rest\Client\Visitor;
 use Innmind\Rest\Client\Visitor\ResolveIdentity;
 use Innmind\UrlResolver\UrlResolver;
 use Innmind\Url\Url;
+use PHPUnit\Framework\TestCase;
 
-class ResolveIdentityTest extends \PHPUnit_Framework_TestCase
+class ResolveIdentityTest extends TestCase
 {
     /**
      * @dataProvider cases

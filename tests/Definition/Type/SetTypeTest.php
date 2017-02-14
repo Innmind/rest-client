@@ -13,8 +13,9 @@ use Innmind\Immutable\{
     Set,
     SetInterface
 };
+use PHPUnit\Framework\TestCase;
 
-class SetTypeTest extends \PHPUnit_Framework_TestCase
+class SetTypeTest extends TestCase
 {
     public function testInterface()
     {

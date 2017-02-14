@@ -11,7 +11,7 @@ use Innmind\Rest\Client\{
     Exception\DenormalizationException
 };
 use Innmind\Immutable\{
-    StringPrimitive as Str,
+    Str,
     Map,
     MapInterface
 };
@@ -40,11 +40,11 @@ final class MapType implements TypeInterface
     {
         $type = new Str($type);
 
-        if (!$type->match(self::PATTERN)) {
+        if (!$type->matches(self::PATTERN)) {
             throw new InvalidArgumentException;
         }
 
-        $matches = $type->getMatches(self::PATTERN);
+        $matches = $type->capture(self::PATTERN);
 
         return new self(
             $types->build(

@@ -4,8 +4,9 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Rest\Client\Request;
 
 use Innmind\Rest\Client\Request\Range;
+use PHPUnit\Framework\TestCase;
 
-class RangeTest extends \PHPUnit_Framework_TestCase
+class RangeTest extends TestCase
 {
     public function testInterface()
     {

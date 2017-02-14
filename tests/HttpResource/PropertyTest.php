@@ -4,8 +4,9 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Rest\Client\HttpResource;
 
 use Innmind\Rest\Client\HttpResource\Property;
+use PHPUnit\Framework\TestCase;
 
-class PropertyTest extends \PHPUnit_Framework_TestCase
+class PropertyTest extends TestCase
 {
     public function testInterface()
     {

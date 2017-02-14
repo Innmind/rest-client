@@ -6,8 +6,9 @@ namespace Tests\Innmind\Rest\Client\Serializer\Normalizer;
 use Innmind\Rest\Client\Serializer\Normalizer\CapabilitiesNamesNormalizer;
 use Innmind\Immutable\SetInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use PHPUnit\Framework\TestCase;
 
-class CapabilitiesNamesNormalizerTest extends \PHPUnit_Framework_TestCase
+class CapabilitiesNamesNormalizerTest extends TestCase
 {
     public function testInterface()
     {
