@@ -89,7 +89,8 @@ final class Client implements ClientInterface
                 $this->transport,
                 $url,
                 $this->resolver,
-                $this->definitionFactory
+                $this->definitionFactory,
+                $this->formats
             ),
             $this->filesystem,
             $this->serializer,

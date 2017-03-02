@@ -5,7 +5,9 @@ namespace Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\{
     Definition\HttpResource,
-    Exception\InvalidArgumentException
+    Exception\InvalidArgumentException,
+    Format\Format,
+    Formats
 };
 use Innmind\HttpTransport\TransportInterface;
 use Innmind\Url\{
@@ -20,7 +22,9 @@ use Innmind\Http\{
     ProtocolVersion,
     Header\HeaderInterface,
     Header\HeaderValueInterface,
-    Header\LinkValue
+    Header\LinkValue,
+    Header\Accept,
+    Header\AcceptValue
 };
 use Innmind\Filesystem\Stream\NullStream;
 use Innmind\Immutable\{
@@ -36,6 +40,7 @@ final class Capabilities implements CapabilitiesInterface
     private $host;
     private $resolver;
     private $factory;
+    private $formats;
     private $optionsUrl;
     private $names;
     private $paths;
@@ -45,12 +50,14 @@ final class Capabilities implements CapabilitiesInterface
         TransportInterface $transport,
         UrlInterface $host,
         ResolverInterface $resolver,
-        DefinitionFactory $factory
+        DefinitionFactory $factory,
+        Formats $formats
     ) {
         $this->transport = $transport;
         $this->host = $host;
         $this->resolver = $resolver;
         $this->factory = $factory;
+        $this->formats = $formats;
         $optionsUrl = $resolver->resolve((string) $host, '/*');
         $this->optionsUrl = Url::fromString($optionsUrl);
         $this->paths = new Map('string', UrlInterface::class);
@@ -125,7 +132,28 @@ final class Capabilities implements CapabilitiesInterface
                 new Method(Method::OPTIONS),
                 new ProtocolVersion(1, 1),
                 new Headers(
-                    new Map('string', HeaderInterface::class)
+                    (new Map('string', HeaderInterface::class))
+                        ->put(
+                            'Accept',
+                            new Accept(
+                                $this
+                                    ->formats
+                                    ->all()
+                                    ->values()
+                                    ->sort(function(Format $a, Format $b): bool {
+                                        return $a->priority() < $b->priority();
+                                    })
+                                    ->reduce(
+                                        new Set(HeaderValueInterface::class),
+                                        function(Set $values, Format $format): Set {
+                                            return $values->add(new AcceptValue(
+                                                $format->preferredMediaType()->topLevel(),
+                                                $format->preferredMediaType()->subType()
+                                            ));
+                                        }
+                                    )
+                            )
+                        )
                 ),
                 new NullStream
             )
