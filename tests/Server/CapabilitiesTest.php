@@ -9,7 +9,10 @@ use Innmind\Rest\Client\{
     Server\DefinitionFactory,
     Definition\Types,
     Definition\HttpResource,
-    Serializer\Normalizer\DefinitionNormalizer
+    Serializer\Normalizer\DefinitionNormalizer,
+    Formats,
+    Format\Format,
+    Format\MediaType
 };
 use Innmind\HttpTransport\TransportInterface;
 use Innmind\Url\Url;
@@ -54,6 +57,29 @@ class CapabilitiesTest extends TestCase
             new UrlResolver,
             new DefinitionFactory(
                 new DefinitionNormalizer($types)
+            ),
+            new Formats(
+                (new Map('string', Format::class))
+                    ->put(
+                        'json',
+                        new Format(
+                            'json',
+                            (new Set(MediaType::class))->add(
+                                new MediaType('application/json', 0)
+                            ),
+                            1
+                        )
+                    )
+                    ->put(
+                        'xml',
+                        new Format(
+                            'xml',
+                            (new Set(MediaType::class))->add(
+                                new MediaType('text/xml', 0)
+                            ),
+                            0
+                        )
+                    )
             )
         );
     }
@@ -194,7 +220,9 @@ class CapabilitiesTest extends TestCase
             ->method('fulfill')
             ->with($this->callback(function(RequestInterface $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
-                    (string) $request->method() === 'OPTIONS';
+                    (string) $request->method() === 'OPTIONS' &&
+                    $request->headers()->has('Accept') &&
+                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml';
             }))
             ->willReturn(
                 $response = $this->createMock(ResponseInterface::class)
