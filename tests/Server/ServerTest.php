@@ -578,8 +578,9 @@ class ServerTest extends TestCase
             ->with($this->callback(function(RequestInterface $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'POST' &&
-                    $request->headers()->count() === 1 &&
+                    $request->headers()->count() === 2 &&
                     (string) $request->headers()->get('Content-Type') === 'Content-Type : application/json' &&
+                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
                     (string) $request->body() === '{"resource":{"url":"foobar"}}';
             }))
             ->willReturn(
@@ -636,8 +637,9 @@ class ServerTest extends TestCase
             ->with($this->callback(function(RequestInterface $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'PUT' &&
-                    $request->headers()->count() === 1 &&
+                    $request->headers()->count() === 2 &&
                     (string) $request->headers()->get('Content-Type') === 'Content-Type : application/json' &&
+                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
                     (string) $request->body() === '{"resource":{"url":"foobar"}}';
             }))
             ->willReturn(

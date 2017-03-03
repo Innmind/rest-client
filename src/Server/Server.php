@@ -151,25 +151,7 @@ final class Server implements ServerInterface
                     (new Map('string', HeaderInterface::class))
                         ->put(
                             'Accept',
-                            new Accept(
-                                $this
-                                    ->formats
-                                    ->all()
-                                    ->values()
-                                    ->sort(function(Format $a, Format $b): bool {
-                                        return $a->priority() < $b->priority();
-                                    })
-                                    ->reduce(
-                                        new Set(HeaderValueInterface::class),
-                                        function(Set $values, Format $format): Set {
-                                            return $values->add(new AcceptValue(
-                                                $format->preferredMediaType()->topLevel(),
-                                                $format->preferredMediaType()->subType(),
-                                                new Map('string', ParameterInterface::class)
-                                            ));
-                                        }
-                                    )
-                            )
+                            $this->generateAcceptHeader()
                         )
                 ),
                 new NullStream
@@ -222,6 +204,10 @@ final class Server implements ServerInterface
                                 )
                             )
                         )
+                        ->put(
+                            'Accept',
+                            $this->generateAcceptHeader()
+                        )
                 ),
                 new StringStream(
                     $this->serializer->serialize(
@@ -270,6 +256,10 @@ final class Server implements ServerInterface
                                     new Map('string', ParameterInterface::class)
                                 )
                             )
+                        )
+                        ->put(
+                            'Accept',
+                            $this->generateAcceptHeader()
                         )
                 ),
                 new StringStream(
@@ -329,5 +319,27 @@ final class Server implements ServerInterface
         $url = rtrim($url, '/').'/'.$identity;
 
         return Url::fromString($url);
+    }
+
+    private function generateAcceptHeader(): Accept
+    {
+        return new Accept(
+            $this
+                ->formats
+                ->all()
+                ->values()
+                ->sort(function(Format $a, Format $b): bool {
+                    return $a->priority() < $b->priority();
+                })
+                ->reduce(
+                    new Set(HeaderValueInterface::class),
+                    function(Set $values, Format $format): Set {
+                        return $values->add(new AcceptValue(
+                            $format->preferredMediaType()->topLevel(),
+                            $format->preferredMediaType()->subType()
+                        ));
+                    }
+                )
+        );
     }
 }
