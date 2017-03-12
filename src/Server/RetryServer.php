@@ -9,6 +9,8 @@ use Innmind\Rest\Client\{
     HttpResource,
     Request\Range
 };
+use Innmind\HttpTransport\Exception\ClientErrorException;
+use Innmind\Http\Message\StatusCode;
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\{
     SetInterface,
@@ -41,6 +43,10 @@ final class RetryServer implements ServerInterface
         try {
             return $this->server->all($name, $specification, $range);
         } catch (\Throwable $e) {
+            if (!$this->shouldRetry($e)) {
+                throw $e;
+            }
+
             $this->server->capabilities()->refresh();
 
             return $this->server->all($name, $specification, $range);
@@ -52,6 +58,10 @@ final class RetryServer implements ServerInterface
         try {
             return $this->server->read($name, $identity);
         } catch (\Throwable $e) {
+            if (!$this->shouldRetry($e)) {
+                throw $e;
+            }
+
             $this->server->capabilities()->refresh();
 
             return $this->server->read($name, $identity);
@@ -63,6 +73,10 @@ final class RetryServer implements ServerInterface
         try {
             return $this->server->create($resource);
         } catch (\Throwable $e) {
+            if (!$this->shouldRetry($e)) {
+                throw $e;
+            }
+
             $this->server->capabilities()->refresh();
 
             return $this->server->create($resource);
@@ -76,11 +90,15 @@ final class RetryServer implements ServerInterface
         try {
             $this->server->update($identity, $resource);
         } catch (\Throwable $e) {
+            if (!$this->shouldRetry($e)) {
+                throw $e;
+            }
+
             $this->server->capabilities()->refresh();
             $this->server->update($identity, $resource);
-        } finally {
-            return $this;
         }
+
+        return $this;
     }
 
     public function remove(string $name, IdentityInterface $identity): ServerInterface
@@ -88,11 +106,15 @@ final class RetryServer implements ServerInterface
         try {
             $this->server->remove($name, $identity);
         } catch (\Throwable $e) {
+            if (!$this->shouldRetry($e)) {
+                throw $e;
+            }
+
             $this->server->capabilities()->refresh();
             $this->server->remove($name, $identity);
-        } finally {
-            return $this;
         }
+
+        return $this;
     }
 
     public function capabilities(): CapabilitiesInterface
@@ -103,5 +125,14 @@ final class RetryServer implements ServerInterface
     public function url(): UrlInterface
     {
         return $this->server->url();
+    }
+
+    private function shouldRetry(\Throwable $e): bool
+    {
+        if (!$e instanceof ClientErrorException) {
+            return false;
+        }
+
+        return $e->response()->statusCode()->value() === StatusCode::codes()->get('BAD_REQUEST');
     }
 }
