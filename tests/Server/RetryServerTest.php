@@ -12,6 +12,12 @@ use Innmind\Rest\Client\{
     HttpResource\Property,
     Request\Range
 };
+use Innmind\HttpTransport\Exception\ClientErrorException;
+use Innmind\Http\Message\{
+    RequestInterface,
+    ResponseInterface,
+    StatusCode
+};
 use Innmind\Url\UrlInterface;
 use Innmind\Specification\SpecificationInterface;
 use Innmind\Immutable\{
@@ -66,7 +72,7 @@ class RetryServerTest extends TestCase
             ->method('all')
             ->with('foo', $specification, $range)
             ->will(
-                $this->throwException(new \Exception)
+                $this->throwException($this->createException())
             );
         $this
             ->inner
@@ -88,6 +94,29 @@ class RetryServerTest extends TestCase
         $identities = $this->server->all('foo', $specification, $range);
 
         $this->assertSame($expected, $identities);
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testDoesntRetryAll()
+    {
+        $specification = $this->createMock(SpecificationInterface::class);
+        $range = new Range(0, 42);
+        $this
+            ->inner
+            ->expects($this->once())
+            ->method('all')
+            ->with('foo', $specification, $range)
+            ->will(
+                $this->throwException(new \Exception)
+            );
+        $this
+            ->inner
+            ->expects($this->never())
+            ->method('capabilities');
+
+        $this->server->all('foo', $specification, $range);
     }
 
     public function testRead()
@@ -119,7 +148,7 @@ class RetryServerTest extends TestCase
             ->method('read')
             ->with('foo', $identity)
             ->will(
-                $this->throwException(new \Exception)
+                $this->throwException($this->createException())
             );
         $this
             ->inner
@@ -146,6 +175,28 @@ class RetryServerTest extends TestCase
         $resource = $this->server->read('foo', $identity);
 
         $this->assertSame($expected, $resource);
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testDoesntRetryRead()
+    {
+        $identity = $this->createMock(IdentityInterface::class);
+        $this
+            ->inner
+            ->expects($this->once())
+            ->method('read')
+            ->with('foo', $identity)
+            ->will(
+                $this->throwException(new \Exception)
+            );
+        $this
+            ->inner
+            ->expects($this->never())
+            ->method('capabilities');
+
+        $this->server->read('foo', $identity);
     }
 
     public function testCreate()
@@ -180,7 +231,7 @@ class RetryServerTest extends TestCase
             ->method('create')
             ->with($resource)
             ->will(
-                $this->throwException(new \Exception)
+                $this->throwException($this->createException())
             );
         $this
             ->inner
@@ -204,6 +255,31 @@ class RetryServerTest extends TestCase
         $identity = $this->server->create($resource);
 
         $this->assertSame($expected, $identity);
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testDoesntRetryCreate()
+    {
+        $resource = new HttpResource(
+            'foo',
+            new Map('string', Property::class)
+        );
+        $this
+            ->inner
+            ->expects($this->once())
+            ->method('create')
+            ->with($resource)
+            ->will(
+                $this->throwException(new \Exception)
+            );
+        $this
+            ->inner
+            ->expects($this->never())
+            ->method('capabilities');
+
+        $this->server->create($resource);
     }
 
     public function testUpdate()
@@ -238,7 +314,7 @@ class RetryServerTest extends TestCase
             ->method('update')
             ->with($identity, $resource)
             ->will(
-                $this->throwException(new \Exception)
+                $this->throwException($this->createException())
             );
         $this
             ->inner
@@ -260,6 +336,32 @@ class RetryServerTest extends TestCase
         $return = $this->server->update($identity, $resource);
 
         $this->assertSame($this->server, $return);
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testDoesntRetryUpdate()
+    {
+        $identity = $this->createMock(IdentityInterface::class);
+        $resource = new HttpResource(
+            'foo',
+            new Map('string', Property::class)
+        );
+        $this
+            ->inner
+            ->expects($this->once())
+            ->method('update')
+            ->with($identity, $resource)
+            ->will(
+                $this->throwException(new \Exception)
+            );
+        $this
+            ->inner
+            ->expects($this->never())
+            ->method('capabilities');
+
+        $this->server->update($identity, $resource);
     }
 
     public function testRemove()
@@ -286,7 +388,7 @@ class RetryServerTest extends TestCase
             ->method('remove')
             ->with('foo', $identity)
             ->will(
-                $this->throwException(new \Exception)
+                $this->throwException($this->createException())
             );
         $this
             ->inner
@@ -308,6 +410,28 @@ class RetryServerTest extends TestCase
         $return = $this->server->remove('foo', $identity);
 
         $this->assertSame($this->server, $return);
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testDoesntRetryRemove()
+    {
+        $identity = $this->createMock(IdentityInterface::class);
+        $this
+            ->inner
+            ->expects($this->once())
+            ->method('remove')
+            ->with('foo', $identity)
+            ->will(
+                $this->throwException(new \Exception)
+            );
+        $this
+            ->inner
+            ->expects($this->never())
+            ->method('capabilities');
+
+        $this->server->remove('foo', $identity);
     }
 
     public function testCapabilities()
@@ -340,5 +464,19 @@ class RetryServerTest extends TestCase
             $expected,
             $this->server->url()
         );
+    }
+
+    private function createException(): ClientErrorException
+    {
+        $exception = new ClientErrorException(
+            $this->createMock(RequestInterface::class),
+            $response = $this->createMock(ResponseInterface::class)
+        );
+        $response
+            ->expects($this->once())
+            ->method('statusCode')
+            ->willReturn(new StatusCode(400)); //bad request
+
+        return $exception;
     }
 }
