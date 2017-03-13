@@ -31,6 +31,24 @@ interface ServerInterface
         HttpResource $resource
     ): self;
     public function remove(string $name, IdentityInterface $identity): self;
+
+    /**
+     * @param SetInterface<Link> $links
+     */
+    public function link(
+        string $name,
+        IdentityInterface $identity,
+        SetInterface $links
+    ): self;
+
+    /**
+     * @param SetInterface<Link> $links
+     */
+    public function unlink(
+        string $name,
+        IdentityInterface $identity,
+        SetInterface $links
+    ): self;
     public function capabilities(): CapabilitiesInterface;
     public function url(): UrlInterface;
 }
