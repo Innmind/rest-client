@@ -124,7 +124,7 @@ final class RetryServer implements ServerInterface
     ): ServerInterface {
         try {
             $this->server->link($name, $identity, $links);
-        } catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             if (!$this->shouldRetryAfter($e)) {
                 throw $e;
             }
@@ -136,7 +136,7 @@ final class RetryServer implements ServerInterface
         return $this;
     }
 
-     /**
+    /**
      * {@inheritdoc}
      */
     public function unlink(
@@ -146,7 +146,7 @@ final class RetryServer implements ServerInterface
     ): ServerInterface {
         try {
             $this->server->unlink($name, $identity, $links);
-        } catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             if (!$this->shouldRetryAfter($e)) {
                 throw $e;
             }
