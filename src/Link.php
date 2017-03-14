@@ -7,7 +7,10 @@ use Innmind\Rest\Client\{
     Link\ParameterInterface,
     Exception\InvalidArgumentException
 };
-use Innmind\Immutable\MapInterface;
+use Innmind\Immutable\{
+    MapInterface,
+    Map
+};
 
 final class Link
 {
@@ -25,6 +28,8 @@ final class Link
         $parameters = $parameters ?? new Map('string', ParameterInterface::class);
 
         if (
+            empty($definition) ||
+            empty($relationship) ||
             (string) $parameters->keyType() !== 'string' ||
             (string) $parameters->valueType() !== ParameterInterface::class
         ) {
