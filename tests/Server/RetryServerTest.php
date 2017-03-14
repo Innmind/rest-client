@@ -10,7 +10,8 @@ use Innmind\Rest\Client\{
     IdentityInterface,
     HttpResource,
     HttpResource\Property,
-    Request\Range
+    Request\Range,
+    Link
 };
 use Innmind\HttpTransport\Exception\ClientErrorException;
 use Innmind\Http\Message\{
@@ -22,7 +23,8 @@ use Innmind\Url\UrlInterface;
 use Innmind\Specification\SpecificationInterface;
 use Innmind\Immutable\{
     SetInterface,
-    Map
+    Map,
+    Set
 };
 use PHPUnit\Framework\TestCase;
 
@@ -464,6 +466,144 @@ class RetryServerTest extends TestCase
             $expected,
             $this->server->url()
         );
+    }
+
+    public function testLink()
+    {
+        $identity = $this->createMock(IdentityInterface::class);
+        $links = new Set(Link::class);
+        $this
+            ->inner
+            ->expects($this->once())
+            ->method('link')
+            ->with('foo', $identity, $links);
+
+        $this->assertSame(
+            $this->server,
+            $this->server->link('foo', $identity, $links)
+        );
+    }
+
+    public function testRetryLink()
+    {
+        $identity = $this->createMock(IdentityInterface::class);
+        $links = new Set(Link::class);
+        $this
+            ->inner
+            ->expects($this->at(0))
+            ->method('link')
+            ->with('foo', $identity, $links)
+            ->will($this->throwException($this->createException()));
+        $this
+            ->inner
+            ->expects($this->at(1))
+            ->method('capabilities')
+            ->willReturn(
+                $capabilities = $this->createMock(CapabilitiesInterface::class)
+            );
+        $capabilities
+            ->expects($this->once())
+            ->method('refresh');
+        $this
+            ->inner
+            ->expects($this->at(2))
+            ->method('link')
+            ->with('foo', $identity, $links);
+
+        $this->assertSame(
+            $this->server,
+            $this->server->link('foo', $identity, $links)
+        );
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testDoesntRetryLink()
+    {
+        $identity = $this->createMock(IdentityInterface::class);
+        $links = new Set(Link::class);
+        $this
+            ->inner
+            ->expects($this->once())
+            ->method('link')
+            ->with('foo', $identity, $links)
+            ->will($this->throwException(new \Exception));
+        $this
+            ->inner
+            ->expects($this->never())
+            ->method('capabilities');
+
+        $this->server->link('foo', $identity, $links);
+    }
+
+    public function testUnlink()
+    {
+        $identity = $this->createMock(IdentityInterface::class);
+        $links = new Set(Link::class);
+        $this
+            ->inner
+            ->expects($this->once())
+            ->method('unlink')
+            ->with('foo', $identity, $links);
+
+        $this->assertSame(
+            $this->server,
+            $this->server->unlink('foo', $identity, $links)
+        );
+    }
+
+    public function testRetryUnlink()
+    {
+        $identity = $this->createMock(IdentityInterface::class);
+        $links = new Set(Link::class);
+        $this
+            ->inner
+            ->expects($this->at(0))
+            ->method('unlink')
+            ->with('foo', $identity, $links)
+            ->will($this->throwException($this->createException()));
+        $this
+            ->inner
+            ->expects($this->at(1))
+            ->method('capabilities')
+            ->willReturn(
+                $capabilities = $this->createMock(CapabilitiesInterface::class)
+            );
+        $capabilities
+            ->expects($this->once())
+            ->method('refresh');
+        $this
+            ->inner
+            ->expects($this->at(2))
+            ->method('unlink')
+            ->with('foo', $identity, $links);
+
+        $this->assertSame(
+            $this->server,
+            $this->server->unlink('foo', $identity, $links)
+        );
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testDoesntRetryUnlink()
+    {
+        $identity = $this->createMock(IdentityInterface::class);
+        $links = new Set(Link::class);
+        $this
+            ->inner
+            ->expects($this->once())
+            ->method('unlink')
+            ->with('foo', $identity, $links)
+            ->will($this->throwException(new \Exception));
+        $this
+            ->inner
+            ->expects($this->never())
+            ->method('capabilities');
+
+        $this->server->unlink('foo', $identity, $links);
     }
 
     private function createException(): ClientErrorException

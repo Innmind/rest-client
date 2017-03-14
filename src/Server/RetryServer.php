@@ -117,6 +117,50 @@ final class RetryServer implements ServerInterface
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function link(
+        string $name,
+        IdentityInterface $identity,
+        SetInterface $links
+    ): ServerInterface {
+        try {
+            $this->server->link($name, $identity, $links);
+        } catch(\Throwable $e) {
+            if (!$this->shouldRetry($e)) {
+                throw $e;
+            }
+
+            $this->server->capabilities()->refresh();
+            $this->server->link($name, $identity, $links);
+        }
+
+        return $this;
+    }
+
+     /**
+     * {@inheritdoc}
+     */
+    public function unlink(
+        string $name,
+        IdentityInterface $identity,
+        SetInterface $links
+    ): ServerInterface {
+        try {
+            $this->server->unlink($name, $identity, $links);
+        } catch(\Throwable $e) {
+            if (!$this->shouldRetry($e)) {
+                throw $e;
+            }
+
+            $this->server->capabilities()->refresh();
+            $this->server->unlink($name, $identity, $links);
+        }
+
+        return $this;
+    }
+
     public function capabilities(): CapabilitiesInterface
     {
         return $this->server->capabilities();

@@ -21,7 +21,10 @@ use Innmind\Rest\Client\{
     Format\MediaType,
     HttpResource,
     HttpResource\Property,
-    Translator\SpecificationTranslator
+    Translator\SpecificationTranslator,
+    Link,
+    Link\ParameterInterface,
+    Link\Parameter
 };
 use Innmind\HttpTransport\TransportInterface;
 use Innmind\UrlResolver\UrlResolver;
@@ -35,13 +38,10 @@ use Innmind\Http\{
     Headers,
     Header\HeaderInterface,
     Header\HeaderValueInterface,
-    Header\Link,
-    Header\LinkValue,
     Header\ContentType,
     Header\ContentTypeValue,
     Header\Location,
-    Header\LocationValue,
-    Header\ParameterInterface
+    Header\LocationValue
 };
 use Innmind\Filesystem\Stream\StringStream;
 use Innmind\Immutable\{
@@ -490,8 +490,7 @@ class ServerTest extends TestCase
                             new ContentType(
                                 new ContentTypeValue(
                                     'text',
-                                    'plain',
-                                    new Map('string', ParameterInterface::class)
+                                    'plain'
                                 )
                             )
                         )
@@ -534,8 +533,7 @@ class ServerTest extends TestCase
                             new ContentType(
                                 new ContentTypeValue(
                                     'application',
-                                    'json',
-                                    new Map('string', ParameterInterface::class)
+                                    'json'
                                 )
                             )
                         )
@@ -692,5 +690,139 @@ class ServerTest extends TestCase
         );
 
         $this->assertSame($this->server, $return);
+    }
+
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     */
+    public function testThrowWhenInvalidSetOfLinks()
+    {
+        $this->server->link(
+            'foo',
+            $this->createMock(IdentityInterface::class),
+            new Set('string')
+        );
+    }
+
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     */
+    public function testThrowWhenEmptySetOfLinks()
+    {
+        $this->server->link(
+            'foo',
+            $this->createMock(IdentityInterface::class),
+            new Set(Link::class)
+        );
+    }
+
+    public function testLink()
+    {
+        $this
+            ->capabilities
+            ->expects($this->at(0))
+            ->method('get')
+            ->with('foo')
+            ->willReturn($this->definition);
+        $this
+            ->capabilities
+            ->expects($this->at(1))
+            ->method('get')
+            ->with('bar')
+            ->willReturn($this->definition);
+        $this
+            ->transport
+            ->expects($this->once())
+            ->method('fulfill')
+            ->with($this->callback(function(RequestInterface $request): bool {
+                return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
+                    (string) $request->method() === 'LINK' &&
+                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
+                    (string) $request->headers()->get('Link') === 'Link : </foo/cano>; rel="canonical";attr=val' &&
+                    (string) $request->body() === '';
+            }));
+
+        $this->assertSame(
+            $this->server,
+            $this->server->link(
+                'foo',
+                new Identity('some-uuid'),
+                (new Set(Link::class))
+                    ->add(new Link(
+                        'bar',
+                        new Identity('cano'),
+                        'canonical',
+                        (new Map('string', ParameterInterface::class))
+                            ->put('attr', new Parameter('attr', 'val'))
+                    ))
+            )
+        );
+    }
+
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     */
+    public function testThrowWhenInvalidSetOfLinksToUnlink()
+    {
+        $this->server->unlink(
+            'foo',
+            $this->createMock(IdentityInterface::class),
+            new Set('string')
+        );
+    }
+
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     */
+    public function testThrowWhenEmptySetOfLinksToUnlink()
+    {
+        $this->server->unlink(
+            'foo',
+            $this->createMock(IdentityInterface::class),
+            new Set(Link::class)
+        );
+    }
+
+    public function testUnlink()
+    {
+        $this
+            ->capabilities
+            ->expects($this->at(0))
+            ->method('get')
+            ->with('foo')
+            ->willReturn($this->definition);
+        $this
+            ->capabilities
+            ->expects($this->at(1))
+            ->method('get')
+            ->with('bar')
+            ->willReturn($this->definition);
+        $this
+            ->transport
+            ->expects($this->once())
+            ->method('fulfill')
+            ->with($this->callback(function(RequestInterface $request): bool {
+                return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
+                    (string) $request->method() === 'UNLINK' &&
+                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
+                    (string) $request->headers()->get('Link') === 'Link : </foo/cano>; rel="canonical";attr=val' &&
+                    (string) $request->body() === '';
+            }));
+
+        $this->assertSame(
+            $this->server,
+            $this->server->unlink(
+                'foo',
+                new Identity('some-uuid'),
+                (new Set(Link::class))
+                    ->add(new Link(
+                        'bar',
+                        new Identity('cano'),
+                        'canonical',
+                        (new Map('string', ParameterInterface::class))
+                            ->put('attr', new Parameter('attr', 'val'))
+                    ))
+            )
+        );
     }
 }

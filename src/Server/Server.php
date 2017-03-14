@@ -13,9 +13,12 @@ use Innmind\Rest\Client\{
     Exception\ResourceNotRangeableException,
     Exception\UnsupportedResponseException,
     Exception\IdentityNotFoundException,
+    Exception\InvalidArgumentException,
     Definition\Access,
     Formats,
-    Format\Format
+    Format\Format,
+    Link,
+    Link\ParameterInterface
 };
 use Innmind\HttpTransport\TransportInterface;
 use Innmind\Url\{
@@ -37,7 +40,10 @@ use Innmind\Http\{
     Header\ContentType,
     Header\ContentTypeValue,
     Header\Location,
-    Header\ParameterInterface
+    Header\ParameterInterface as HeaderParameterInterface,
+    Header\Parameter as HeaderParameter,
+    Header\Link as LinkHeader,
+    Header\LinkValue
 };
 use Innmind\Filesystem\Stream\{
     NullStream,
@@ -199,8 +205,7 @@ final class Server implements ServerInterface
                             new ContentType(
                                 new ContentTypeValue(
                                     'application',
-                                    'json',
-                                    new Map('string', ParameterInterface::class)
+                                    'json'
                                 )
                             )
                         )
@@ -252,8 +257,7 @@ final class Server implements ServerInterface
                             new ContentType(
                                 new ContentTypeValue(
                                     'application',
-                                    'json',
-                                    new Map('string', ParameterInterface::class)
+                                    'json'
                                 )
                             )
                         )
@@ -290,11 +294,77 @@ final class Server implements ServerInterface
                     $identity
                 ),
                 new Method(Method::DELETE),
+                new ProtocolVersion(1, 1)
+            )
+        );
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function link(
+        string $name,
+        IdentityInterface $identity,
+        SetInterface $links
+    ): ServerInterface {
+        if (
+            (string) $links->type() !== Link::class ||
+            $links->size() === 0
+        ) {
+            throw new InvalidArgumentException;
+        }
+
+        $definition = $this->capabilities->get($name);
+        $this->transport->fulfill(
+            new Request(
+                $this->resolveUrl(
+                    $definition->url(),
+                    $identity
+                ),
+                new Method(Method::LINK),
                 new ProtocolVersion(1, 1),
                 new Headers(
-                    new Map('string', HeaderInterface::class)
+                    (new Map('string', HeaderInterface::class))
+                        ->put('Accept', $this->generateAcceptHeader())
+                        ->put('Link', $this->generateLinkHeader($links))
+                )
+            )
+        );
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unlink(
+        string $name,
+        IdentityInterface $identity,
+        SetInterface $links
+    ): ServerInterface {
+        if (
+            (string) $links->type() !== Link::class ||
+            $links->size() === 0
+        ) {
+            throw new InvalidArgumentException;
+        }
+
+        $definition = $this->capabilities->get($name);
+        $this->transport->fulfill(
+            new Request(
+                $this->resolveUrl(
+                    $definition->url(),
+                    $identity
                 ),
-                new NullStream
+                new Method(Method::UNLINK),
+                new ProtocolVersion(1, 1),
+                new Headers(
+                    (new Map('string', HeaderInterface::class))
+                        ->put('Accept', $this->generateAcceptHeader())
+                        ->put('Link', $this->generateLinkHeader($links))
+                )
             )
         );
 
@@ -340,6 +410,45 @@ final class Server implements ServerInterface
                         ));
                     }
                 )
+        );
+    }
+
+    private function generateLinkHeader(SetInterface $links): LinkHeader
+    {
+        return new LinkHeader(
+            $links->reduce(
+                new Set(HeaderValueInterface::class),
+                function(Set $carry, Link $link): Set {
+                    $url = $this->resolveUrl(
+                        $this
+                            ->capabilities
+                            ->get($link->definition())
+                            ->url(),
+                        $link->identity()
+                    );
+
+                    return $carry->add(
+                        new LinkValue(
+                            Url::fromString((string) $url->path()),
+                            $link->relationship(),
+                            $link
+                                ->parameters()
+                                ->reduce(
+                                    new Map('string', HeaderParameterInterface::class),
+                                    function(Map $carry, string $name, ParameterInterface $parameter): Map {
+                                        return $carry->put(
+                                            $name,
+                                            new HeaderParameter(
+                                                $parameter->key(),
+                                                $parameter->value()
+                                            )
+                                        );
+                                    }
+                                )
+                        )
+                    );
+                }
+            )
         );
     }
 }
