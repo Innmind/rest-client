@@ -66,7 +66,7 @@ final class HttpResource
     }
 
     /**
-     * @return MapInterface<string, variable>
+     * @return MapInterface<scalar, variable>
      */
     public function metas(): MapInterface
     {
