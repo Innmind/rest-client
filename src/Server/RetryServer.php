@@ -43,7 +43,7 @@ final class RetryServer implements ServerInterface
         try {
             return $this->server->all($name, $specification, $range);
         } catch (\Throwable $e) {
-            if (!$this->shouldRetry($e)) {
+            if (!$this->shouldRetryAfter($e)) {
                 throw $e;
             }
 
@@ -58,7 +58,7 @@ final class RetryServer implements ServerInterface
         try {
             return $this->server->read($name, $identity);
         } catch (\Throwable $e) {
-            if (!$this->shouldRetry($e)) {
+            if (!$this->shouldRetryAfter($e)) {
                 throw $e;
             }
 
@@ -73,7 +73,7 @@ final class RetryServer implements ServerInterface
         try {
             return $this->server->create($resource);
         } catch (\Throwable $e) {
-            if (!$this->shouldRetry($e)) {
+            if (!$this->shouldRetryAfter($e)) {
                 throw $e;
             }
 
@@ -90,7 +90,7 @@ final class RetryServer implements ServerInterface
         try {
             $this->server->update($identity, $resource);
         } catch (\Throwable $e) {
-            if (!$this->shouldRetry($e)) {
+            if (!$this->shouldRetryAfter($e)) {
                 throw $e;
             }
 
@@ -106,7 +106,7 @@ final class RetryServer implements ServerInterface
         try {
             $this->server->remove($name, $identity);
         } catch (\Throwable $e) {
-            if (!$this->shouldRetry($e)) {
+            if (!$this->shouldRetryAfter($e)) {
                 throw $e;
             }
 
@@ -128,7 +128,7 @@ final class RetryServer implements ServerInterface
         try {
             $this->server->link($name, $identity, $links);
         } catch(\Throwable $e) {
-            if (!$this->shouldRetry($e)) {
+            if (!$this->shouldRetryAfter($e)) {
                 throw $e;
             }
 
@@ -150,7 +150,7 @@ final class RetryServer implements ServerInterface
         try {
             $this->server->unlink($name, $identity, $links);
         } catch(\Throwable $e) {
-            if (!$this->shouldRetry($e)) {
+            if (!$this->shouldRetryAfter($e)) {
                 throw $e;
             }
 
@@ -171,7 +171,7 @@ final class RetryServer implements ServerInterface
         return $this->server->url();
     }
 
-    private function shouldRetry(\Throwable $e): bool
+    private function shouldRetryAfter(\Throwable $e): bool
     {
         if (!$e instanceof ClientErrorException) {
             return false;
