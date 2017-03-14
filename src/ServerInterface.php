@@ -8,10 +8,7 @@ use Innmind\Rest\Client\{
     Request\Range
 };
 use Innmind\Url\UrlInterface;
-use Innmind\Immutable\{
-    SetInterface,
-    MapInterface
-};
+use Innmind\Immutable\SetInterface;
 use Innmind\Specification\SpecificationInterface;
 
 interface ServerInterface

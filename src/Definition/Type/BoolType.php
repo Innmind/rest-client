@@ -6,9 +6,7 @@ namespace Innmind\Rest\Client\Definition\Type;
 use Innmind\Rest\Client\{
     Definition\Types,
     Definition\TypeInterface,
-    Exception\InvalidArgumentException,
-    Exception\NormalizationException,
-    Exception\DenormalizationException
+    Exception\InvalidArgumentException
 };
 
 final class BoolType implements TypeInterface

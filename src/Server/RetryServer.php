@@ -12,10 +12,7 @@ use Innmind\Rest\Client\{
 use Innmind\HttpTransport\Exception\ClientErrorException;
 use Innmind\Http\Message\StatusCode;
 use Innmind\Url\UrlInterface;
-use Innmind\Immutable\{
-    SetInterface,
-    MapInterface
-};
+use Innmind\Immutable\SetInterface;
 use Innmind\Specification\SpecificationInterface;
 
 /**

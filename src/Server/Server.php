@@ -12,7 +12,6 @@ use Innmind\Rest\Client\{
     Translator\SpecificationTranslatorInterface,
     Exception\ResourceNotRangeableException,
     Exception\UnsupportedResponseException,
-    Exception\IdentityNotFoundException,
     Exception\InvalidArgumentException,
     Definition\Access,
     Formats,
@@ -39,7 +38,6 @@ use Innmind\Http\{
     Header\AcceptValue,
     Header\ContentType,
     Header\ContentTypeValue,
-    Header\Location,
     Header\ParameterInterface as HeaderParameterInterface,
     Header\Parameter as HeaderParameter,
     Header\Link as LinkHeader,
@@ -51,7 +49,6 @@ use Innmind\Filesystem\Stream\{
 };
 use Innmind\Immutable\{
     SetInterface,
-    MapInterface,
     Map,
     Set
 };
