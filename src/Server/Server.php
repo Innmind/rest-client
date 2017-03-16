@@ -13,11 +13,13 @@ use Innmind\Rest\Client\{
     Exception\ResourceNotRangeableException,
     Exception\UnsupportedResponseException,
     Exception\InvalidArgumentException,
+    Exception\NormalizationException,
     Definition\Access,
     Formats,
     Format\Format,
     Link,
-    Link\ParameterInterface
+    Link\ParameterInterface,
+    Definition\HttpResource as Definition
 };
 use Innmind\HttpTransport\TransportInterface;
 use Innmind\Url\{
@@ -314,6 +316,7 @@ final class Server implements ServerInterface
         }
 
         $definition = $this->capabilities->get($name);
+        $this->validateLinks($definition, $links);
         $this->transport->fulfill(
             new Request(
                 $this->resolveUrl(
@@ -349,6 +352,7 @@ final class Server implements ServerInterface
         }
 
         $definition = $this->capabilities->get($name);
+        $this->validateLinks($definition, $links);
         $this->transport->fulfill(
             new Request(
                 $this->resolveUrl(
@@ -447,5 +451,19 @@ final class Server implements ServerInterface
                 }
             )
         );
+    }
+
+    /**
+     * @param SetInterface<link> $links
+     *
+     * @throws NormalizationException
+     */
+    private function validateLinks(Definition $definition, SetInterface $links): void
+    {
+        $links->foreach(function(Link $link) use ($definition): void {
+            if (!$definition->allowsLink($link)) {
+                throw new NormalizationException;
+            }
+        });
     }
 }

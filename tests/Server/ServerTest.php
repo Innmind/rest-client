@@ -724,6 +724,36 @@ class ServerTest extends TestCase
         );
     }
 
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\NormalizationException
+     */
+    public function testThrowWhenLinkNotAllowedByDefinition()
+    {
+        $this
+            ->capabilities
+            ->expects($this->once())
+            ->method('get')
+            ->with('foo')
+            ->willReturn($this->definition);
+        $this
+            ->transport
+            ->expects($this->never())
+            ->method('fulfill');
+
+        $this->server->link(
+            'foo',
+            new Identity('some-uuid'),
+            (new Set(Link::class))
+                ->add(new Link(
+                    'baz',
+                    new Identity('cano'),
+                    'canonical',
+                    (new Map('string', ParameterInterface::class))
+                        ->put('attr', new Parameter('attr', 'val'))
+                ))
+        );
+    }
+
     public function testLink()
     {
         $this
@@ -788,6 +818,36 @@ class ServerTest extends TestCase
             'foo',
             $this->createMock(IdentityInterface::class),
             new Set(Link::class)
+        );
+    }
+
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\NormalizationException
+     */
+    public function testThrowWhenUnlinkNotAllowedByDefinition()
+    {
+        $this
+            ->capabilities
+            ->expects($this->once())
+            ->method('get')
+            ->with('foo')
+            ->willReturn($this->definition);
+        $this
+            ->transport
+            ->expects($this->never())
+            ->method('fulfill');
+
+        $this->server->unlink(
+            'foo',
+            new Identity('some-uuid'),
+            (new Set(Link::class))
+                ->add(new Link(
+                    'baz',
+                    new Identity('cano'),
+                    'canonical',
+                    (new Map('string', ParameterInterface::class))
+                        ->put('attr', new Parameter('attr', 'val'))
+                ))
         );
     }
 
