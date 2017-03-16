@@ -7,7 +7,9 @@ use Innmind\Rest\Client\{
     ServerInterface,
     IdentityInterface,
     HttpResource,
-    Request\Range
+    Request\Range,
+    Exception\NormalizationException,
+    Exception\DenormalizationException
 };
 use Innmind\HttpTransport\Exception\ClientErrorException;
 use Innmind\Http\Message\StatusCode;
@@ -170,6 +172,13 @@ final class RetryServer implements ServerInterface
 
     private function shouldRetryAfter(\Throwable $e): bool
     {
+        if (
+            $e instanceof NormalizationException ||
+            $e instanceof DenormalizationException
+        ) {
+            return true;
+        }
+
         if (!$e instanceof ClientErrorException) {
             return false;
         }
