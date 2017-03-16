@@ -3,10 +3,13 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\Definition;
 
-use Innmind\Rest\Client\Definition\{
-    HttpResource,
-    Identity,
-    Property
+use Innmind\Rest\Client\{
+    Definition\HttpResource,
+    Definition\Identity,
+    Definition\Property,
+    Link,
+    Link\ParameterInterface,
+    IdentityInterface
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\Map;
@@ -22,6 +25,7 @@ class HttpResourceTest extends TestCase
             $identity = new Identity('uuid'),
             $properties = new Map('string', Property::class),
             $metas = new Map('scalar', 'variable'),
+            $links = new Map('string', 'string'),
             true
         );
 
@@ -31,6 +35,7 @@ class HttpResourceTest extends TestCase
         $this->assertSame($identity, $resource->identity());
         $this->assertSame($properties, $resource->properties());
         $this->assertSame($metas, $resource->metas());
+        $this->assertSame($links, $resource->links());
         $this->assertTrue($resource->isRangeable());
     }
 
@@ -45,6 +50,7 @@ class HttpResourceTest extends TestCase
             new Identity('uuid'),
             new Map('string', Property::class),
             new Map('scalar', 'variable'),
+            new Map('string', 'string'),
             true
         );
     }
@@ -60,6 +66,7 @@ class HttpResourceTest extends TestCase
             new Identity('uuid'),
             new Map('int', Property::class),
             new Map('scalar', 'variable'),
+            new Map('string', 'string'),
             true
         );
     }
@@ -75,7 +82,54 @@ class HttpResourceTest extends TestCase
             new Identity('uuid'),
             new Map('string', Property::class),
             new Map('string', 'scalar'),
+            new Map('string', 'string'),
             true
         );
+    }
+
+    /**
+     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     */
+    public function testThrowWhenInvalidLinkMap()
+    {
+        new HttpResource(
+            'foo',
+            $this->createMock(UrlInterface::class),
+            new Identity('uuid'),
+            new Map('string', Property::class),
+            new Map('string', 'scalar'),
+            new Map('string', 'scalar'),
+            true
+        );
+    }
+
+    public function testAllowsLink()
+    {
+        $resource = new HttpResource(
+            'foo',
+            $this->createMock(UrlInterface::class),
+            new Identity('uuid'),
+            new Map('string', Property::class),
+            new Map('scalar', 'variable'),
+            (new Map('string', 'string'))
+                ->put('rel', 'res'),
+            true
+        );
+
+        $notAllowed = new Link(
+            'foo',
+            $this->createMock(IdentityInterface::class),
+            'baz',
+            new Map('string', ParameterInterface::class)
+        );
+        $allowed = new Link(
+            'res',
+            $this->createMock(IdentityInterface::class),
+            'rel',
+            new Map('string', ParameterInterface::class)
+        );
+
+        $this->assertFalse($resource->allowsLink($notAllowed));
+        $this->assertTrue($resource->allowsLink($allowed));
     }
 }

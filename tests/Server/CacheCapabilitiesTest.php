@@ -79,6 +79,7 @@ class CacheCapabilitiesTest extends TestCase
             'metas' => [
                 'foo' => ['bar' => 'baz'],
             ],
+            'linkable_to' => [],
             'rangeable' => true,
         ];
         $this->definition = $this->serializer->denormalize(

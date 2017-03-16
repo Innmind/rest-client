@@ -133,6 +133,9 @@ class ServerTest extends TestCase
                 'metas' => [
                     'foo' => ['bar' => 'baz'],
                 ],
+                'linkable_to' => [
+                    'canonical' => 'bar',
+                ],
                 'rangeable' => true,
             ],
             HttpResourceDefinition::class,
@@ -174,6 +177,7 @@ class ServerTest extends TestCase
                     new IdentityDefinition('uuid'),
                     new Map('string', PropertyDefinition::class),
                     new Map('scalar', 'variable'),
+                    new Map('string', 'string'),
                     false
                 )
             );
@@ -199,6 +203,7 @@ class ServerTest extends TestCase
                     new IdentityDefinition('uuid'),
                     new Map('string', PropertyDefinition::class),
                     new Map('scalar', 'variable'),
+                    new Map('string', 'string'),
                     false
                 )
             );
@@ -253,6 +258,7 @@ class ServerTest extends TestCase
                     new IdentityDefinition('uuid'),
                     new Map('string', PropertyDefinition::class),
                     new Map('scalar', 'variable'),
+                    new Map('string', 'string'),
                     true
                 )
             );
@@ -309,6 +315,7 @@ class ServerTest extends TestCase
                     new IdentityDefinition('uuid'),
                     new Map('string', PropertyDefinition::class),
                     new Map('scalar', 'variable'),
+                    new Map('string', 'string'),
                     false
                 )
             );
@@ -376,6 +383,7 @@ class ServerTest extends TestCase
                     new IdentityDefinition('uuid'),
                     new Map('string', PropertyDefinition::class),
                     new Map('scalar', 'variable'),
+                    new Map('string', 'string'),
                     true
                 )
             );
