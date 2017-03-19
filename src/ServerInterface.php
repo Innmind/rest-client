@@ -8,10 +8,7 @@ use Innmind\Rest\Client\{
     Request\Range
 };
 use Innmind\Url\UrlInterface;
-use Innmind\Immutable\{
-    SetInterface,
-    MapInterface
-};
+use Innmind\Immutable\SetInterface;
 use Innmind\Specification\SpecificationInterface;
 
 interface ServerInterface
@@ -31,6 +28,24 @@ interface ServerInterface
         HttpResource $resource
     ): self;
     public function remove(string $name, IdentityInterface $identity): self;
+
+    /**
+     * @param SetInterface<Link> $links
+     */
+    public function link(
+        string $name,
+        IdentityInterface $identity,
+        SetInterface $links
+    ): self;
+
+    /**
+     * @param SetInterface<Link> $links
+     */
+    public function unlink(
+        string $name,
+        IdentityInterface $identity,
+        SetInterface $links
+    ): self;
     public function capabilities(): CapabilitiesInterface;
     public function url(): UrlInterface;
 }

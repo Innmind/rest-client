@@ -67,6 +67,7 @@ class ResourceNormalizerTest extends TestCase
                 'metas' => [
                     'foo' => ['bar' => 'baz'],
                 ],
+                'linkable_to' => [],
                 'rangeable' => true,
             ],
             ResourceDefinition::class,

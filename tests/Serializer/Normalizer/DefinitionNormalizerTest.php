@@ -47,6 +47,9 @@ class DefinitionNormalizerTest extends TestCase
             'metas' => [
                 'foo' => ['bar' => 'baz'],
             ],
+            'linkable_to' => [
+                'rel' => 'res',
+            ],
             'rangeable' => true,
         ];
     }
@@ -168,6 +171,8 @@ class DefinitionNormalizerTest extends TestCase
             ['bar' => 'baz'],
             $definition->metas()->get('foo')
         );
+        $this->assertCount(1, $definition->links());
+        $this->assertSame('res', $definition->links()->get('rel'));
         $this->assertTrue($definition->isRangeable());
     }
 

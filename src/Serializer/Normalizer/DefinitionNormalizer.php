@@ -44,6 +44,7 @@ final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInt
 
         $properties = new Map('string', Property::class);
         $metas = new Map('scalar', 'variable');
+        $links = new Map('string', 'string');
 
         foreach ($definition['properties'] as $name => $value) {
             $properties = $properties->put(
@@ -56,12 +57,17 @@ final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInt
             $metas = $metas->put($key, $value);
         }
 
+        foreach ($definition['linkable_to'] as $key => $value) {
+            $links = $links->put($key, $value);
+        }
+
         return new HttpResource(
             $context['name'],
             Url::fromString($definition['url']),
             new Identity($definition['identity']),
             $properties,
             $metas,
+            $links,
             $definition['rangeable']
         );
     }
@@ -98,6 +104,10 @@ final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInt
             'metas' => array_combine(
                 $data->metas()->keys()->toPrimitive(),
                 $data->metas()->values()->toPrimitive()
+            ),
+            'linkable_to' => array_combine(
+                $data->links()->keys()->toPrimitive(),
+                $data->links()->values()->toPrimitive()
             ),
             'rangeable' => $data->isRangeable(),
         ];

@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Definition;
 
-use Innmind\Rest\Client\Exception\InvalidArgumentException;
+use Innmind\Rest\Client\{
+    Link,
+    Exception\InvalidArgumentException
+};
 use Innmind\url\UrlInterface;
 use Innmind\Immutable\MapInterface;
 
@@ -14,6 +17,7 @@ final class HttpResource
     private $identity;
     private $properties;
     private $metas;
+    private $links;
     private $rangeable;
 
     public function __construct(
@@ -22,6 +26,7 @@ final class HttpResource
         Identity $identity,
         MapInterface $properties,
         MapInterface $metas,
+        MapInterface $links,
         bool $rangeable
     ) {
         if (
@@ -29,7 +34,9 @@ final class HttpResource
             (string) $properties->keyType() !== 'string' ||
             (string) $properties->valueType() !== Property::class ||
             (string) $metas->keyType() !== 'scalar' ||
-            (string) $metas->valueType() !== 'variable'
+            (string) $metas->valueType() !== 'variable' ||
+            (string) $links->keyType() !== 'string' ||
+            (string) $links->valueType() !== 'string'
         ) {
             throw new InvalidArgumentException;
         }
@@ -39,6 +46,7 @@ final class HttpResource
         $this->identity = $identity;
         $this->properties = $properties;
         $this->metas = $metas;
+        $this->links = $links;
         $this->rangeable = $rangeable;
     }
 
@@ -66,11 +74,28 @@ final class HttpResource
     }
 
     /**
-     * @return MapInterface<string, variable>
+     * @return MapInterface<scalar, variable>
      */
     public function metas(): MapInterface
     {
         return $this->metas;
+    }
+
+    /**
+     * @return MapInterface<string, string>
+     */
+    public function links(): MapInterface
+    {
+        return $this->links;
+    }
+
+    public function allowsLink(Link $link): bool
+    {
+        if (!$this->links->contains($link->relationship())) {
+            return false;
+        }
+
+        return $this->links->get($link->relationship()) === $link->definition();
     }
 
     public function isRangeable(): bool

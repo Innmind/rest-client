@@ -7,15 +7,14 @@ use Innmind\Rest\Client\{
     ServerInterface,
     IdentityInterface,
     HttpResource,
-    Request\Range
+    Request\Range,
+    Exception\NormalizationException,
+    Exception\DenormalizationException
 };
 use Innmind\HttpTransport\Exception\ClientErrorException;
 use Innmind\Http\Message\StatusCode;
 use Innmind\Url\UrlInterface;
-use Innmind\Immutable\{
-    SetInterface,
-    MapInterface
-};
+use Innmind\Immutable\SetInterface;
 use Innmind\Specification\SpecificationInterface;
 
 /**
@@ -43,7 +42,7 @@ final class RetryServer implements ServerInterface
         try {
             return $this->server->all($name, $specification, $range);
         } catch (\Throwable $e) {
-            if (!$this->shouldRetry($e)) {
+            if (!$this->shouldRetryAfter($e)) {
                 throw $e;
             }
 
@@ -58,7 +57,7 @@ final class RetryServer implements ServerInterface
         try {
             return $this->server->read($name, $identity);
         } catch (\Throwable $e) {
-            if (!$this->shouldRetry($e)) {
+            if (!$this->shouldRetryAfter($e)) {
                 throw $e;
             }
 
@@ -73,7 +72,7 @@ final class RetryServer implements ServerInterface
         try {
             return $this->server->create($resource);
         } catch (\Throwable $e) {
-            if (!$this->shouldRetry($e)) {
+            if (!$this->shouldRetryAfter($e)) {
                 throw $e;
             }
 
@@ -90,7 +89,7 @@ final class RetryServer implements ServerInterface
         try {
             $this->server->update($identity, $resource);
         } catch (\Throwable $e) {
-            if (!$this->shouldRetry($e)) {
+            if (!$this->shouldRetryAfter($e)) {
                 throw $e;
             }
 
@@ -106,12 +105,56 @@ final class RetryServer implements ServerInterface
         try {
             $this->server->remove($name, $identity);
         } catch (\Throwable $e) {
-            if (!$this->shouldRetry($e)) {
+            if (!$this->shouldRetryAfter($e)) {
                 throw $e;
             }
 
             $this->server->capabilities()->refresh();
             $this->server->remove($name, $identity);
+        }
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function link(
+        string $name,
+        IdentityInterface $identity,
+        SetInterface $links
+    ): ServerInterface {
+        try {
+            $this->server->link($name, $identity, $links);
+        } catch (\Throwable $e) {
+            if (!$this->shouldRetryAfter($e)) {
+                throw $e;
+            }
+
+            $this->server->capabilities()->refresh();
+            $this->server->link($name, $identity, $links);
+        }
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unlink(
+        string $name,
+        IdentityInterface $identity,
+        SetInterface $links
+    ): ServerInterface {
+        try {
+            $this->server->unlink($name, $identity, $links);
+        } catch (\Throwable $e) {
+            if (!$this->shouldRetryAfter($e)) {
+                throw $e;
+            }
+
+            $this->server->capabilities()->refresh();
+            $this->server->unlink($name, $identity, $links);
         }
 
         return $this;
@@ -127,8 +170,15 @@ final class RetryServer implements ServerInterface
         return $this->server->url();
     }
 
-    private function shouldRetry(\Throwable $e): bool
+    private function shouldRetryAfter(\Throwable $e): bool
     {
+        if (
+            $e instanceof NormalizationException ||
+            $e instanceof DenormalizationException
+        ) {
+            return true;
+        }
+
         if (!$e instanceof ClientErrorException) {
             return false;
         }

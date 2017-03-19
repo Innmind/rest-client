@@ -48,6 +48,7 @@ class IdentitiesNormalizerTest extends TestCase
             new Identity('uuid'),
             new Map('string', Property::class),
             new Map('scalar', 'variable'),
+            new Map('string', 'string'),
             false
         );
     }

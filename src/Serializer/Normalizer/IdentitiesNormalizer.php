@@ -61,8 +61,7 @@ final class IdentitiesNormalizer implements DenormalizerInterface
                 function(Set $identities, LinkValue $link) use ($definition): Set {
                     return $identities->add(
                         new Identity(
-                            call_user_func(
-                                $this->resolveIdentity,
+                            ($this->resolveIdentity)(
                                 $definition->url(),
                                 $link->url()
                             )
