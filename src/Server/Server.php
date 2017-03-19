@@ -45,10 +45,7 @@ use Innmind\Http\{
     Header\Link as LinkHeader,
     Header\LinkValue
 };
-use Innmind\Filesystem\Stream\{
-    NullStream,
-    StringStream
-};
+use Innmind\Filesystem\Stream\StringStream;
 use Innmind\Immutable\{
     SetInterface,
     Map,
@@ -128,8 +125,7 @@ final class Server implements ServerInterface
                 $url,
                 new Method(Method::GET),
                 new ProtocolVersion(1, 1),
-                new Headers($headers),
-                new NullStream
+                new Headers($headers)
             )
         );
 
@@ -158,8 +154,7 @@ final class Server implements ServerInterface
                             'Accept',
                             $this->generateAcceptHeader()
                         )
-                ),
-                new NullStream
+                )
             )
         );
 
