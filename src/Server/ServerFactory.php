@@ -11,7 +11,6 @@ use Innmind\Rest\Client\{
 use Innmind\Url\UrlInterface;
 use Innmind\HttpTransport\TransportInterface;
 use Innmind\UrlResolver\ResolverInterface;
-use Innmind\Filesystem\AdapterInterface;
 use Symfony\Component\Serializer\Serializer;
 
 final class ServerFactory implements FactoryInterface
@@ -20,7 +19,6 @@ final class ServerFactory implements FactoryInterface
     private $resolver;
     private $serializer;
     private $translator;
-    private $filesystem;
     private $formats;
     private $capabilities;
 
@@ -29,7 +27,6 @@ final class ServerFactory implements FactoryInterface
         ResolverInterface $resolver,
         Serializer $serializer,
         SpecificationTranslatorInterface $translator,
-        AdapterInterface $filesystem,
         Formats $formats,
         Capabilities\FactoryInterface $capabilities
     ) {
@@ -37,7 +34,6 @@ final class ServerFactory implements FactoryInterface
         $this->resolver = $resolver;
         $this->serializer = $serializer;
         $this->translator = $translator;
-        $this->filesystem = $filesystem;
         $this->formats = $formats;
         $this->capabilities = $capabilities;
     }

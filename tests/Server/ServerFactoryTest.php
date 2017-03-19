@@ -17,7 +17,6 @@ use Innmind\Rest\Client\{
 use Innmind\Url\UrlInterface;
 use Innmind\HttpTransport\TransportInterface;
 use Innmind\UrlResolver\ResolverInterface;
-use Innmind\Filesystem\AdapterInterface;
 use Innmind\Immutable\{
     Map,
     Set
@@ -37,7 +36,6 @@ class ServerFactoryTest extends TestCase
             $this->createMock(ResolverInterface::class),
             $this->createMock(Serializer::class),
             $this->createMock(SpecificationTranslatorInterface::class),
-            $this->createMock(AdapterInterface::class),
             new Formats(
                 (new Map('string', Format::class))
                     ->put(
