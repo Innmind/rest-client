@@ -9,7 +9,7 @@ use Innmind\Rest\Client\{
     Formats
 };
 use Innmind\Url\UrlInterface;
-use Innmind\HttpTransport\TransportInterface;
+use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\ResolverInterface;
 use Symfony\Component\Serializer\Serializer;
 
@@ -23,7 +23,7 @@ final class ServerFactory implements FactoryInterface
     private $capabilities;
 
     public function __construct(
-        TransportInterface $transport,
+        Transport $transport,
         ResolverInterface $resolver,
         Serializer $serializer,
         SpecificationTranslatorInterface $translator,

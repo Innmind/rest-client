@@ -9,8 +9,8 @@ use Innmind\Rest\Client\{
     Exception\InvalidArgumentException
 };
 use Innmind\Http\Message\{
-    ResponseInterface,
-    StatusCode
+    Response,
+    StatusCode\StatusCode
 };
 use Innmind\Url\UrlInterface;
 
@@ -26,7 +26,7 @@ final class DefinitionFactory
     public function make(
         string $name,
         UrlInterface $url,
-        ResponseInterface $response
+        Response $response
     ): HttpResource {
         $headers = $response->headers();
 

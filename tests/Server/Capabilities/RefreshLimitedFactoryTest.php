@@ -10,7 +10,6 @@ use Innmind\Rest\Client\Server\{
     RefreshLimitedCapabilities
 };
 use Innmind\Url\UrlInterface;
-use Innmind\Filesystem\AdapterInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use PHPUnit\Framework\TestCase;
 

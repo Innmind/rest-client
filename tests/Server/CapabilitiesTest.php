@@ -14,21 +14,20 @@ use Innmind\Rest\Client\{
     Format\Format,
     Format\MediaType
 };
-use Innmind\HttpTransport\TransportInterface;
+use Innmind\HttpTransport\Transport;
 use Innmind\Url\Url;
 use Innmind\UrlResolver\UrlResolver;
 use Innmind\Http\{
-    Message\RequestInterface,
-    Message\ResponseInterface,
-    Message\StatusCode,
-    Headers,
-    Header\HeaderInterface,
-    Header\HeaderValueInterface,
+    Message\Request,
+    Message\Response,
+    Message\StatusCode\StatusCode,
+    Headers\Headers,
+    Header,
+    Header\Value,
     Header\Link,
     Header\LinkValue,
     Header\ContentType,
-    Header\ContentTypeValue,
-    Header\ParameterInterface
+    Header\ContentTypeValue
 };
 use Innmind\Filesystem\Stream\StringStream;
 use Innmind\Immutable\{
@@ -52,7 +51,7 @@ class CapabilitiesTest extends TestCase
         });
 
         $this->capabilities = new Capabilities(
-            $this->transport = $this->createMock(TransportInterface::class),
+            $this->transport = $this->createMock(Transport::class),
             Url::fromString('http://example.com/'),
             new UrlResolver,
             new DefinitionFactory(
@@ -98,20 +97,18 @@ class CapabilitiesTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/*' &&
                     (string) $request->method() === 'OPTIONS';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    new Map('string', HeaderInterface::class)
-                )
+                new Headers
             );
 
         $names = $this->capabilities->names();
@@ -128,37 +125,30 @@ class CapabilitiesTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/*' &&
                     (string) $request->method() === 'OPTIONS';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Link',
                             new Link(
-                                (new Set(HeaderValueInterface::class))
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo'),
-                                            'foo',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/bar'),
-                                            'bar',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
+                                new LinkValue(
+                                    Url::fromString('/foo'),
+                                    'foo'
+                                ),
+                                new LinkValue(
+                                    Url::fromString('/bar'),
+                                    'bar'
+                                )
                             )
                         )
                 )
@@ -179,37 +169,30 @@ class CapabilitiesTest extends TestCase
             ->transport
             ->expects($this->at(0))
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/*' &&
                     (string) $request->method() === 'OPTIONS';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Link',
                             new Link(
-                                (new Set(HeaderValueInterface::class))
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo'),
-                                            'foo',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/bar'),
-                                            'bar',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
+                                new LinkValue(
+                                    Url::fromString('/foo'),
+                                    'foo'
+                                ),
+                                new LinkValue(
+                                    Url::fromString('/bar'),
+                                    'bar'
+                                )
                             )
                         )
                 )
@@ -218,28 +201,27 @@ class CapabilitiesTest extends TestCase
             ->transport
             ->expects($this->at(1))
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'OPTIONS' &&
                     $request->headers()->has('Accept') &&
                     (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Content-Type',
                             new ContentType(
                                 new ContentTypeValue(
                                     'application',
-                                    'json',
-                                    new Map('string', ParameterInterface::class)
+                                    'json'
                                 )
                             )
                         )
@@ -268,37 +250,30 @@ class CapabilitiesTest extends TestCase
             ->transport
             ->expects($this->at(0))
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/*' &&
                     (string) $request->method() === 'OPTIONS';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Link',
                             new Link(
-                                (new Set(HeaderValueInterface::class))
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo'),
-                                            'foo',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/bar'),
-                                            'bar',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
+                                new LinkValue(
+                                    Url::fromString('/foo'),
+                                    'foo'
+                                ),
+                                new LinkValue(
+                                    Url::fromString('/bar'),
+                                    'bar'
+                                )
                             )
                         )
                 )
@@ -307,26 +282,25 @@ class CapabilitiesTest extends TestCase
             ->transport
             ->expects($this->at(1))
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'OPTIONS';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Content-Type',
                             new ContentType(
                                 new ContentTypeValue(
                                     'application',
-                                    'json',
-                                    new Map('string', ParameterInterface::class)
+                                    'json'
                                 )
                             )
                         )
@@ -344,26 +318,25 @@ class CapabilitiesTest extends TestCase
             ->transport
             ->expects($this->at(2))
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/bar' &&
                     (string) $request->method() === 'OPTIONS';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Content-Type',
                             new ContentType(
                                 new ContentTypeValue(
                                     'application',
-                                    'json',
-                                    new Map('string', ParameterInterface::class)
+                                    'json'
                                 )
                             )
                         )
@@ -397,20 +370,18 @@ class CapabilitiesTest extends TestCase
             ->transport
             ->expects($this->exactly(2))
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/*' &&
                     (string) $request->method() === 'OPTIONS';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $response
             ->expects($this->exactly(2))
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    new Map('string', HeaderInterface::class)
-                )
+                new Headers
             );
 
         $names = $this->capabilities->names();

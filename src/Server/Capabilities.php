@@ -9,19 +9,19 @@ use Innmind\Rest\Client\{
     Format\Format,
     Formats
 };
-use Innmind\HttpTransport\TransportInterface;
+use Innmind\HttpTransport\Transport;
 use Innmind\Url\{
     UrlInterface,
     Url
 };
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Http\{
-    Message\Request,
-    Message\Method,
-    Headers,
-    ProtocolVersion,
-    Header\HeaderInterface,
-    Header\HeaderValueInterface,
+    Message\Request\Request,
+    Message\Method\Method,
+    Headers\Headers,
+    ProtocolVersion\ProtocolVersion,
+    Header,
+    Header\Value,
     Header\LinkValue,
     Header\Accept,
     Header\AcceptValue
@@ -47,7 +47,7 @@ final class Capabilities implements CapabilitiesInterface
     private $definitions;
 
     public function __construct(
-        TransportInterface $transport,
+        Transport $transport,
         UrlInterface $host,
         ResolverInterface $resolver,
         DefinitionFactory $factory,
@@ -80,9 +80,7 @@ final class Capabilities implements CapabilitiesInterface
                     $this->optionsUrl,
                     new Method(Method::OPTIONS),
                     new ProtocolVersion(1, 1),
-                    new Headers(
-                        new Map('string', HeaderInterface::class)
-                    ),
+                    new Headers,
                     new NullStream
                 )
             )
@@ -95,7 +93,7 @@ final class Capabilities implements CapabilitiesInterface
         return $this->names = $headers
             ->get('Link')
             ->values()
-            ->filter(function(HeaderValueInterface $value): bool {
+            ->filter(function(Value $value): bool {
                 return $value instanceof LinkValue;
             })
             ->reduce(
@@ -132,11 +130,11 @@ final class Capabilities implements CapabilitiesInterface
                 new Method(Method::OPTIONS),
                 new ProtocolVersion(1, 1),
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Accept',
                             new Accept(
-                                $this
+                                ...$this
                                     ->formats
                                     ->all()
                                     ->values()
@@ -144,7 +142,7 @@ final class Capabilities implements CapabilitiesInterface
                                         return $a->priority() < $b->priority();
                                     })
                                     ->reduce(
-                                        new Set(HeaderValueInterface::class),
+                                        new Set(Value::class),
                                         function(Set $values, Format $format): Set {
                                             return $values->add(new AcceptValue(
                                                 $format->preferredMediaType()->topLevel(),

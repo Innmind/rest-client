@@ -12,13 +12,12 @@ use Innmind\Rest\Client\{
     Definition\Property
 };
 use Innmind\Http\{
-    Message\ResponseInterface,
-    Headers,
-    Header\HeaderInterface,
-    Header\HeaderValueInterface,
+    Message\Response,
+    Headers\Headers,
+    Header,
+    Header\Value,
     Header\Link,
-    Header\LinkValue,
-    Header\ParameterInterface
+    Header\LinkValue
 };
 use Innmind\Url\Url;
 use Innmind\UrlResolver\UrlResolver;
@@ -65,7 +64,7 @@ class IdentitiesNormalizerTest extends TestCase
     {
         $this->assertTrue(
             $this->normalizer->supportsDenormalization(
-                $this->createMock(ResponseInterface::class),
+                $this->createMock(Response::class),
                 'rest_identities'
             )
         );
@@ -77,7 +76,7 @@ class IdentitiesNormalizerTest extends TestCase
         );
         $this->assertFalse(
             $this->normalizer->supportsDenormalization(
-                $this->createMock(ResponseInterface::class),
+                $this->createMock(Response::class),
                 'identities'
             )
         );
@@ -102,7 +101,7 @@ class IdentitiesNormalizerTest extends TestCase
     public function testThrowWhenDenormalizingInvalidType()
     {
         $this->normalizer->denormalize(
-            $this->createMock(ResponseInterface::class),
+            $this->createMock(Response::class),
             'identities',
             null,
             ['definition' => $this->definition]
@@ -115,7 +114,7 @@ class IdentitiesNormalizerTest extends TestCase
     public function testThrowWhenDenormalizingWithoutDefinition()
     {
         $this->normalizer->denormalize(
-            $this->createMock(ResponseInterface::class),
+            $this->createMock(Response::class),
             'identities'
         );
     }
@@ -126,7 +125,7 @@ class IdentitiesNormalizerTest extends TestCase
     public function testThrowWhenDenormalizingWithInvalidDefinition()
     {
         $this->normalizer->denormalize(
-            $this->createMock(ResponseInterface::class),
+            $this->createMock(Response::class),
             'identities',
             null,
             ['definition' => []]
@@ -135,13 +134,13 @@ class IdentitiesNormalizerTest extends TestCase
 
     public function testDenormalizeWithoutLinks()
     {
-        $response = $this->createMock(ResponseInterface::class);
+        $response = $this->createMock(Response::class);
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    new Map('string', HeaderInterface::class)
+                    new Map('string', Header::class)
                 )
             );
 
@@ -162,38 +161,28 @@ class IdentitiesNormalizerTest extends TestCase
 
     public function testDenormalizeWithLinks()
     {
-        $response = $this->createMock(ResponseInterface::class);
+        $response = $this->createMock(Response::class);
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Link',
                             new Link(
-                                (new Set(HeaderValueInterface::class))
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo/42'),
-                                            'resource',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo/66'),
-                                            'resource',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
-                                    ->add(
-                                        new LinkValue(
-                                            Url::fromString('/foo?range[]=10&range[]=20'),
-                                            'next',
-                                            new Map('string', ParameterInterface::class)
-                                        )
-                                    )
+                                new LinkValue(
+                                    Url::fromString('/foo/42'),
+                                    'resource'
+                                ),
+                                new LinkValue(
+                                    Url::fromString('/foo/66'),
+                                    'resource'
+                                ),
+                                new LinkValue(
+                                    Url::fromString('/foo?range[]=10&range[]=20'),
+                                    'next'
+                                )
                             )
                         )
                 )

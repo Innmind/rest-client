@@ -21,26 +21,25 @@ use Innmind\Rest\Client\{
     Link\ParameterInterface,
     Definition\HttpResource as Definition
 };
-use Innmind\HttpTransport\TransportInterface;
+use Innmind\HttpTransport\Transport;
 use Innmind\Url\{
     UrlInterface,
     Url
 };
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Http\{
-    Message\Request,
-    Message\Method,
-    ProtocolVersion,
-    Headers,
-    Header\HeaderInterface,
-    Header\HeaderValueInterface,
+    Message\Request\Request,
+    Message\Method\Method,
+    ProtocolVersion\ProtocolVersion,
+    Headers\Headers,
+    Header,
+    Header\Value,
     Header\Range as RangeHeader,
     Header\RangeValue,
     Header\Accept,
     Header\AcceptValue,
     Header\ContentType,
     Header\ContentTypeValue,
-    Header\ParameterInterface as HeaderParameterInterface,
     Header\Parameter as HeaderParameter,
     Header\Link as LinkHeader,
     Header\LinkValue
@@ -66,7 +65,7 @@ final class Server implements ServerInterface
 
     public function __construct(
         UrlInterface $url,
-        TransportInterface $transport,
+        Transport $transport,
         CapabilitiesInterface $capabilities,
         ResolverInterface $resolver,
         Serializer $serializer,
@@ -105,7 +104,7 @@ final class Server implements ServerInterface
             $query ?? (string) $definition->url()
         );
         $url = Url::fromString($url);
-        $headers = new Map('string', HeaderInterface::class);
+        $headers = new Map('string', Header::class);
 
         if ($range !== null) {
             $headers = $headers->put(
@@ -149,7 +148,7 @@ final class Server implements ServerInterface
                 new Method(Method::GET),
                 new ProtocolVersion(1, 1),
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Accept',
                             $this->generateAcceptHeader()
@@ -179,7 +178,7 @@ final class Server implements ServerInterface
                 'response' => $response,
                 'access' => new Access(
                     (new Set('string'))->add(Access::READ)
-                )
+                ),
             ]
         );
     }
@@ -193,7 +192,7 @@ final class Server implements ServerInterface
                 new Method(Method::POST),
                 new ProtocolVersion(1, 1),
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Content-Type',
                             new ContentType(
@@ -245,7 +244,7 @@ final class Server implements ServerInterface
                 new Method(Method::PUT),
                 new ProtocolVersion(1, 1),
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Content-Type',
                             new ContentType(
@@ -321,7 +320,7 @@ final class Server implements ServerInterface
                 new Method(Method::LINK),
                 new ProtocolVersion(1, 1),
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put('Accept', $this->generateAcceptHeader())
                         ->put('Link', $this->generateLinkHeader($links))
                 )
@@ -357,7 +356,7 @@ final class Server implements ServerInterface
                 new Method(Method::UNLINK),
                 new ProtocolVersion(1, 1),
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put('Accept', $this->generateAcceptHeader())
                         ->put('Link', $this->generateLinkHeader($links))
                 )
@@ -390,7 +389,7 @@ final class Server implements ServerInterface
     private function generateAcceptHeader(): Accept
     {
         return new Accept(
-            $this
+            ...$this
                 ->formats
                 ->all()
                 ->values()
@@ -398,7 +397,7 @@ final class Server implements ServerInterface
                     return $a->priority() < $b->priority();
                 })
                 ->reduce(
-                    new Set(HeaderValueInterface::class),
+                    new Set(Value::class),
                     function(Set $values, Format $format): Set {
                         return $values->add(new AcceptValue(
                             $format->preferredMediaType()->topLevel(),
@@ -412,8 +411,8 @@ final class Server implements ServerInterface
     private function generateLinkHeader(SetInterface $links): LinkHeader
     {
         return new LinkHeader(
-            $links->reduce(
-                new Set(HeaderValueInterface::class),
+            ...$links->reduce(
+                new Set(Value::class),
                 function(Set $carry, Link $link): Set {
                     $url = $this->resolveUrl(
                         $this
@@ -430,11 +429,11 @@ final class Server implements ServerInterface
                             $link
                                 ->parameters()
                                 ->reduce(
-                                    new Map('string', HeaderParameterInterface::class),
+                                    new Map('string', HeaderParameter::class),
                                     function(Map $carry, string $name, ParameterInterface $parameter): Map {
                                         return $carry->put(
                                             $name,
-                                            new HeaderParameter(
+                                            new HeaderParameter\Parameter(
                                                 $parameter->key(),
                                                 $parameter->value()
                                             )

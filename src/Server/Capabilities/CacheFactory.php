@@ -8,7 +8,7 @@ use Innmind\Rest\Client\Server\{
     CacheCapabilities
 };
 use Innmind\Url\UrlInterface;
-use Innmind\Filesystem\AdapterInterface;
+use Innmind\Filesystem\Adapter;
 use SYmfony\Component\Serializer\SerializerInterface;
 
 final class CacheFactory implements FactoryInterface
@@ -18,7 +18,7 @@ final class CacheFactory implements FactoryInterface
     private $factory;
 
     public function __construct(
-        AdapterInterface $filesystem,
+        Adapter $filesystem,
         SerializerInterface $serializer,
         FactoryInterface $factory
     ) {

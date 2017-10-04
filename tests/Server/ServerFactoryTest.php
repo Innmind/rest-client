@@ -15,7 +15,7 @@ use Innmind\Rest\Client\{
     Format\MediaType
 };
 use Innmind\Url\UrlInterface;
-use Innmind\HttpTransport\TransportInterface;
+use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Immutable\{
     Map,
@@ -32,7 +32,7 @@ class ServerFactoryTest extends TestCase
     public function setUp()
     {
         $this->factory = new ServerFactory(
-            $this->createMock(TransportInterface::class),
+            $this->createMock(Transport::class),
             $this->createMock(ResolverInterface::class),
             $this->createMock(Serializer::class),
             $this->createMock(SpecificationTranslatorInterface::class),

@@ -11,7 +11,7 @@ use Innmind\Rest\Client\{
 };
 use Innmind\Url\UrlInterface;
 use Innmind\UrlResolver\ResolverInterface;
-use Innmind\HttpTransport\TransportInterface;
+use Innmind\HttpTransport\Transport;
 
 final class Factory implements FactoryInterface
 {
@@ -21,7 +21,7 @@ final class Factory implements FactoryInterface
     private $formats;
 
     public function __construct(
-        TransportInterface $transport,
+        Transport $transport,
         ResolverInterface $resolver,
         DefinitionFactory $definitionFactory,
         Formats $formats

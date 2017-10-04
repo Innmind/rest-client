@@ -14,7 +14,7 @@ use Innmind\Rest\Client\{
     Format\Format,
     Format\MediaType
 };
-use Innmind\HttpTransport\TransportInterface;
+use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\{
@@ -30,7 +30,7 @@ class FactoryTest extends TestCase
     public function setUp()
     {
         $this->factory = new Factory(
-            $this->createMock(TransportInterface::class),
+            $this->createMock(Transport::class),
             $this->createMock(ResolverInterface::class),
             new DefinitionFactory(
                 new DefinitionNormalizer(new Types)

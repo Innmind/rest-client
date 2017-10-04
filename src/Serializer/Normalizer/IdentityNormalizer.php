@@ -12,7 +12,7 @@ use Innmind\Rest\Client\{
     Definition\HttpResource
 };
 use Innmind\Http\{
-    Message\ResponseInterface,
+    Message\Response,
     Header\Location
 };
 use Innmind\Url\Url;
@@ -64,6 +64,6 @@ final class IdentityNormalizer implements DenormalizerInterface
 
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $data instanceof ResponseInterface && $type === 'rest_identity';
+        return $data instanceof Response && $type === 'rest_identity';
     }
 }

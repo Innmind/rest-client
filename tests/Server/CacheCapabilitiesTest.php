@@ -13,8 +13,8 @@ use Innmind\Rest\Client\{
 };
 use Innmind\Filesystem\{
     Adapter\MemoryAdapter,
-    Directory,
-    File,
+    Directory\Directory,
+    File\File,
     Stream\StringStream
 };
 use Innmind\Url\Url;

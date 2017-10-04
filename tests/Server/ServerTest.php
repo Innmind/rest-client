@@ -26,18 +26,17 @@ use Innmind\Rest\Client\{
     Link\ParameterInterface,
     Link\Parameter
 };
-use Innmind\HttpTransport\TransportInterface;
+use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\UrlResolver;
 use Innmind\Url\{
     Url,
     UrlInterface
 };
 use Innmind\Http\{
-    Message\RequestInterface,
-    Message\ResponseInterface,
-    Headers,
-    Header\HeaderInterface,
-    Header\HeaderValueInterface,
+    Message\Request,
+    Message\Response,
+    Headers\Headers,
+    Header,
     Header\ContentType,
     Header\ContentTypeValue,
     Header\Location,
@@ -71,7 +70,7 @@ class ServerTest extends TestCase
     {
         $this->server = new Server(
             $this->url = Url::fromString('http://example.com/'),
-            $this->transport = $this->createMock(TransportInterface::class),
+            $this->transport = $this->createMock(Transport::class),
             $this->capabilities = $this->createMock(CapabilitiesInterface::class),
             new UrlResolver,
             new Serializer(
@@ -211,21 +210,21 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 0 &&
                     (string) $request->body() === '';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $this
             ->identitiesNormalizer
             ->expects($this->once())
             ->method('supportsDenormalization')
             ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof ResponseInterface && $format === 'rest_identities';
+                return $data instanceof Response && $format === 'rest_identities';
             }));
         $this
             ->identitiesNormalizer
@@ -266,7 +265,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 1 &&
@@ -275,14 +274,14 @@ class ServerTest extends TestCase
                     (string) $request->body() === '';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $this
             ->identitiesNormalizer
             ->expects($this->once())
             ->method('supportsDenormalization')
             ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof ResponseInterface && $format === 'rest_identities';
+                return $data instanceof Response && $format === 'rest_identities';
             }));
         $this
             ->identitiesNormalizer
@@ -323,14 +322,14 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo?bar=baz' &&
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 0 &&
                     (string) $request->body() === '';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $specification = $this->createMock(ComparatorInterface::class);
         $specification
@@ -350,7 +349,7 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('supportsDenormalization')
             ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof ResponseInterface && $format === 'rest_identities';
+                return $data instanceof Response && $format === 'rest_identities';
             }));
         $this
             ->identitiesNormalizer
@@ -391,7 +390,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo?bar=baz' &&
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 1 &&
@@ -400,7 +399,7 @@ class ServerTest extends TestCase
                     (string) $request->body() === '';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $specification = $this->createMock(ComparatorInterface::class);
         $specification
@@ -420,7 +419,7 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('supportsDenormalization')
             ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof ResponseInterface && $format === 'rest_identities';
+                return $data instanceof Response && $format === 'rest_identities';
             }));
         $this
             ->identitiesNormalizer
@@ -455,14 +454,14 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('fulfill')
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    new Map('string', HeaderInterface::class)
+                    new Map('string', Header::class)
                 )
             );
 
@@ -485,14 +484,14 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('fulfill')
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Content-Type',
                             new ContentType(
@@ -520,7 +519,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/bar' &&
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 1 &&
@@ -528,14 +527,14 @@ class ServerTest extends TestCase
                     (string) $request->body() === '';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Content-Type',
                             new ContentType(
@@ -581,7 +580,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'POST' &&
                     $request->headers()->count() === 2 &&
@@ -590,14 +589,14 @@ class ServerTest extends TestCase
                     (string) $request->body() === '{"resource":{"url":"foobar"}}';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $this
             ->identityNormalizer
             ->expects($this->once())
             ->method('supportsDenormalization')
             ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof ResponseInterface && $format === 'rest_identity';
+                return $data instanceof Response && $format === 'rest_identity';
             }));
         $this
             ->identityNormalizer
@@ -640,7 +639,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'PUT' &&
                     $request->headers()->count() === 2 &&
@@ -649,7 +648,7 @@ class ServerTest extends TestCase
                     (string) $request->body() === '{"resource":{"url":"foobar"}}';
             }))
             ->willReturn(
-                $this->createMock(ResponseInterface::class)
+                $this->createMock(Response::class)
             );
 
         $return = $this->server->update(
@@ -682,14 +681,14 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'DELETE' &&
                     $request->headers()->count() === 0 &&
                     (string) $request->body() === '';
             }))
             ->willReturn(
-                $this->createMock(ResponseInterface::class)
+                $this->createMock(Response::class)
             );
 
         $return = $this->server->remove(
@@ -772,7 +771,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'LINK' &&
                     (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
@@ -869,7 +868,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'UNLINK' &&
                     (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&

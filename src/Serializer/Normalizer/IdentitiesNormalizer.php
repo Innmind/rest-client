@@ -11,8 +11,8 @@ use Innmind\Rest\Client\{
     Visitor\ResolveIdentity
 };
 use Innmind\Http\{
-    Message\ResponseInterface,
-    Header\HeaderValueInterface,
+    Message\Response,
+    Header\Value,
     Header\LinkValue
 };
 use Innmind\Immutable\{
@@ -50,7 +50,7 @@ final class IdentitiesNormalizer implements DenormalizerInterface
         return $headers
             ->get('Link')
             ->values()
-            ->filter(function(HeaderValueInterface $link): bool {
+            ->filter(function(Value $link): bool {
                 return $link instanceof LinkValue;
             })
             ->filter(function(LinkValue $link): bool {
@@ -73,6 +73,6 @@ final class IdentitiesNormalizer implements DenormalizerInterface
 
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $data instanceof ResponseInterface && $type === 'rest_identities';
+        return $data instanceof Response && $type === 'rest_identities';
     }
 }

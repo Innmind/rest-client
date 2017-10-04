@@ -10,7 +10,7 @@ use Innmind\Rest\Client\Server\{
     CacheCapabilities
 };
 use Innmind\Url\UrlInterface;
-use Innmind\Filesystem\AdapterInterface;
+use Innmind\Filesystem\Adapter;
 use Symfony\Component\Serializer\SerializerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -22,7 +22,7 @@ class CacheFactoryTest extends TestCase
     public function setUp()
     {
         $this->factory = new CacheFactory(
-            $this->createMock(AdapterInterface::class),
+            $this->createMock(Adapter::class),
             $this->createMock(SerializerInterface::class),
             $this->inner = $this->createMock(FactoryInterface::class)
         );

@@ -15,11 +15,11 @@ use Innmind\Rest\Client\{
     Exception\NormalizationException,
     Exception\DenormalizationException
 };
-use Innmind\HttpTransport\Exception\ClientErrorException;
+use Innmind\HttpTransport\Exception\ClientError;
 use Innmind\Http\Message\{
-    RequestInterface,
-    ResponseInterface,
-    StatusCode
+    Request,
+    Response,
+    StatusCode\StatusCode
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Specification\SpecificationInterface;
@@ -638,11 +638,11 @@ class RetryServerTest extends TestCase
         ];
     }
 
-    private function createException(): ClientErrorException
+    private function createException(): ClientError
     {
-        $exception = new ClientErrorException(
-            $this->createMock(RequestInterface::class),
-            $response = $this->createMock(ResponseInterface::class)
+        $exception = new ClientError(
+            $this->createMock(Request::class),
+            $response = $this->createMock(Response::class)
         );
         $response
             ->expects($this->once())

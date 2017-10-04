@@ -12,15 +12,13 @@ use Innmind\Rest\Client\{
     Definition\Property
 };
 use Innmind\Http\{
-    Message\ResponseInterface,
-    Headers,
-    Header\HeaderInterface,
-    Header\HeaderValueInterface,
-    Header\Header,
+    Message\Response,
+    Headers\Headers,
+    Header,
+    Header\Value\Value,
     Header\HeaderValue,
     Header\Location,
-    Header\LocationValue,
-    Header\ParameterInterface
+    Header\LocationValue
 };
 use Innmind\Url\Url;
 use Innmind\UrlResolver\UrlResolver;
@@ -67,7 +65,7 @@ class IdentityNormalizerTest extends TestCase
     {
         $this->assertTrue(
             $this->normalizer->supportsDenormalization(
-                $this->createMock(ResponseInterface::class),
+                $this->createMock(Response::class),
                 'rest_identity'
             )
         );
@@ -79,7 +77,7 @@ class IdentityNormalizerTest extends TestCase
         );
         $this->assertFalse(
             $this->normalizer->supportsDenormalization(
-                $this->createMock(ResponseInterface::class),
+                $this->createMock(Response::class),
                 'identity'
             )
         );
@@ -104,7 +102,7 @@ class IdentityNormalizerTest extends TestCase
     public function testThrowWhenDenormalizingInvalidType()
     {
         $this->normalizer->denormalize(
-            $this->createMock(ResponseInterface::class),
+            $this->createMock(Response::class),
             'identity',
             null,
             ['definition' => $this->definition]
@@ -117,7 +115,7 @@ class IdentityNormalizerTest extends TestCase
     public function testThrowWhenDenormalizingWhithoutDefinition()
     {
         $this->normalizer->denormalize(
-            $this->createMock(ResponseInterface::class),
+            $this->createMock(Response::class),
             'identity'
         );
     }
@@ -128,7 +126,7 @@ class IdentityNormalizerTest extends TestCase
     public function testThrowWhenDenormalizingWhithInvalidDefinition()
     {
         $this->normalizer->denormalize(
-            $this->createMock(ResponseInterface::class),
+            $this->createMock(Response::class),
             'identity',
             null,
             ['definition' => []]
@@ -140,14 +138,12 @@ class IdentityNormalizerTest extends TestCase
      */
     public function testThrowWhenDenormalizingWithoutLocation()
     {
-        $response = $this->createMock(ResponseInterface::class);
+        $response = $this->createMock(Response::class);
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    new Map('string', HeaderInterface::class)
-                )
+                new Headers
             );
 
         $this->normalizer->denormalize(
@@ -163,19 +159,18 @@ class IdentityNormalizerTest extends TestCase
      */
     public function testThrowWhenDenormalizingWithUnsupportedLocation()
     {
-        $response = $this->createMock(ResponseInterface::class);
+        $response = $this->createMock(Response::class);
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Location',
-                            new Header(
+                            new Header\Header(
                                 'Location',
-                                (new Set(HeaderValueInterface::class))
-                                    ->add(new HeaderValue('http://example.com/foo/42'))
+                                new Value('http://example.com/foo/42')
                             )
                         )
                 )
@@ -191,13 +186,13 @@ class IdentityNormalizerTest extends TestCase
 
     public function testDenormalize()
     {
-        $response = $this->createMock(ResponseInterface::class);
+        $response = $this->createMock(Response::class);
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Location',
                             new Location(

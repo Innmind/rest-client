@@ -5,13 +5,11 @@ namespace Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\Definition\HttpResource;
 use Innmind\Filesystem\{
-    AdapterInterface,
-    FileInterface,
-    DirectoryInterface,
-    Directory,
+    Adapter,
     File,
+    Directory,
     Stream\StringStream,
-    Exception\FileNotFoundException
+    Exception\FileNotFound
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\{
@@ -33,7 +31,7 @@ final class CacheCapabilities implements CapabilitiesInterface
 
     public function __construct(
         CapabilitiesInterface $capabilities,
-        AdapterInterface $filesystem,
+        Adapter $filesystem,
         SerializerInterface $serializer,
         UrlInterface $host
     ) {
@@ -60,7 +58,7 @@ final class CacheCapabilities implements CapabilitiesInterface
                 'capabilities_names',
                 'json'
             );
-        } catch (FileNotFoundException $e) {
+        } catch (FileNotFound $e) {
             $this->names = $this->capabilities->names();
             $this->persist('.names', $this->names->toPrimitive());
 
@@ -88,7 +86,7 @@ final class CacheCapabilities implements CapabilitiesInterface
             );
 
             return $definition;
-        } catch (FileNotFoundException $e) {
+        } catch (FileNotFound $e) {
             $definition = $this->capabilities->get($name);
             $this->persist($name, $definition);
             $this->definitions = $this->definitions->put(
@@ -125,22 +123,22 @@ final class CacheCapabilities implements CapabilitiesInterface
         return $this;
     }
 
-    private function load(string $file): FileInterface
+    private function load(string $file): File
     {
         $file .= '.json';
 
         if (!$this->filesystem->has($this->directory)) {
-            throw new FileNotFoundException;
+            throw new FileNotFound;
         }
 
         $directory = $this->filesystem->get($this->directory);
 
-        if (!$directory instanceof DirectoryInterface) {
-            throw new FileNotFoundException;
+        if (!$directory instanceof Directory) {
+            throw new FileNotFound;
         }
 
         if (!$directory->has($file)) {
-            throw new FileNotFoundException;
+            throw new FileNotFound;
         }
 
         return $directory->get($file);
@@ -151,11 +149,11 @@ final class CacheCapabilities implements CapabilitiesInterface
         if ($this->filesystem->has($this->directory)) {
             $directory = $this->filesystem->get($this->directory);
         } else {
-            $directory = new Directory($this->directory);
+            $directory = new Directory\Directory($this->directory);
         }
 
         $directory = $directory->add(
-            new File(
+            new File\File(
                 $name.'.json',
                 new StringStream(
                     $this->serializer->serialize(

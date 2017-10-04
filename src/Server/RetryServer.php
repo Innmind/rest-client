@@ -11,8 +11,8 @@ use Innmind\Rest\Client\{
     Exception\NormalizationException,
     Exception\DenormalizationException
 };
-use Innmind\HttpTransport\Exception\ClientErrorException;
-use Innmind\Http\Message\StatusCode;
+use Innmind\HttpTransport\Exception\ClientError;
+use Innmind\Http\Message\StatusCode\StatusCode;
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\SetInterface;
 use Innmind\Specification\SpecificationInterface;
@@ -179,7 +179,7 @@ final class RetryServer implements ServerInterface
             return true;
         }
 
-        if (!$e instanceof ClientErrorException) {
+        if (!$e instanceof ClientError) {
             return false;
         }
 
