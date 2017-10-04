@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Request;
 
-use Innmind\rest\Client\Exception\InvalidArgumentException;
+use Innmind\Rest\Client\Exception\InvalidArgumentException;
 
 final class Range
 {

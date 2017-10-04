@@ -7,7 +7,7 @@ use Innmind\Rest\Client\{
     Link,
     Exception\InvalidArgumentException
 };
-use Innmind\url\UrlInterface;
+use Innmind\Url\UrlInterface;
 use Innmind\Immutable\MapInterface;
 
 final class HttpResource
