@@ -134,7 +134,7 @@ class IdentityNormalizerTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\IdentityNotFoundException
+     * @expectedException Innmind\Rest\Client\Exception\IdentityNotFound
      */
     public function testThrowWhenDenormalizingWithoutLocation()
     {
@@ -155,7 +155,7 @@ class IdentityNormalizerTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\IdentityNotFoundException
+     * @expectedException Innmind\Rest\Client\Exception\IdentityNotFound
      */
     public function testThrowWhenDenormalizingWithUnsupportedLocation()
     {

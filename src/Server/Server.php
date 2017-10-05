@@ -9,8 +9,8 @@ use Innmind\Rest\Client\{
     Identity,
     HttpResource,
     Translator\SpecificationTranslator,
-    Exception\ResourceNotRangeableException,
-    Exception\UnsupportedResponseException,
+    Exception\ResourceNotRangeable,
+    Exception\UnsupportedResponse,
     Exception\InvalidArgumentException,
     Exception\NormalizationException,
     Definition\Access,
@@ -91,7 +91,7 @@ final class Server implements ServerInterface
         $definition = $this->capabilities->get($name);
 
         if ($range !== null && !$definition->isRangeable()) {
-            throw new ResourceNotRangeableException;
+            throw new ResourceNotRangeable;
         }
 
         if ($specification !== null) {
@@ -165,7 +165,7 @@ final class Server implements ServerInterface
                     ->join(', ')
             );
         } catch (\Exception $e) {
-            throw new UnsupportedResponseException('', 0, $e);
+            throw new UnsupportedResponse('', 0, $e);
         }
 
         return $this->serializer->deserialize(

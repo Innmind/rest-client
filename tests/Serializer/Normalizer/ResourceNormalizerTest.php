@@ -285,7 +285,7 @@ class ResourceNormalizerTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\MissingPropertyException
+     * @expectedException Innmind\Rest\Client\Exception\MissingProperty
      * @expectedExceptionMessage Missing property "uuid"
      */
     public function testThrowWhenDenormalizingWithMissingProperty()
@@ -525,7 +525,7 @@ class ResourceNormalizerTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\MissingPropertyException
+     * @expectedException Innmind\Rest\Client\Exception\MissingProperty
      * @expectedExceptionMessage Missing property "onCreate"
      */
     public function testThrowWhenNormalizingWithMissingProperty()

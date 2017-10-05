@@ -6,7 +6,7 @@ namespace Innmind\Rest\Client\Serializer\Normalizer;
 use Innmind\Rest\Client\{
     Identity,
     Exception\LogicException,
-    Exception\IdentityNotFoundException,
+    Exception\IdentityNotFound,
     Visitor\ResolveIdentity,
     Definition\HttpResource
 };
@@ -43,7 +43,7 @@ final class IdentityNormalizer implements DenormalizerInterface
             !$headers->has('Location') ||
             !$headers->get('Location') instanceof Location
         ) {
-            throw new IdentityNotFoundException;
+            throw new IdentityNotFound;
         }
 
         $header = $headers

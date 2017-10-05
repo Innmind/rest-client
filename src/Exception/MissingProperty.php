@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Exception;
 
-final class MissingPropertyException extends RuntimeException
+final class MissingProperty extends RuntimeException
 {
     public function __construct(string $property)
     {

@@ -3,6 +3,6 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Exception;
 
-final class ResourceNotRangeableException extends LogicException
+final class ResourceNotRangeable extends LogicException
 {
 }

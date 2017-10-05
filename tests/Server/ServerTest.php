@@ -158,7 +158,7 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\ResourceNotRangeableException
+     * @expectedException Innmind\Rest\Client\Exception\ResourceNotRangeable
      */
     public function testThrowWhenRangingOnNonRangeableResource()
     {
@@ -437,7 +437,7 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\UnsupportedResponseException
+     * @expectedException Innmind\Rest\Client\Exception\UnsupportedResponse
      */
     public function testThrowWhenReadResponseHasNoContentType()
     {
@@ -467,7 +467,7 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\UnsupportedResponseException
+     * @expectedException Innmind\Rest\Client\Exception\UnsupportedResponse
      */
     public function testThrowWhenReadResponseContentTypeNotSupported()
     {

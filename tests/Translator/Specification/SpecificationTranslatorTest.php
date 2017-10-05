@@ -48,7 +48,7 @@ class SpecificationTranslatorTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\OnlyEqualityCanBeTranslatedException
+     * @expectedException Innmind\Rest\Client\Exception\OnlyEqualityCanBeTranslated
      */
     public function testThrowWhenUnsupportedComparison()
     {
@@ -115,7 +115,7 @@ class SpecificationTranslatorTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\OnlyAndCompositionCanBeTranslatedException
+     * @expectedException Innmind\Rest\Client\Exception\OnlyAndCompositionCanBeTranslated
      */
     public function testThrowWhenUnsupportedComposite()
     {
@@ -135,7 +135,7 @@ class SpecificationTranslatorTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\SpecificationCantBeTranslatedException
+     * @expectedException Innmind\Rest\Client\Exception\SpecificationCantBeTranslated
      */
     public function testThrowWhenTranslatingNegativeSpecification()
     {
@@ -145,7 +145,7 @@ class SpecificationTranslatorTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\SpecificationCantBeTranslatedException
+     * @expectedException Innmind\Rest\Client\Exception\SpecificationCantBeTranslated
      */
     public function testThrowWhenTranslatingUnknownSpecification()
     {

@@ -12,7 +12,7 @@ use Innmind\Rest\Client\{
     Definition\Type\SetType,
     Definition\Type\StringType,
     Exception\InvalidArgumentException,
-    Exception\UnknownTypeException
+    Exception\UnknownType
 };
 use Innmind\Immutable\{
     Set,
@@ -51,7 +51,7 @@ final class Types
             }
         }
 
-        throw new UnknownTypeException;
+        throw new UnknownType;
     }
 
     /**

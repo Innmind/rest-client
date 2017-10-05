@@ -5,9 +5,9 @@ namespace Innmind\Rest\Client\Translator\Specification;
 
 use Innmind\Rest\Client\{
     Translator\SpecificationTranslator as SpecificationTranslatorInterface,
-    Exception\OnlyEqualityCanBeTranslatedException,
-    Exception\OnlyAndCompositionCanBeTranslatedException,
-    Exception\SpecificationCantBeTranslatedException
+    Exception\OnlyEqualityCanBeTranslated,
+    Exception\OnlyAndCompositionCanBeTranslated,
+    Exception\SpecificationCantBeTranslated
 };
 use Innmind\Specification\{
     SpecificationInterface,
@@ -26,7 +26,7 @@ final class SpecificationTranslator implements SpecificationTranslatorInterface
         switch (true) {
             case $specification instanceof ComparatorInterface:
                 if ($specification->sign() !== '==') {
-                    throw new OnlyEqualityCanBeTranslatedException;
+                    throw new OnlyEqualityCanBeTranslated;
                 }
 
                 return sprintf(
@@ -37,7 +37,7 @@ final class SpecificationTranslator implements SpecificationTranslatorInterface
 
             case $specification instanceof CompositeInterface:
                 if ((string) $specification->operator() === Operator::OR) {
-                    throw new OnlyAndCompositionCanBeTranslatedException;
+                    throw new OnlyAndCompositionCanBeTranslated;
                 }
 
                 return sprintf(
@@ -47,7 +47,7 @@ final class SpecificationTranslator implements SpecificationTranslatorInterface
                 );
 
             default:
-                throw new SpecificationCantBeTranslatedException;
+                throw new SpecificationCantBeTranslated;
         }
     }
 }

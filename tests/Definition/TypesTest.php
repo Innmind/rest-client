@@ -96,7 +96,7 @@ class TypesTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\UnknownTypeException
+     * @expectedException Innmind\Rest\Client\Exception\UnknownType
      */
     public function testThrowWhenBuildingUnknownType()
     {

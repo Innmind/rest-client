@@ -3,6 +3,6 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Exception;
 
-class SpecificationCantBeTranslatedException extends LogicException
+final class OnlyEqualityCanBeTranslated extends SpecificationCantBeTranslated
 {
 }
