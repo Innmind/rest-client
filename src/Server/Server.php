@@ -11,7 +11,7 @@ use Innmind\Rest\Client\{
     Translator\SpecificationTranslator,
     Exception\ResourceNotRangeable,
     Exception\UnsupportedResponse,
-    Exception\InvalidArgumentException,
+    Exception\DomainException,
     Exception\NormalizationException,
     Definition\Access,
     Formats,
@@ -301,11 +301,15 @@ final class Server implements ServerInterface
         Identity $identity,
         SetInterface $links
     ): ServerInterface {
-        if (
-            (string) $links->type() !== Link::class ||
-            $links->size() === 0
-        ) {
-            throw new InvalidArgumentException;
+        if ((string) $links->type() !== Link::class) {
+            throw new \TypeError(sprintf(
+                'Argument 3 must be of type SetInterface<%s>',
+                Link::class
+            ));
+        }
+
+        if ($links->size() === 0) {
+            throw new DomainException;
         }
 
         $definition = $this->capabilities->get($name);
@@ -337,11 +341,15 @@ final class Server implements ServerInterface
         Identity $identity,
         SetInterface $links
     ): ServerInterface {
-        if (
-            (string) $links->type() !== Link::class ||
-            $links->size() === 0
-        ) {
-            throw new InvalidArgumentException;
+        if ((string) $links->type() !== Link::class) {
+            throw new \TypeError(sprintf(
+                'Argument 3 must be of type SetInterface<%s>',
+                Link::class
+            ));
+        }
+
+        if ($links->size() === 0) {
+            throw new DomainException;
         }
 
         $definition = $this->capabilities->get($name);

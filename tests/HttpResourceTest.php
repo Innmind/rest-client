@@ -24,7 +24,7 @@ class HttpResourceTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenEmptyName()
     {
@@ -35,7 +35,8 @@ class HttpResourceTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 2 must be of type MapInterface<string, Innmind\Rest\Client\HttpResource\Property>
      */
     public function testThrowWhenInvalidProperties()
     {

@@ -6,7 +6,7 @@ namespace Innmind\Rest\Client\Definition\Type;
 use Innmind\Rest\Client\{
     Definition\Types,
     Definition\Type,
-    Exception\InvalidArgumentException,
+    Exception\DomainException,
     Exception\NormalizationException,
     Exception\DenormalizationException
 };
@@ -21,7 +21,7 @@ final class DateType implements Type
     public function __construct(string $format)
     {
         if (empty($format)) {
-            throw new InvalidArgumentException;
+            throw new DomainException;
         }
 
         $this->format = $format;
@@ -32,7 +32,7 @@ final class DateType implements Type
         $type = new Str($type);
 
         if (!$type->matches(self::PATTERN)) {
-            throw new InvalidArgumentException;
+            throw new DomainException;
         }
 
         return new self(

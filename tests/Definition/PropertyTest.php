@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 class PropertyTest extends TestCase
 {
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenEmptyName()
     {
@@ -28,7 +28,8 @@ class PropertyTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 4 must be of type SetInterface<string>
      */
     public function testThrowWhenInvalidVariants()
     {

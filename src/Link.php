@@ -5,7 +5,7 @@ namespace Innmind\Rest\Client;
 
 use Innmind\Rest\Client\{
     Link\Parameter,
-    Exception\InvalidArgumentException
+    Exception\DomainException
 };
 use Innmind\Immutable\{
     MapInterface,
@@ -29,11 +29,19 @@ final class Link
 
         if (
             empty($definition) ||
-            empty($relationship) ||
+            empty($relationship)
+        ) {
+            throw new DomainException;
+        }
+
+        if (
             (string) $parameters->keyType() !== 'string' ||
             (string) $parameters->valueType() !== Parameter::class
         ) {
-            throw new InvalidArgumentException;
+            throw new \TypeError(sprintf(
+                'Argument 4 must be of type MapInterface<string, %s>',
+                Parameter::class
+            ));
         }
 
         $this->definition = $definition;

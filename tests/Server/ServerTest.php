@@ -698,7 +698,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 3 must be of type SetInterface<Innmind\Rest\Client\Link>
      */
     public function testThrowWhenInvalidSetOfLinks()
     {
@@ -710,7 +711,7 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenEmptySetOfLinks()
     {
@@ -795,7 +796,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 3 must be of type SetInterface<Innmind\Rest\Client\Link>
      */
     public function testThrowWhenInvalidSetOfLinksToUnlink()
     {
@@ -807,7 +809,7 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenEmptySetOfLinksToUnlink()
     {

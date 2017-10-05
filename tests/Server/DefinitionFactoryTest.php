@@ -39,7 +39,7 @@ class DefinitionFactoryTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenResponseNotSuccessful()
     {
@@ -53,7 +53,7 @@ class DefinitionFactoryTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenResponseHasNoContentType()
     {
@@ -75,7 +75,7 @@ class DefinitionFactoryTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenResponseHasNotJson()
     {

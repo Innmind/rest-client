@@ -3,7 +3,6 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Definition;
 
-use Innmind\Rest\Client\Exception\InvalidArgumentException;
 use Innmind\Immutable\SetInterface;
 
 final class Access
@@ -17,7 +16,7 @@ final class Access
     public function __construct(SetInterface $mask)
     {
         if ((string) $mask->type() !== 'string') {
-            throw new InvalidArgumentException;
+            throw new \TypeError('Argument 1 must be of type SetInterface<string>');
         }
 
         $this->mask = $mask;

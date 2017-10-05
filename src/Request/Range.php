@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Request;
 
-use Innmind\Rest\Client\Exception\InvalidArgumentException;
+use Innmind\Rest\Client\Exception\DomainException;
 
 final class Range
 {
@@ -16,7 +16,7 @@ final class Range
             $firstPosition < 0 ||
             $lastPosition < $firstPosition
         ) {
-            throw new InvalidArgumentException;
+            throw new DomainException;
         }
 
         $this->firstPosition = $firstPosition;

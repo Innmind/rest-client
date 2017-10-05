@@ -51,7 +51,8 @@ class LinkTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 4 must be of type MapInterface<string, Innmind\Rest\Client\Link\Parameter>
      */
     public function testThrowWhenInvalidParameterMap()
     {
@@ -64,7 +65,7 @@ class LinkTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenEmptyDefinition()
     {
@@ -77,7 +78,7 @@ class LinkTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenEmptyRelationship()
     {

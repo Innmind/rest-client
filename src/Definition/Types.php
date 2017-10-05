@@ -11,7 +11,7 @@ use Innmind\Rest\Client\{
     Definition\Type\MapType,
     Definition\Type\SetType,
     Definition\Type\StringType,
-    Exception\InvalidArgumentException,
+    Exception\DomainException,
     Exception\UnknownType
 };
 use Innmind\Immutable\{
@@ -29,7 +29,7 @@ final class Types
         $refl = new \ReflectionClass($class);
 
         if (!$refl->implementsInterface(Type::class)) {
-            throw new InvalidArgumentException;
+            throw new DomainException;
         }
 
         $this->types[] = $class;
@@ -46,7 +46,7 @@ final class Types
                     $type,
                     $this
                 );
-            } catch (InvalidArgumentException $e) {
+            } catch (DomainException $e) {
                 //pass
             }
         }

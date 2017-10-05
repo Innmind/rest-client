@@ -6,7 +6,7 @@ namespace Innmind\Rest\Client\Server;
 use Innmind\Rest\Client\{
     Definition\HttpResource,
     Serializer\Normalizer\DefinitionNormalizer,
-    Exception\InvalidArgumentException
+    Exception\DomainException
 };
 use Innmind\Http\Message\{
     Response,
@@ -35,7 +35,7 @@ final class DefinitionFactory
             !$headers->has('Content-Type') ||
             (string) $headers->get('Content-Type')->values()->current() !== 'application/json'
         ) {
-            throw new InvalidArgumentException;
+            throw new DomainException;
         }
 
         $data = json_decode((string) $response->body(), true);

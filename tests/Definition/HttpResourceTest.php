@@ -40,7 +40,7 @@ class HttpResourceTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenEmptyName()
     {
@@ -56,7 +56,8 @@ class HttpResourceTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 4 must be of type MapInterface<string, Innmind\Rest\Client\Definition\Property>
      */
     public function testThrowWhenInvalidPropertyMap()
     {
@@ -72,7 +73,8 @@ class HttpResourceTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 5 must be of type MapInterface<scalar, variable>
      */
     public function testThrowWhenInvalidMetaMap()
     {
@@ -88,7 +90,8 @@ class HttpResourceTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 6 must be of type MapInterface<string, string>
      */
     public function testThrowWhenInvalidLinkMap()
     {
@@ -97,7 +100,7 @@ class HttpResourceTest extends TestCase
             $this->createMock(UrlInterface::class),
             new Identity('uuid'),
             new Map('string', Property::class),
-            new Map('string', 'scalar'),
+            new Map('scalar', 'variable'),
             new Map('string', 'scalar'),
             true
         );

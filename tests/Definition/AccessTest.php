@@ -10,7 +10,8 @@ use PHPUnit\Framework\TestCase;
 class AccessTest extends TestCase
 {
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 1 must be of type SetInterface<string>
      */
     public function testThrowWhenInvalidMask()
     {

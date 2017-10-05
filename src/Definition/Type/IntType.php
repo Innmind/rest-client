@@ -6,7 +6,7 @@ namespace Innmind\Rest\Client\Definition\Type;
 use Innmind\Rest\Client\{
     Definition\Types,
     Definition\Type,
-    Exception\InvalidArgumentException,
+    Exception\DomainException,
     Exception\NormalizationException,
     Exception\DenormalizationException
 };
@@ -16,7 +16,7 @@ final class IntType implements Type
     public static function fromString(string $type, Types $types): Type
     {
         if ($type !== 'int') {
-            throw new InvalidArgumentException;
+            throw new DomainException;
         }
 
         return new self;

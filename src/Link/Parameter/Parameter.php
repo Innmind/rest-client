@@ -5,7 +5,7 @@ namespace Innmind\Rest\Client\Link\Parameter;
 
 use Innmind\Rest\Client\{
     Link\Parameter as ParameterInterface,
-    Exception\InvalidArgumentException
+    Exception\DomainException
 };
 
 final class Parameter implements ParameterInterface
@@ -16,7 +16,7 @@ final class Parameter implements ParameterInterface
     public function __construct(string $key, string $value)
     {
         if (empty($key)) {
-            throw new InvalidArgumentException;
+            throw new DomainException;
         }
 
         $this->key = $key;

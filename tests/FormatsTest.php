@@ -37,7 +37,8 @@ class FormatsTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 1 must be of type MapInterface<string, Innmind\Rest\Client\Format\Format>
      */
     public function testThrowWhenInvalidMapKey()
     {
@@ -45,7 +46,8 @@ class FormatsTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 1 must be of type MapInterface<string, Innmind\Rest\Client\Format\Format>
      */
     public function testThrowWhenInvalidMapValue()
     {
@@ -53,7 +55,7 @@ class FormatsTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenEmptyMap()
     {

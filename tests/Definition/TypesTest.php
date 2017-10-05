@@ -13,7 +13,7 @@ use Innmind\Rest\Client\{
     Definition\Type\MapType,
     Definition\Type\SetType,
     Definition\Type\StringType,
-    Exception\InvalidArgumentException
+    Exception\DomainException
 };
 use Innmind\Immutable\SetInterface;
 use PHPUnit\Framework\TestCase;
@@ -29,7 +29,7 @@ class TypesTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenRegisteringInvalidType()
     {
@@ -43,7 +43,7 @@ class TypesTest extends TestCase
             public static function fromString(string $type, Types $types): Type
             {
                 if ($type !== 'type1') {
-                    throw new InvalidArgumentException;
+                    throw new DomainException;
                 }
 
                 return new self;
@@ -66,7 +66,7 @@ class TypesTest extends TestCase
             public static function fromString(string $type, Types $types): Type
             {
                 if ($type !== 'type2') {
-                    throw new InvalidArgumentException;
+                    throw new DomainException;
                 }
 
                 return new self;

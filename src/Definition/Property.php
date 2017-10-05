@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Definition;
 
-use Innmind\Rest\Client\Exception\InvalidArgumentException;
+use Innmind\Rest\Client\Exception\DomainException;
 use Innmind\Immutable\SetInterface;
 
 final class Property
@@ -21,11 +21,12 @@ final class Property
         SetInterface $variants,
         bool $optional
     ) {
-        if (
-            empty($name) ||
-            (string) $variants->type() !== 'string'
-        ) {
-            throw new InvalidArgumentException;
+        if (empty($name)) {
+            throw new DomainException;
+        }
+
+        if ((string) $variants->type() !== 'string') {
+            throw new \TypeError(sprintf('Argument 4 must be of type SetInterface<string>'));
         }
 
         $this->name = $name;
