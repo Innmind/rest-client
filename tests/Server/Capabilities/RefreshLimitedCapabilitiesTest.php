@@ -1,11 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\Rest\Client\Server;
+namespace Tests\Innmind\Rest\Client\Server\Capabilities;
 
 use Innmind\Rest\Client\{
-    Server\RefreshLimitedCapabilities,
-    Server\CapabilitiesInterface,
+    Server\Capabilities\RefreshLimitedCapabilities,
+    Server\Capabilities,
     Definition\HttpResource,
     Definition\Property,
     Definition\Identity
@@ -23,9 +23,9 @@ class RefreshLimitedCapabilitiesTest extends TestCase
     public function testInterface()
     {
         $this->assertInstanceOf(
-            CapabilitiesInterface::class,
+            Capabilities::class,
             new RefreshLimitedCapabilities(
-                $this->createMock(CapabilitiesInterface::class)
+                $this->createMock(Capabilities::class)
             )
         );
     }
@@ -33,7 +33,7 @@ class RefreshLimitedCapabilitiesTest extends TestCase
     public function testNames()
     {
         $capabilities = new RefreshLimitedCapabilities(
-            $inner = $this->createMock(CapabilitiesInterface::class)
+            $inner = $this->createMock(Capabilities::class)
         );
         $inner
             ->expects($this->once())
@@ -48,7 +48,7 @@ class RefreshLimitedCapabilitiesTest extends TestCase
     public function testGet()
     {
         $capabilities = new RefreshLimitedCapabilities(
-            $inner = $this->createMock(CapabilitiesInterface::class)
+            $inner = $this->createMock(Capabilities::class)
         );
         $inner
             ->expects($this->once())
@@ -72,7 +72,7 @@ class RefreshLimitedCapabilitiesTest extends TestCase
     public function testDefinitions()
     {
         $capabilities = new RefreshLimitedCapabilities(
-            $inner = $this->createMock(CapabilitiesInterface::class)
+            $inner = $this->createMock(Capabilities::class)
         );
         $inner
             ->expects($this->once())
@@ -87,7 +87,7 @@ class RefreshLimitedCapabilitiesTest extends TestCase
     public function testRefreshOnlyOnce()
     {
         $capabilities = new RefreshLimitedCapabilities(
-            $inner = $this->createMock(CapabilitiesInterface::class)
+            $inner = $this->createMock(Capabilities::class)
         );
         $inner
             ->expects($this->once())

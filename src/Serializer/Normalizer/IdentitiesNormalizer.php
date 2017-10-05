@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Serializer\Normalizer;
 
 use Innmind\Rest\Client\{
-    IdentityInterface,
     Identity,
     Exception\LogicException,
     Definition\HttpResource,
@@ -44,7 +43,7 @@ final class IdentitiesNormalizer implements DenormalizerInterface
         $headers = $data->headers();
 
         if (!$headers->has('Link')) {
-            return new Set(IdentityInterface::class);
+            return new Set(Identity::class);
         }
 
         return $headers
@@ -57,10 +56,10 @@ final class IdentitiesNormalizer implements DenormalizerInterface
                 return $link->relationship() === 'resource';
             })
             ->reduce(
-                new Set(IdentityInterface::class),
+                new Set(Identity::class),
                 function(Set $identities, LinkValue $link) use ($definition): Set {
                     return $identities->add(
-                        new Identity(
+                        new Identity\Identity(
                             ($this->resolveIdentity)(
                                 $definition->url(),
                                 $link->url()

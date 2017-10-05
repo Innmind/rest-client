@@ -1,11 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\Rest\Client\Server\Capabilities;
+namespace Tests\Innmind\Rest\Client\Server\Capabilities\Factory;
 
 use Innmind\Rest\Client\{
-    Server\Capabilities\Factory,
-    Server\Capabilities\FactoryInterface,
+    Server\Capabilities\Factory\Factory,
+    Server\Capabilities\Factory as FactoryInterface,
     Server\Capabilities,
     Server\DefinitionFactory,
     Serializer\Normalizer\DefinitionNormalizer,

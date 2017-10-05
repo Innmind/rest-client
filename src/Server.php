@@ -4,37 +4,37 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client;
 
 use Innmind\Rest\Client\{
-    Server\CapabilitiesInterface,
+    Server\Capabilities,
     Request\Range
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\SetInterface;
 use Innmind\Specification\SpecificationInterface;
 
-interface ServerInterface
+interface Server
 {
     /**
-     * @return SetInterface<IdentityInterface>
+     * @return SetInterface<Identity>
      */
     public function all(
         string $name,
         SpecificationInterface $specification = null,
         Range $range = null
     ): SetInterface;
-    public function read(string $name, IdentityInterface $identity): HttpResource;
-    public function create(HttpResource $resource): IdentityInterface;
+    public function read(string $name, Identity $identity): HttpResource;
+    public function create(HttpResource $resource): Identity;
     public function update(
-        IdentityInterface $identity,
+        Identity $identity,
         HttpResource $resource
     ): self;
-    public function remove(string $name, IdentityInterface $identity): self;
+    public function remove(string $name, Identity $identity): self;
 
     /**
      * @param SetInterface<Link> $links
      */
     public function link(
         string $name,
-        IdentityInterface $identity,
+        Identity $identity,
         SetInterface $links
     ): self;
 
@@ -43,9 +43,9 @@ interface ServerInterface
      */
     public function unlink(
         string $name,
-        IdentityInterface $identity,
+        Identity $identity,
         SetInterface $links
     ): self;
-    public function capabilities(): CapabilitiesInterface;
+    public function capabilities(): Capabilities;
     public function url(): UrlInterface;
 }

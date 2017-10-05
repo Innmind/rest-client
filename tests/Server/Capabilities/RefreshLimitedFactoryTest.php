@@ -5,9 +5,9 @@ namespace Tests\Innmind\Rest\Client\Server\Capabilities;
 
 use Innmind\Rest\Client\Server\{
     Capabilities\RefreshLimitedFactory,
-    Capabilities\FactoryInterface,
-    CapabilitiesInterface,
-    RefreshLimitedCapabilities
+    Capabilities\Factory,
+    Capabilities,
+    Capabilities\RefreshLimitedCapabilities
 };
 use Innmind\Url\UrlInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -21,14 +21,14 @@ class RefreshLimitedFactoryTest extends TestCase
     public function setUp()
     {
         $this->factory = new RefreshLimitedFactory(
-            $this->inner = $this->createMock(FactoryInterface::class)
+            $this->inner = $this->createMock(Factory::class)
         );
     }
 
     public function testInterface()
     {
         $this->assertInstanceOf(
-            FactoryInterface::class,
+            Factory::class,
             $this->factory
         );
     }
@@ -41,7 +41,7 @@ class RefreshLimitedFactoryTest extends TestCase
             ->expects($this->once())
             ->method('make')
             ->with($url)
-            ->willReturn($this->createMock(CapabilitiesInterface::class));
+            ->willReturn($this->createMock(Capabilities::class));
 
         $this->assertInstanceOf(
             RefreshLimitedCapabilities::class,

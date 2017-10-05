@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Definition;
 
-interface TypeInterface
+interface Type
 {
     public static function fromString(string $type, Types $types): self;
 

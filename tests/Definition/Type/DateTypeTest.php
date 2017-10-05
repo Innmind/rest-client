@@ -6,7 +6,7 @@ namespace Tests\Innmind\Rest\Client\Definition\Type;
 use Innmind\Rest\Client\Definition\{
     Type\DateType,
     Types,
-    TypeInterface
+    Type
 };
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +14,7 @@ class DateTypeTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(TypeInterface::class, new DateType('c'));
+        $this->assertInstanceOf(Type::class, new DateType('c'));
     }
 
     public function testFromString()

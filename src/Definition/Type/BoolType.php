@@ -5,13 +5,13 @@ namespace Innmind\Rest\Client\Definition\Type;
 
 use Innmind\Rest\Client\{
     Definition\Types,
-    Definition\TypeInterface,
+    Definition\Type,
     Exception\InvalidArgumentException
 };
 
-final class BoolType implements TypeInterface
+final class BoolType implements Type
 {
-    public static function fromString(string $type, Types $types): TypeInterface
+    public static function fromString(string $type, Types $types): Type
     {
         if ($type !== 'bool') {
             throw new InvalidArgumentException;

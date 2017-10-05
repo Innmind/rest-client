@@ -1,11 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\Rest\Client\Server;
+namespace Tests\Innmind\Rest\Client\Server\Capabilities;
 
 use Innmind\Rest\Client\{
-    Server\CacheCapabilities,
-    Server\CapabilitiesInterface,
+    Server\Capabilities\CacheCapabilities,
+    Server\Capabilities,
     Definition\Types,
     Definition\HttpResource,
     Serializer\Normalizer\DefinitionNormalizer,
@@ -47,7 +47,7 @@ class CacheCapabilitiesTest extends TestCase
         });
 
         $this->capabilities = new CacheCapabilities(
-            $this->inner = $this->createMock(CapabilitiesInterface::class),
+            $this->inner = $this->createMock(Capabilities::class),
             $this->filesystem = new MemoryAdapter,
             $this->serializer = new Serializer(
                 [
@@ -93,7 +93,7 @@ class CacheCapabilitiesTest extends TestCase
     public function testInterface()
     {
         $this->assertInstanceOf(
-            CapabilitiesInterface::class,
+            Capabilities::class,
             $this->capabilities
         );
     }

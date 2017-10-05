@@ -8,7 +8,7 @@ use Innmind\Rest\Client\Definition\{
     Type\DateType,
     Type\IntType,
     Types,
-    TypeInterface
+    Type
 };
 use Innmind\Immutable\{
     Map,
@@ -21,7 +21,7 @@ class MapTypeTest extends TestCase
     public function testInterface()
     {
         $this->assertInstanceOf(
-            TypeInterface::class,
+            Type::class,
             new MapType(
                 new IntType,
                 new DateType('c')

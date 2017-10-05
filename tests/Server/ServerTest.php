@@ -5,8 +5,8 @@ namespace Tests\Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\{
     Server\Server,
-    ServerInterface,
-    Server\CapabilitiesInterface,
+    Server as ServerInterface,
+    Server\Capabilities,
     Serializer\Normalizer\DefinitionNormalizer,
     Serializer\Normalizer\ResourceNormalizer,
     Definition\HttpResource as HttpResourceDefinition,
@@ -14,16 +14,14 @@ use Innmind\Rest\Client\{
     Definition\Property as PropertyDefinition,
     Definition\Types,
     Request\Range,
-    IdentityInterface,
     Identity,
     Formats,
     Format\Format,
     Format\MediaType,
     HttpResource,
     HttpResource\Property,
-    Translator\SpecificationTranslator,
+    Translator\Specification\SpecificationTranslator,
     Link,
-    Link\ParameterInterface,
     Link\Parameter
 };
 use Innmind\HttpTransport\Transport;
@@ -71,7 +69,7 @@ class ServerTest extends TestCase
         $this->server = new Server(
             $this->url = Url::fromString('http://example.com/'),
             $this->transport = $this->createMock(Transport::class),
-            $this->capabilities = $this->createMock(CapabilitiesInterface::class),
+            $this->capabilities = $this->createMock(Capabilities::class),
             new UrlResolver,
             new Serializer(
                 [
@@ -236,7 +234,7 @@ class ServerTest extends TestCase
                 null,
                 ['definition' => $definition]
             )
-            ->willReturn($expected = new Set(IdentityInterface::class));
+            ->willReturn($expected = new Set(Identity::class));
 
         $all = $this->server->all('foo');
 
@@ -293,7 +291,7 @@ class ServerTest extends TestCase
                 null,
                 ['definition' => $definition]
             )
-            ->willReturn($expected = new Set(IdentityInterface::class));
+            ->willReturn($expected = new Set(Identity::class));
 
         $all = $this->server->all('foo', null, new Range(10, 20));
 
@@ -361,7 +359,7 @@ class ServerTest extends TestCase
                 null,
                 ['definition' => $definition]
             )
-            ->willReturn($expected = new Set(IdentityInterface::class));
+            ->willReturn($expected = new Set(Identity::class));
 
         $all = $this->server->all('foo', $specification);
 
@@ -431,7 +429,7 @@ class ServerTest extends TestCase
                 null,
                 ['definition' => $definition]
             )
-            ->willReturn($expected = new Set(IdentityInterface::class));
+            ->willReturn($expected = new Set(Identity::class));
 
         $all = $this->server->all('foo', $specification, new Range(10, 20));
 
@@ -465,7 +463,7 @@ class ServerTest extends TestCase
                 )
             );
 
-        $this->server->read('foo', new Identity('uuid'));
+        $this->server->read('foo', new Identity\Identity('uuid'));
     }
 
     /**
@@ -504,7 +502,7 @@ class ServerTest extends TestCase
                 )
             );
 
-        $this->server->read('foo', new Identity('uuid'));
+        $this->server->read('foo', new Identity\Identity('uuid'));
     }
 
     public function testRead()
@@ -553,7 +551,7 @@ class ServerTest extends TestCase
                 new StringStream('{"resource":{"uuid":"bar","url":"example.com"}}')
             );
 
-        $resource = $this->server->read('foo', new Identity('bar'));
+        $resource = $this->server->read('foo', new Identity\Identity('bar'));
 
         $this->assertInstanceOf(HttpResource::class, $resource);
         $this->assertSame('foo', $resource->name());
@@ -608,7 +606,7 @@ class ServerTest extends TestCase
                 null,
                 ['definition' => $this->definition]
             )
-            ->willReturn($expected = new Identity('some-uuid'));
+            ->willReturn($expected = new Identity\Identity('some-uuid'));
 
         $identity = $this->server->create(
             new HttpResource(
@@ -652,7 +650,7 @@ class ServerTest extends TestCase
             );
 
         $return = $this->server->update(
-            new Identity('some-uuid'),
+            new Identity\Identity('some-uuid'),
             new HttpResource(
                 'foo',
                 (new Map('string', Property::class))
@@ -693,7 +691,7 @@ class ServerTest extends TestCase
 
         $return = $this->server->remove(
             'foo',
-            new Identity('some-uuid')
+            new Identity\Identity('some-uuid')
         );
 
         $this->assertSame($this->server, $return);
@@ -706,7 +704,7 @@ class ServerTest extends TestCase
     {
         $this->server->link(
             'foo',
-            $this->createMock(IdentityInterface::class),
+            $this->createMock(Identity::class),
             new Set('string')
         );
     }
@@ -718,7 +716,7 @@ class ServerTest extends TestCase
     {
         $this->server->link(
             'foo',
-            $this->createMock(IdentityInterface::class),
+            $this->createMock(Identity::class),
             new Set(Link::class)
         );
     }
@@ -741,14 +739,14 @@ class ServerTest extends TestCase
 
         $this->server->link(
             'foo',
-            new Identity('some-uuid'),
+            new Identity\Identity('some-uuid'),
             (new Set(Link::class))
                 ->add(new Link(
                     'baz',
-                    new Identity('cano'),
+                    new Identity\Identity('cano'),
                     'canonical',
-                    (new Map('string', ParameterInterface::class))
-                        ->put('attr', new Parameter('attr', 'val'))
+                    (new Map('string', Parameter::class))
+                        ->put('attr', new Parameter\Parameter('attr', 'val'))
                 ))
         );
     }
@@ -783,14 +781,14 @@ class ServerTest extends TestCase
             $this->server,
             $this->server->link(
                 'foo',
-                new Identity('some-uuid'),
+                new Identity\Identity('some-uuid'),
                 (new Set(Link::class))
                     ->add(new Link(
                         'bar',
-                        new Identity('cano'),
+                        new Identity\Identity('cano'),
                         'canonical',
-                        (new Map('string', ParameterInterface::class))
-                            ->put('attr', new Parameter('attr', 'val'))
+                        (new Map('string', Parameter::class))
+                            ->put('attr', new Parameter\Parameter('attr', 'val'))
                     ))
             )
         );
@@ -803,7 +801,7 @@ class ServerTest extends TestCase
     {
         $this->server->unlink(
             'foo',
-            $this->createMock(IdentityInterface::class),
+            $this->createMock(Identity::class),
             new Set('string')
         );
     }
@@ -815,7 +813,7 @@ class ServerTest extends TestCase
     {
         $this->server->unlink(
             'foo',
-            $this->createMock(IdentityInterface::class),
+            $this->createMock(Identity::class),
             new Set(Link::class)
         );
     }
@@ -838,14 +836,14 @@ class ServerTest extends TestCase
 
         $this->server->unlink(
             'foo',
-            new Identity('some-uuid'),
+            new Identity\Identity('some-uuid'),
             (new Set(Link::class))
                 ->add(new Link(
                     'baz',
-                    new Identity('cano'),
+                    new Identity\Identity('cano'),
                     'canonical',
-                    (new Map('string', ParameterInterface::class))
-                        ->put('attr', new Parameter('attr', 'val'))
+                    (new Map('string', Parameter::class))
+                        ->put('attr', new Parameter\Parameter('attr', 'val'))
                 ))
         );
     }
@@ -880,14 +878,14 @@ class ServerTest extends TestCase
             $this->server,
             $this->server->unlink(
                 'foo',
-                new Identity('some-uuid'),
+                new Identity\Identity('some-uuid'),
                 (new Set(Link::class))
                     ->add(new Link(
                         'bar',
-                        new Identity('cano'),
+                        new Identity\Identity('cano'),
                         'canonical',
-                        (new Map('string', ParameterInterface::class))
-                            ->put('attr', new Parameter('attr', 'val'))
+                        (new Map('string', Parameter::class))
+                            ->put('attr', new Parameter\Parameter('attr', 'val'))
                     ))
             )
         );

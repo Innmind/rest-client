@@ -7,7 +7,7 @@ use Innmind\Rest\Client\Definition\{
     Type\SetType,
     Type\DateType,
     Types,
-    TypeInterface
+    Type
 };
 use Innmind\Immutable\{
     Set,
@@ -20,7 +20,7 @@ class SetTypeTest extends TestCase
     public function testInterface()
     {
         $this->assertInstanceOf(
-            TypeInterface::class,
+            Type::class,
             new SetType(new DateType('c'))
         );
     }

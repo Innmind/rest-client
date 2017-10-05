@@ -16,7 +16,7 @@ final class Property
 
     public function __construct(
         string $name,
-        TypeInterface $type,
+        Type $type,
         Access $access,
         SetInterface $variants,
         bool $optional
@@ -40,7 +40,7 @@ final class Property
         return $this->name;
     }
 
-    public function type(): TypeInterface
+    public function type(): Type
     {
         return $this->type;
     }

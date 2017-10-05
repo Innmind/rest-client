@@ -28,7 +28,7 @@ final class Types
     {
         $refl = new \ReflectionClass($class);
 
-        if (!$refl->implementsInterface(TypeInterface::class)) {
+        if (!$refl->implementsInterface(Type::class)) {
             throw new InvalidArgumentException;
         }
 
@@ -37,7 +37,7 @@ final class Types
         return $this;
     }
 
-    public function build(string $type): TypeInterface
+    public function build(string $type): Type
     {
         foreach ($this->types as $builder) {
             try {

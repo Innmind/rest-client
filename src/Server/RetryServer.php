@@ -4,8 +4,8 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\{
-    ServerInterface,
-    IdentityInterface,
+    Server as ServerInterface,
+    Identity,
     HttpResource,
     Request\Range,
     Exception\NormalizationException,
@@ -52,7 +52,7 @@ final class RetryServer implements ServerInterface
         }
     }
 
-    public function read(string $name, IdentityInterface $identity): HttpResource
+    public function read(string $name, Identity $identity): HttpResource
     {
         try {
             return $this->server->read($name, $identity);
@@ -67,7 +67,7 @@ final class RetryServer implements ServerInterface
         }
     }
 
-    public function create(HttpResource $resource): IdentityInterface
+    public function create(HttpResource $resource): Identity
     {
         try {
             return $this->server->create($resource);
@@ -83,7 +83,7 @@ final class RetryServer implements ServerInterface
     }
 
     public function update(
-        IdentityInterface $identity,
+        Identity $identity,
         HttpResource $resource
     ): ServerInterface {
         try {
@@ -100,7 +100,7 @@ final class RetryServer implements ServerInterface
         return $this;
     }
 
-    public function remove(string $name, IdentityInterface $identity): ServerInterface
+    public function remove(string $name, Identity $identity): ServerInterface
     {
         try {
             $this->server->remove($name, $identity);
@@ -121,7 +121,7 @@ final class RetryServer implements ServerInterface
      */
     public function link(
         string $name,
-        IdentityInterface $identity,
+        Identity $identity,
         SetInterface $links
     ): ServerInterface {
         try {
@@ -143,7 +143,7 @@ final class RetryServer implements ServerInterface
      */
     public function unlink(
         string $name,
-        IdentityInterface $identity,
+        Identity $identity,
         SetInterface $links
     ): ServerInterface {
         try {
@@ -160,7 +160,7 @@ final class RetryServer implements ServerInterface
         return $this;
     }
 
-    public function capabilities(): CapabilitiesInterface
+    public function capabilities(): Capabilities
     {
         return $this->server->capabilities();
     }

@@ -1,11 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\Rest\Client\Link;
+namespace Tests\Innmind\Rest\Client\Link\Parameter;
 
 use Innmind\Rest\Client\Link\{
-    Parameter,
-    ParameterInterface
+    Parameter\Parameter,
+    Parameter as ParameterInterface
 };
 use PHPUnit\Framework\TestCase;
 

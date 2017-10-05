@@ -1,9 +1,12 @@
 <?php
 declare(strict_types = 1);
 
-namespace Innmind\Rest\Client\Server;
+namespace Innmind\Rest\Client\Server\Capabilities;
 
-use Innmind\Rest\Client\Definition\HttpResource;
+use Innmind\Rest\Client\{
+    Server\Capabilities as CapabilitiesInterface,
+    Definition\HttpResource
+};
 use Innmind\Immutable\{
     SetInterface,
     MapInterface

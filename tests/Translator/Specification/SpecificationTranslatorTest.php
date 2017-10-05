@@ -1,11 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\Rest\Client\Translator;
+namespace Tests\Innmind\Rest\Client\Translator\Specification;
 
 use Innmind\Rest\Client\Translator\{
-    SpecificationTranslator,
-    SpecificationTranslatorInterface
+    Specification\SpecificationTranslator,
+    SpecificationTranslator as SpecificationTranslatorInterface
 };
 use Innmind\Specification\{
     ComparatorInterface,

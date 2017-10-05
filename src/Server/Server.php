@@ -4,12 +4,11 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\{
-    ServerInterface,
+    Server as ServerInterface,
     Request\Range,
-    IdentityInterface,
     Identity,
     HttpResource,
-    Translator\SpecificationTranslatorInterface,
+    Translator\SpecificationTranslator,
     Exception\ResourceNotRangeableException,
     Exception\UnsupportedResponseException,
     Exception\InvalidArgumentException,
@@ -18,7 +17,7 @@ use Innmind\Rest\Client\{
     Formats,
     Format\Format,
     Link,
-    Link\ParameterInterface,
+    Link\Parameter,
     Definition\HttpResource as Definition
 };
 use Innmind\HttpTransport\Transport;
@@ -66,10 +65,10 @@ final class Server implements ServerInterface
     public function __construct(
         UrlInterface $url,
         Transport $transport,
-        CapabilitiesInterface $capabilities,
+        Capabilities $capabilities,
         ResolverInterface $resolver,
         Serializer $serializer,
-        SpecificationTranslatorInterface $specificationTranslator,
+        SpecificationTranslator $specificationTranslator,
         Formats $formats
     ) {
         $this->url = $url;
@@ -136,7 +135,7 @@ final class Server implements ServerInterface
         );
     }
 
-    public function read(string $name, IdentityInterface $identity): HttpResource
+    public function read(string $name, Identity $identity): HttpResource
     {
         $definition = $this->capabilities->get($name);
         $response = $this->transport->fulfill(
@@ -183,7 +182,7 @@ final class Server implements ServerInterface
         );
     }
 
-    public function create(HttpResource $resource): IdentityInterface
+    public function create(HttpResource $resource): Identity
     {
         $definition = $this->capabilities->get($resource->name());
         $response = $this->transport->fulfill(
@@ -231,7 +230,7 @@ final class Server implements ServerInterface
     }
 
     public function update(
-        IdentityInterface $identity,
+        Identity $identity,
         HttpResource $resource
     ): ServerInterface {
         $definition = $this->capabilities->get($resource->name());
@@ -277,7 +276,7 @@ final class Server implements ServerInterface
         return $this;
     }
 
-    public function remove(string $name, IdentityInterface $identity): ServerInterface
+    public function remove(string $name, Identity $identity): ServerInterface
     {
         $definition = $this->capabilities->get($name);
         $this->transport->fulfill(
@@ -299,7 +298,7 @@ final class Server implements ServerInterface
      */
     public function link(
         string $name,
-        IdentityInterface $identity,
+        Identity $identity,
         SetInterface $links
     ): ServerInterface {
         if (
@@ -335,7 +334,7 @@ final class Server implements ServerInterface
      */
     public function unlink(
         string $name,
-        IdentityInterface $identity,
+        Identity $identity,
         SetInterface $links
     ): ServerInterface {
         if (
@@ -366,7 +365,7 @@ final class Server implements ServerInterface
         return $this;
     }
 
-    public function capabilities(): CapabilitiesInterface
+    public function capabilities(): Capabilities
     {
         return $this->capabilities;
     }
@@ -378,7 +377,7 @@ final class Server implements ServerInterface
 
     private function resolveUrl(
         UrlInterface $url,
-        IdentityInterface $identity
+        Identity $identity
     ): UrlInterface {
         $url = (string) $url;
         $url = rtrim($url, '/').'/'.$identity;
@@ -430,7 +429,7 @@ final class Server implements ServerInterface
                                 ->parameters()
                                 ->reduce(
                                     new Map('string', HeaderParameter::class),
-                                    function(Map $carry, string $name, ParameterInterface $parameter): Map {
+                                    function(Map $carry, string $name, Parameter $parameter): Map {
                                         return $carry->put(
                                             $name,
                                             new HeaderParameter\Parameter(

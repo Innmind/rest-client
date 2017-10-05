@@ -1,13 +1,13 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\Rest\Client;
+namespace Tests\Innmind\Rest\Client\Client;
 
 use Innmind\Rest\Client\{
-    Client,
-    ClientInterface,
-    Server\FactoryInterface,
-    ServerInterface
+    Client\Client,
+    Client as ClientInterface,
+    Server\Factory,
+    Server
 };
 use PHPUnit\Framework\TestCase;
 
@@ -19,7 +19,7 @@ class ClientTest extends TestCase
     public function setUp()
     {
         $this->client = new Client(
-            $this->factory = $this->createMock(FactoryInterface::class)
+            $this->factory = $this->createMock(Factory::class)
         );
     }
 
@@ -50,7 +50,7 @@ class ClientTest extends TestCase
 
         $server = $this->client->server('http://example.com/');
 
-        $this->assertInstanceOf(ServerInterface::class, $server);
+        $this->assertInstanceOf(Server::class, $server);
         $this->assertSame($server, $this->client->server('http://example.com'));
         $this->assertNotSame(
             $server,

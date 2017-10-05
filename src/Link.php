@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client;
 
 use Innmind\Rest\Client\{
-    Link\ParameterInterface,
+    Link\Parameter,
     Exception\InvalidArgumentException
 };
 use Innmind\Immutable\{
@@ -21,17 +21,17 @@ final class Link
 
     public function __construct(
         string $definition,
-        IdentityInterface $identity,
+        Identity $identity,
         string $relationship,
         MapInterface $parameters = null
     ) {
-        $parameters = $parameters ?? new Map('string', ParameterInterface::class);
+        $parameters = $parameters ?? new Map('string', Parameter::class);
 
         if (
             empty($definition) ||
             empty($relationship) ||
             (string) $parameters->keyType() !== 'string' ||
-            (string) $parameters->valueType() !== ParameterInterface::class
+            (string) $parameters->valueType() !== Parameter::class
         ) {
             throw new InvalidArgumentException;
         }
@@ -47,7 +47,7 @@ final class Link
         return $this->definition;
     }
 
-    public function identity(): IdentityInterface
+    public function identity(): Identity
     {
         return $this->identity;
     }
@@ -58,7 +58,7 @@ final class Link
     }
 
     /**
-     * @return MapInterface<string, ParameterInterface>
+     * @return MapInterface<string, Parameter>
      */
     public function parameters(): MapInterface
     {

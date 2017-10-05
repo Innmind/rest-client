@@ -5,8 +5,8 @@ namespace Tests\Innmind\Rest\Client;
 
 use Innmind\Rest\Client\{
     Link,
-    Link\ParameterInterface,
-    IdentityInterface
+    Link\Parameter,
+    Identity
 };
 use Innmind\Immutable\{
     MapInterface,
@@ -20,9 +20,9 @@ class LinkTest extends TestCase
     {
         $link = new Link(
             'foo',
-            $identity = $this->createMock(IdentityInterface::class),
+            $identity = $this->createMock(Identity::class),
             'baz',
-            $parameters = new Map('string', ParameterInterface::class)
+            $parameters = new Map('string', Parameter::class)
         );
 
         $this->assertSame('foo', $link->definition());
@@ -35,7 +35,7 @@ class LinkTest extends TestCase
     {
         $link = new Link(
             'foo',
-            $this->createMock(IdentityInterface::class),
+            $this->createMock(Identity::class),
             'baz'
         );
 
@@ -45,7 +45,7 @@ class LinkTest extends TestCase
         );
         $this->assertSame('string', (string) $link->parameters()->keyType());
         $this->assertSame(
-            ParameterInterface::class,
+            Parameter::class,
             (string) $link->parameters()->valueType()
         );
     }
@@ -57,7 +57,7 @@ class LinkTest extends TestCase
     {
         new Link(
             'foo',
-            $this->createMock(IdentityInterface::class),
+            $this->createMock(Identity::class),
             'baz',
             new Map('string', 'string')
         );
@@ -70,9 +70,9 @@ class LinkTest extends TestCase
     {
         new Link(
             '',
-            $this->createMock(IdentityInterface::class),
+            $this->createMock(Identity::class),
             'baz',
-            new Map('string', ParameterInterface::class)
+            new Map('string', Parameter::class)
         );
     }
 
@@ -83,9 +83,9 @@ class LinkTest extends TestCase
     {
         new Link(
             'foo',
-            $this->createMock(IdentityInterface::class),
+            $this->createMock(Identity::class),
             '',
-            new Map('string', ParameterInterface::class)
+            new Map('string', Parameter::class)
         );
     }
 }

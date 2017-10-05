@@ -5,15 +5,15 @@ namespace Innmind\Rest\Client\Definition\Type;
 
 use Innmind\Rest\Client\{
     Definition\Types,
-    Definition\TypeInterface,
+    Definition\Type,
     Exception\InvalidArgumentException,
     Exception\NormalizationException,
     Exception\DenormalizationException
 };
 
-final class FloatType implements TypeInterface
+final class FloatType implements Type
 {
-    public static function fromString(string $type, Types $types): TypeInterface
+    public static function fromString(string $type, Types $types): Type
     {
         if ($type !== 'float') {
             throw new InvalidArgumentException;

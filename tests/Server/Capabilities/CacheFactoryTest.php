@@ -5,9 +5,9 @@ namespace Tests\Innmind\Rest\Client\Server\Capabilities;
 
 use Innmind\Rest\Client\Server\{
     Capabilities\CacheFactory,
-    Capabilities\FactoryInterface,
-    CapabilitiesInterface,
-    CacheCapabilities
+    Capabilities\Factory,
+    Capabilities,
+    Capabilities\CacheCapabilities
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Filesystem\Adapter;
@@ -24,14 +24,14 @@ class CacheFactoryTest extends TestCase
         $this->factory = new CacheFactory(
             $this->createMock(Adapter::class),
             $this->createMock(SerializerInterface::class),
-            $this->inner = $this->createMock(FactoryInterface::class)
+            $this->inner = $this->createMock(Factory::class)
         );
     }
 
     public function testInterface()
     {
         $this->assertInstanceOf(
-            FactoryInterface::class,
+            Factory::class,
             $this->factory
         );
     }
@@ -44,7 +44,7 @@ class CacheFactoryTest extends TestCase
             ->expects($this->once())
             ->method('make')
             ->with($url)
-            ->willReturn($this->createMock(CapabilitiesInterface::class));
+            ->willReturn($this->createMock(Capabilities::class));
 
         $this->assertInstanceOf(
             CacheCapabilities::class,

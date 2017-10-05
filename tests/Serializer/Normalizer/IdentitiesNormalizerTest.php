@@ -5,7 +5,7 @@ namespace Tests\Innmind\Rest\Client\Serializer\Normalizer;
 
 use Innmind\Rest\Client\{
     Serializer\Normalizer\IdentitiesNormalizer,
-    IdentityInterface,
+    Identity as IdentityInterface,
     Visitor\ResolveIdentity,
     Definition\HttpResource,
     Definition\Identity,

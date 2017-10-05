@@ -1,11 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\Rest\Client\Server;
+namespace Tests\Innmind\Rest\Client\Server\Capabilities;
 
 use Innmind\Rest\Client\{
-    Server\Capabilities,
-    Server\CapabilitiesInterface,
+    Server\Capabilities\Capabilities,
+    Server\Capabilities as CapabilitiesInterface,
     Server\DefinitionFactory,
     Definition\Types,
     Definition\HttpResource,

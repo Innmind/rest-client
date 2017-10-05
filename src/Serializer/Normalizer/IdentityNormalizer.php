@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Serializer\Normalizer;
 
 use Innmind\Rest\Client\{
-    IdentityInterface,
     Identity,
     Exception\LogicException,
     Exception\IdentityNotFoundException,
@@ -27,7 +26,7 @@ final class IdentityNormalizer implements DenormalizerInterface
         $this->resolveIdentity = $resolveIdentity;
     }
 
-    public function denormalize($data, $type, $format = null, array $context = []): IdentityInterface
+    public function denormalize($data, $type, $format = null, array $context = []): Identity
     {
         if (
             !$this->supportsDenormalization($data, $type, $format) ||
@@ -53,7 +52,7 @@ final class IdentityNormalizer implements DenormalizerInterface
             ->current();
         $header = Url::fromString((string) $header);
 
-        return new Identity(
+        return new Identity\Identity(
             call_user_func(
                 $this->resolveIdentity,
                 $definition->url(),

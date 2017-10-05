@@ -5,14 +5,14 @@ namespace Innmind\Rest\Client\Definition\Type;
 
 use Innmind\Rest\Client\{
     Definition\Types,
-    Definition\TypeInterface,
+    Definition\Type,
     Exception\InvalidArgumentException,
     Exception\NormalizationException,
     Exception\DenormalizationException
 };
 use Innmind\Immutable\Str;
 
-final class DateType implements TypeInterface
+final class DateType implements Type
 {
     const PATTERN = '~date<(?<format>.+)>~';
 
@@ -27,7 +27,7 @@ final class DateType implements TypeInterface
         $this->format = $format;
     }
 
-    public static function fromString(string $type, Types $types): TypeInterface
+    public static function fromString(string $type, Types $types): Type
     {
         $type = new Str($type);
 

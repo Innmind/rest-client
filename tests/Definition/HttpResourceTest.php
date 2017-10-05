@@ -8,8 +8,8 @@ use Innmind\Rest\Client\{
     Definition\Identity,
     Definition\Property,
     Link,
-    Link\ParameterInterface,
-    IdentityInterface
+    Link\Parameter,
+    Identity as IdentityInterface
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\Map;
@@ -120,13 +120,13 @@ class HttpResourceTest extends TestCase
             'foo',
             $this->createMock(IdentityInterface::class),
             'baz',
-            new Map('string', ParameterInterface::class)
+            new Map('string', Parameter::class)
         );
         $allowed = new Link(
             'res',
             $this->createMock(IdentityInterface::class),
             'rel',
-            new Map('string', ParameterInterface::class)
+            new Map('string', Parameter::class)
         );
 
         $this->assertFalse($resource->allowsLink($notAllowed));

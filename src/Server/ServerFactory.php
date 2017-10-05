@@ -4,8 +4,8 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\{
-    ServerInterface,
-    Translator\SpecificationTranslatorInterface,
+    Server as ServerInterface,
+    Translator\SpecificationTranslator,
     Formats
 };
 use Innmind\Url\UrlInterface;
@@ -13,7 +13,7 @@ use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\ResolverInterface;
 use Symfony\Component\Serializer\Serializer;
 
-final class ServerFactory implements FactoryInterface
+final class ServerFactory implements Factory
 {
     private $transport;
     private $resolver;
@@ -26,9 +26,9 @@ final class ServerFactory implements FactoryInterface
         Transport $transport,
         ResolverInterface $resolver,
         Serializer $serializer,
-        SpecificationTranslatorInterface $translator,
+        SpecificationTranslator $translator,
         Formats $formats,
-        Capabilities\FactoryInterface $capabilities
+        Capabilities\Factory $capabilities
     ) {
         $this->transport = $transport;
         $this->resolver = $resolver;
