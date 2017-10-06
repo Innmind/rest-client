@@ -10,13 +10,12 @@ use Innmind\Rest\Client\{
     Serializer\Normalizer\DefinitionNormalizer
 };
 use Innmind\Http\{
-    Message\ResponseInterface,
-    Message\StatusCode,
-    Headers,
-    Header\HeaderInterface,
+    Message\Response,
+    Message\StatusCode\StatusCode,
+    Headers\Headers,
+    Header,
     Header\ContentType,
-    Header\ContentTypeValue,
-    Header\ParameterInterface
+    Header\ContentTypeValue
 };
 use Innmind\Filesystem\Stream\StringStream;
 use Innmind\Url\Url;
@@ -40,11 +39,11 @@ class DefinitionFactoryTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenResponseNotSuccessful()
     {
-        $response = $this->createMock(ResponseInterface::class);
+        $response = $this->createMock(Response::class);
         $response
             ->expects($this->once())
             ->method('statusCode')
@@ -54,11 +53,11 @@ class DefinitionFactoryTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenResponseHasNoContentType()
     {
-        $response = $this->createMock(ResponseInterface::class);
+        $response = $this->createMock(Response::class);
         $response
             ->expects($this->once())
             ->method('statusCode')
@@ -68,7 +67,7 @@ class DefinitionFactoryTest extends TestCase
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    new Map('string', HeaderInterface::class)
+                    new Map('string', Header::class)
                 )
             );
 
@@ -76,11 +75,11 @@ class DefinitionFactoryTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenResponseHasNotJson()
     {
-        $response = $this->createMock(ResponseInterface::class);
+        $response = $this->createMock(Response::class);
         $response
             ->expects($this->once())
             ->method('statusCode')
@@ -90,14 +89,13 @@ class DefinitionFactoryTest extends TestCase
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'content-type',
                             new ContentType(
                                 new ContentTypeValue(
                                     'text',
-                                    'plain',
-                                    new Map('string', ParameterInterface::class)
+                                    'plain'
                                 )
                             )
                         )
@@ -109,7 +107,7 @@ class DefinitionFactoryTest extends TestCase
 
     public function testMake()
     {
-        $response = $this->createMock(ResponseInterface::class);
+        $response = $this->createMock(Response::class);
         $response
             ->expects($this->once())
             ->method('statusCode')
@@ -119,14 +117,13 @@ class DefinitionFactoryTest extends TestCase
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'content-type',
                             new ContentType(
                                 new ContentTypeValue(
                                     'application',
-                                    'json',
-                                    new Map('string', ParameterInterface::class)
+                                    'json'
                                 )
                             )
                         )

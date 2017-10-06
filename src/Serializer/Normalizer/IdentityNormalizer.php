@@ -4,15 +4,14 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Serializer\Normalizer;
 
 use Innmind\Rest\Client\{
-    IdentityInterface,
     Identity,
     Exception\LogicException,
-    Exception\IdentityNotFoundException,
+    Exception\IdentityNotFound,
     Visitor\ResolveIdentity,
     Definition\HttpResource
 };
 use Innmind\Http\{
-    Message\ResponseInterface,
+    Message\Response,
     Header\Location
 };
 use Innmind\Url\Url;
@@ -27,7 +26,7 @@ final class IdentityNormalizer implements DenormalizerInterface
         $this->resolveIdentity = $resolveIdentity;
     }
 
-    public function denormalize($data, $type, $format = null, array $context = []): IdentityInterface
+    public function denormalize($data, $type, $format = null, array $context = []): Identity
     {
         if (
             !$this->supportsDenormalization($data, $type, $format) ||
@@ -44,7 +43,7 @@ final class IdentityNormalizer implements DenormalizerInterface
             !$headers->has('Location') ||
             !$headers->get('Location') instanceof Location
         ) {
-            throw new IdentityNotFoundException;
+            throw new IdentityNotFound;
         }
 
         $header = $headers
@@ -53,7 +52,7 @@ final class IdentityNormalizer implements DenormalizerInterface
             ->current();
         $header = Url::fromString((string) $header);
 
-        return new Identity(
+        return new Identity\Identity(
             call_user_func(
                 $this->resolveIdentity,
                 $definition->url(),
@@ -64,6 +63,6 @@ final class IdentityNormalizer implements DenormalizerInterface
 
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $data instanceof ResponseInterface && $type === 'rest_identity';
+        return $data instanceof Response && $type === 'rest_identity';
     }
 }

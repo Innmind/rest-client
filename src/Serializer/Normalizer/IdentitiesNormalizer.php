@@ -4,15 +4,14 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Serializer\Normalizer;
 
 use Innmind\Rest\Client\{
-    IdentityInterface,
     Identity,
     Exception\LogicException,
     Definition\HttpResource,
     Visitor\ResolveIdentity
 };
 use Innmind\Http\{
-    Message\ResponseInterface,
-    Header\HeaderValueInterface,
+    Message\Response,
+    Header\Value,
     Header\LinkValue
 };
 use Innmind\Immutable\{
@@ -44,23 +43,23 @@ final class IdentitiesNormalizer implements DenormalizerInterface
         $headers = $data->headers();
 
         if (!$headers->has('Link')) {
-            return new Set(IdentityInterface::class);
+            return new Set(Identity::class);
         }
 
         return $headers
             ->get('Link')
             ->values()
-            ->filter(function(HeaderValueInterface $link): bool {
+            ->filter(function(Value $link): bool {
                 return $link instanceof LinkValue;
             })
             ->filter(function(LinkValue $link): bool {
                 return $link->relationship() === 'resource';
             })
             ->reduce(
-                new Set(IdentityInterface::class),
+                new Set(Identity::class),
                 function(Set $identities, LinkValue $link) use ($definition): Set {
                     return $identities->add(
-                        new Identity(
+                        new Identity\Identity(
                             ($this->resolveIdentity)(
                                 $definition->url(),
                                 $link->url()
@@ -73,6 +72,6 @@ final class IdentitiesNormalizer implements DenormalizerInterface
 
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $data instanceof ResponseInterface && $type === 'rest_identities';
+        return $data instanceof Response && $type === 'rest_identities';
     }
 }

@@ -10,7 +10,7 @@ use Innmind\Rest\Client\{
     HttpResource,
     HttpResource\Property,
     Exception\LogicException,
-    Exception\MissingPropertyException
+    Exception\MissingProperty
 };
 use Innmind\Immutable\Map;
 use Symfony\Component\Serializer\Normalizer\{
@@ -50,7 +50,7 @@ final class ResourceNormalizer implements DenormalizerInterface, NormalizerInter
             })
             ->foreach(function(string $name) use ($data) {
                 if (!isset($data[$name])) {
-                    throw new MissingPropertyException($name);
+                    throw new MissingProperty($name);
                 }
             })
             ->reduce(
@@ -115,7 +115,7 @@ final class ResourceNormalizer implements DenormalizerInterface, NormalizerInter
                 $name = $this->resolveName($property, $data);
 
                 if (!$data->properties()->contains($name)) {
-                    throw new MissingPropertyException($name);
+                    throw new MissingProperty($name);
                 }
             })
             ->reduce(

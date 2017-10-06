@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\HttpResource;
 
-use Innmind\Rest\Client\Exception\InvalidArgumentException;
+use Innmind\Rest\Client\Exception\DomainException;
 
 final class Property
 {
@@ -13,7 +13,7 @@ final class Property
     public function __construct(string $name, $value)
     {
         if (empty($name)) {
-            throw new InvalidArgumentException;
+            throw new DomainException;
         }
 
         $this->name = $name;

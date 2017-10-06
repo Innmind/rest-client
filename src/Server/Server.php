@@ -4,43 +4,41 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\{
-    ServerInterface,
+    Server as ServerInterface,
     Request\Range,
-    IdentityInterface,
     Identity,
     HttpResource,
-    Translator\SpecificationTranslatorInterface,
-    Exception\ResourceNotRangeableException,
-    Exception\UnsupportedResponseException,
-    Exception\InvalidArgumentException,
+    Translator\SpecificationTranslator,
+    Exception\ResourceNotRangeable,
+    Exception\UnsupportedResponse,
+    Exception\DomainException,
     Exception\NormalizationException,
     Definition\Access,
     Formats,
     Format\Format,
     Link,
-    Link\ParameterInterface,
+    Link\Parameter,
     Definition\HttpResource as Definition
 };
-use Innmind\HttpTransport\TransportInterface;
+use Innmind\HttpTransport\Transport;
 use Innmind\Url\{
     UrlInterface,
     Url
 };
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Http\{
-    Message\Request,
-    Message\Method,
-    ProtocolVersion,
-    Headers,
-    Header\HeaderInterface,
-    Header\HeaderValueInterface,
+    Message\Request\Request,
+    Message\Method\Method,
+    ProtocolVersion\ProtocolVersion,
+    Headers\Headers,
+    Header,
+    Header\Value,
     Header\Range as RangeHeader,
     Header\RangeValue,
     Header\Accept,
     Header\AcceptValue,
     Header\ContentType,
     Header\ContentTypeValue,
-    Header\ParameterInterface as HeaderParameterInterface,
     Header\Parameter as HeaderParameter,
     Header\Link as LinkHeader,
     Header\LinkValue
@@ -66,11 +64,11 @@ final class Server implements ServerInterface
 
     public function __construct(
         UrlInterface $url,
-        TransportInterface $transport,
-        CapabilitiesInterface $capabilities,
+        Transport $transport,
+        Capabilities $capabilities,
         ResolverInterface $resolver,
         Serializer $serializer,
-        SpecificationTranslatorInterface $specificationTranslator,
+        SpecificationTranslator $specificationTranslator,
         Formats $formats
     ) {
         $this->url = $url;
@@ -93,7 +91,7 @@ final class Server implements ServerInterface
         $definition = $this->capabilities->get($name);
 
         if ($range !== null && !$definition->isRangeable()) {
-            throw new ResourceNotRangeableException;
+            throw new ResourceNotRangeable;
         }
 
         if ($specification !== null) {
@@ -105,7 +103,7 @@ final class Server implements ServerInterface
             $query ?? (string) $definition->url()
         );
         $url = Url::fromString($url);
-        $headers = new Map('string', HeaderInterface::class);
+        $headers = new Map('string', Header::class);
 
         if ($range !== null) {
             $headers = $headers->put(
@@ -137,7 +135,7 @@ final class Server implements ServerInterface
         );
     }
 
-    public function read(string $name, IdentityInterface $identity): HttpResource
+    public function read(string $name, Identity $identity): HttpResource
     {
         $definition = $this->capabilities->get($name);
         $response = $this->transport->fulfill(
@@ -149,7 +147,7 @@ final class Server implements ServerInterface
                 new Method(Method::GET),
                 new ProtocolVersion(1, 1),
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Accept',
                             $this->generateAcceptHeader()
@@ -167,7 +165,7 @@ final class Server implements ServerInterface
                     ->join(', ')
             );
         } catch (\Exception $e) {
-            throw new UnsupportedResponseException('', 0, $e);
+            throw new UnsupportedResponse('', 0, $e);
         }
 
         return $this->serializer->deserialize(
@@ -177,14 +175,12 @@ final class Server implements ServerInterface
             [
                 'definition' => $definition,
                 'response' => $response,
-                'access' => new Access(
-                    (new Set('string'))->add(Access::READ)
-                )
+                'access' => new Access(Access::READ),
             ]
         );
     }
 
-    public function create(HttpResource $resource): IdentityInterface
+    public function create(HttpResource $resource): Identity
     {
         $definition = $this->capabilities->get($resource->name());
         $response = $this->transport->fulfill(
@@ -193,7 +189,7 @@ final class Server implements ServerInterface
                 new Method(Method::POST),
                 new ProtocolVersion(1, 1),
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Content-Type',
                             new ContentType(
@@ -214,9 +210,7 @@ final class Server implements ServerInterface
                         'json',
                         [
                             'definition' => $definition,
-                            'access' => new Access(
-                                (new Set('string'))->add(Access::CREATE)
-                            ),
+                            'access' => new Access(Access::CREATE),
                         ]
                     )
                 )
@@ -232,7 +226,7 @@ final class Server implements ServerInterface
     }
 
     public function update(
-        IdentityInterface $identity,
+        Identity $identity,
         HttpResource $resource
     ): ServerInterface {
         $definition = $this->capabilities->get($resource->name());
@@ -245,7 +239,7 @@ final class Server implements ServerInterface
                 new Method(Method::PUT),
                 new ProtocolVersion(1, 1),
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Content-Type',
                             new ContentType(
@@ -266,9 +260,7 @@ final class Server implements ServerInterface
                         'json',
                         [
                             'definition' => $definition,
-                            'access' => new Access(
-                                (new Set('string'))->add(Access::UPDATE)
-                            ),
+                            'access' => new Access(Access::UPDATE),
                         ]
                     )
                 )
@@ -278,7 +270,7 @@ final class Server implements ServerInterface
         return $this;
     }
 
-    public function remove(string $name, IdentityInterface $identity): ServerInterface
+    public function remove(string $name, Identity $identity): ServerInterface
     {
         $definition = $this->capabilities->get($name);
         $this->transport->fulfill(
@@ -300,14 +292,18 @@ final class Server implements ServerInterface
      */
     public function link(
         string $name,
-        IdentityInterface $identity,
+        Identity $identity,
         SetInterface $links
     ): ServerInterface {
-        if (
-            (string) $links->type() !== Link::class ||
-            $links->size() === 0
-        ) {
-            throw new InvalidArgumentException;
+        if ((string) $links->type() !== Link::class) {
+            throw new \TypeError(sprintf(
+                'Argument 3 must be of type SetInterface<%s>',
+                Link::class
+            ));
+        }
+
+        if ($links->size() === 0) {
+            throw new DomainException;
         }
 
         $definition = $this->capabilities->get($name);
@@ -321,7 +317,7 @@ final class Server implements ServerInterface
                 new Method(Method::LINK),
                 new ProtocolVersion(1, 1),
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put('Accept', $this->generateAcceptHeader())
                         ->put('Link', $this->generateLinkHeader($links))
                 )
@@ -336,14 +332,18 @@ final class Server implements ServerInterface
      */
     public function unlink(
         string $name,
-        IdentityInterface $identity,
+        Identity $identity,
         SetInterface $links
     ): ServerInterface {
-        if (
-            (string) $links->type() !== Link::class ||
-            $links->size() === 0
-        ) {
-            throw new InvalidArgumentException;
+        if ((string) $links->type() !== Link::class) {
+            throw new \TypeError(sprintf(
+                'Argument 3 must be of type SetInterface<%s>',
+                Link::class
+            ));
+        }
+
+        if ($links->size() === 0) {
+            throw new DomainException;
         }
 
         $definition = $this->capabilities->get($name);
@@ -357,7 +357,7 @@ final class Server implements ServerInterface
                 new Method(Method::UNLINK),
                 new ProtocolVersion(1, 1),
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put('Accept', $this->generateAcceptHeader())
                         ->put('Link', $this->generateLinkHeader($links))
                 )
@@ -367,7 +367,7 @@ final class Server implements ServerInterface
         return $this;
     }
 
-    public function capabilities(): CapabilitiesInterface
+    public function capabilities(): Capabilities
     {
         return $this->capabilities;
     }
@@ -379,7 +379,7 @@ final class Server implements ServerInterface
 
     private function resolveUrl(
         UrlInterface $url,
-        IdentityInterface $identity
+        Identity $identity
     ): UrlInterface {
         $url = (string) $url;
         $url = rtrim($url, '/').'/'.$identity;
@@ -390,7 +390,7 @@ final class Server implements ServerInterface
     private function generateAcceptHeader(): Accept
     {
         return new Accept(
-            $this
+            ...$this
                 ->formats
                 ->all()
                 ->values()
@@ -398,7 +398,7 @@ final class Server implements ServerInterface
                     return $a->priority() < $b->priority();
                 })
                 ->reduce(
-                    new Set(HeaderValueInterface::class),
+                    new Set(Value::class),
                     function(Set $values, Format $format): Set {
                         return $values->add(new AcceptValue(
                             $format->preferredMediaType()->topLevel(),
@@ -412,8 +412,8 @@ final class Server implements ServerInterface
     private function generateLinkHeader(SetInterface $links): LinkHeader
     {
         return new LinkHeader(
-            $links->reduce(
-                new Set(HeaderValueInterface::class),
+            ...$links->reduce(
+                new Set(Value::class),
                 function(Set $carry, Link $link): Set {
                     $url = $this->resolveUrl(
                         $this
@@ -430,11 +430,11 @@ final class Server implements ServerInterface
                             $link
                                 ->parameters()
                                 ->reduce(
-                                    new Map('string', HeaderParameterInterface::class),
-                                    function(Map $carry, string $name, ParameterInterface $parameter): Map {
+                                    new Map('string', HeaderParameter::class),
+                                    function(Map $carry, string $name, Parameter $parameter): Map {
                                         return $carry->put(
                                             $name,
-                                            new HeaderParameter(
+                                            new HeaderParameter\Parameter(
                                                 $parameter->key(),
                                                 $parameter->value()
                                             )

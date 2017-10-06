@@ -5,7 +5,7 @@ namespace Innmind\Rest\Client;
 
 use Innmind\Rest\Client\{
     HttpResource\Property,
-    Exception\InvalidArgumentException
+    Exception\DomainException
 };
 use Innmind\Immutable\MapInterface;
 
@@ -16,12 +16,18 @@ final class HttpResource
 
     public function __construct(string $name, MapInterface $properties)
     {
+        if (empty($name)) {
+            throw new DomainException;
+        }
+
         if (
-            empty($name) ||
             (string) $properties->keyType() !== 'string' ||
             (string) $properties->valueType() !== Property::class
         ) {
-            throw new InvalidArgumentException;
+            throw new \TypeError(sprintf(
+                'Argument 2 must be of type MapInterface<string, %s>',
+                Property::class
+            ));
         }
 
         $this->name = $name;

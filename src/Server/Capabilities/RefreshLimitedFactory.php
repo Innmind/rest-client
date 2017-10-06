@@ -3,17 +3,14 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Server\Capabilities;
 
-use Innmind\Rest\Client\Server\{
-    CapabilitiesInterface,
-    RefreshLimitedCapabilities
-};
+use Innmind\Rest\Client\Server\Capabilities as CapabilitiesInterface;
 use Innmind\Url\UrlInterface;
 
-final class RefreshLimitedFactory implements FactoryInterface
+final class RefreshLimitedFactory implements Factory
 {
     private $factory;
 
-    public function __construct(FactoryInterface $factory)
+    public function __construct(Factory $factory)
     {
         $this->factory = $factory;
     }

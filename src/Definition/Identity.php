@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Definition;
 
-use Innmind\Rest\Client\Exception\InvalidArgumentException;
+use Innmind\Rest\Client\Exception\DomainException;
 
 final class Identity
 {
@@ -12,7 +12,7 @@ final class Identity
     public function __construct(string $name)
     {
         if (empty($name)) {
-            throw new InvalidArgumentException;
+            throw new DomainException;
         }
 
         $this->name = $name;

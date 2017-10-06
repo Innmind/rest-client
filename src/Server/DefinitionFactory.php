@@ -6,11 +6,11 @@ namespace Innmind\Rest\Client\Server;
 use Innmind\Rest\Client\{
     Definition\HttpResource,
     Serializer\Normalizer\DefinitionNormalizer,
-    Exception\InvalidArgumentException
+    Exception\DomainException
 };
 use Innmind\Http\Message\{
-    ResponseInterface,
-    StatusCode
+    Response,
+    StatusCode\StatusCode
 };
 use Innmind\Url\UrlInterface;
 
@@ -26,7 +26,7 @@ final class DefinitionFactory
     public function make(
         string $name,
         UrlInterface $url,
-        ResponseInterface $response
+        Response $response
     ): HttpResource {
         $headers = $response->headers();
 
@@ -35,7 +35,7 @@ final class DefinitionFactory
             !$headers->has('Content-Type') ||
             (string) $headers->get('Content-Type')->values()->current() !== 'application/json'
         ) {
-            throw new InvalidArgumentException;
+            throw new DomainException;
         }
 
         $data = json_decode((string) $response->body(), true);

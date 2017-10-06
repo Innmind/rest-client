@@ -3,24 +3,21 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Server\Capabilities;
 
-use Innmind\Rest\Client\Server\{
-    CapabilitiesInterface,
-    CacheCapabilities
-};
+use Innmind\Rest\Client\Server\Capabilities as CapabilitiesInterface;
 use Innmind\Url\UrlInterface;
-use Innmind\Filesystem\AdapterInterface;
+use Innmind\Filesystem\Adapter;
 use SYmfony\Component\Serializer\SerializerInterface;
 
-final class CacheFactory implements FactoryInterface
+final class CacheFactory implements Factory
 {
     private $filesystem;
     private $serializer;
     private $factory;
 
     public function __construct(
-        AdapterInterface $filesystem,
+        Adapter $filesystem,
         SerializerInterface $serializer,
-        FactoryInterface $factory
+        Factory $factory
     ) {
         $this->filesystem = $filesystem;
         $this->serializer = $serializer;

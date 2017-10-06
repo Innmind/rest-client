@@ -5,8 +5,8 @@ namespace Tests\Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\{
     Server\Server,
-    ServerInterface,
-    Server\CapabilitiesInterface,
+    Server as ServerInterface,
+    Server\Capabilities,
     Serializer\Normalizer\DefinitionNormalizer,
     Serializer\Normalizer\ResourceNormalizer,
     Definition\HttpResource as HttpResourceDefinition,
@@ -14,30 +14,27 @@ use Innmind\Rest\Client\{
     Definition\Property as PropertyDefinition,
     Definition\Types,
     Request\Range,
-    IdentityInterface,
     Identity,
     Formats,
     Format\Format,
     Format\MediaType,
     HttpResource,
     HttpResource\Property,
-    Translator\SpecificationTranslator,
+    Translator\Specification\SpecificationTranslator,
     Link,
-    Link\ParameterInterface,
     Link\Parameter
 };
-use Innmind\HttpTransport\TransportInterface;
+use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\UrlResolver;
 use Innmind\Url\{
     Url,
     UrlInterface
 };
 use Innmind\Http\{
-    Message\RequestInterface,
-    Message\ResponseInterface,
-    Headers,
-    Header\HeaderInterface,
-    Header\HeaderValueInterface,
+    Message\Request,
+    Message\Response,
+    Headers\Headers,
+    Header,
     Header\ContentType,
     Header\ContentTypeValue,
     Header\Location,
@@ -71,8 +68,8 @@ class ServerTest extends TestCase
     {
         $this->server = new Server(
             $this->url = Url::fromString('http://example.com/'),
-            $this->transport = $this->createMock(TransportInterface::class),
-            $this->capabilities = $this->createMock(CapabilitiesInterface::class),
+            $this->transport = $this->createMock(Transport::class),
+            $this->capabilities = $this->createMock(Capabilities::class),
             new UrlResolver,
             new Serializer(
                 [
@@ -161,7 +158,7 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\ResourceNotRangeableException
+     * @expectedException Innmind\Rest\Client\Exception\ResourceNotRangeable
      */
     public function testThrowWhenRangingOnNonRangeableResource()
     {
@@ -211,21 +208,21 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 0 &&
                     (string) $request->body() === '';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $this
             ->identitiesNormalizer
             ->expects($this->once())
             ->method('supportsDenormalization')
             ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof ResponseInterface && $format === 'rest_identities';
+                return $data instanceof Response && $format === 'rest_identities';
             }));
         $this
             ->identitiesNormalizer
@@ -237,7 +234,7 @@ class ServerTest extends TestCase
                 null,
                 ['definition' => $definition]
             )
-            ->willReturn($expected = new Set(IdentityInterface::class));
+            ->willReturn($expected = new Set(Identity::class));
 
         $all = $this->server->all('foo');
 
@@ -266,7 +263,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 1 &&
@@ -275,14 +272,14 @@ class ServerTest extends TestCase
                     (string) $request->body() === '';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $this
             ->identitiesNormalizer
             ->expects($this->once())
             ->method('supportsDenormalization')
             ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof ResponseInterface && $format === 'rest_identities';
+                return $data instanceof Response && $format === 'rest_identities';
             }));
         $this
             ->identitiesNormalizer
@@ -294,7 +291,7 @@ class ServerTest extends TestCase
                 null,
                 ['definition' => $definition]
             )
-            ->willReturn($expected = new Set(IdentityInterface::class));
+            ->willReturn($expected = new Set(Identity::class));
 
         $all = $this->server->all('foo', null, new Range(10, 20));
 
@@ -323,14 +320,14 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo?bar=baz' &&
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 0 &&
                     (string) $request->body() === '';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $specification = $this->createMock(ComparatorInterface::class);
         $specification
@@ -350,7 +347,7 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('supportsDenormalization')
             ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof ResponseInterface && $format === 'rest_identities';
+                return $data instanceof Response && $format === 'rest_identities';
             }));
         $this
             ->identitiesNormalizer
@@ -362,7 +359,7 @@ class ServerTest extends TestCase
                 null,
                 ['definition' => $definition]
             )
-            ->willReturn($expected = new Set(IdentityInterface::class));
+            ->willReturn($expected = new Set(Identity::class));
 
         $all = $this->server->all('foo', $specification);
 
@@ -391,7 +388,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo?bar=baz' &&
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 1 &&
@@ -400,7 +397,7 @@ class ServerTest extends TestCase
                     (string) $request->body() === '';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $specification = $this->createMock(ComparatorInterface::class);
         $specification
@@ -420,7 +417,7 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('supportsDenormalization')
             ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof ResponseInterface && $format === 'rest_identities';
+                return $data instanceof Response && $format === 'rest_identities';
             }));
         $this
             ->identitiesNormalizer
@@ -432,7 +429,7 @@ class ServerTest extends TestCase
                 null,
                 ['definition' => $definition]
             )
-            ->willReturn($expected = new Set(IdentityInterface::class));
+            ->willReturn($expected = new Set(Identity::class));
 
         $all = $this->server->all('foo', $specification, new Range(10, 20));
 
@@ -440,7 +437,7 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\UnsupportedResponseException
+     * @expectedException Innmind\Rest\Client\Exception\UnsupportedResponse
      */
     public function testThrowWhenReadResponseHasNoContentType()
     {
@@ -455,22 +452,22 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('fulfill')
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    new Map('string', HeaderInterface::class)
+                    new Map('string', Header::class)
                 )
             );
 
-        $this->server->read('foo', new Identity('uuid'));
+        $this->server->read('foo', new Identity\Identity('uuid'));
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\UnsupportedResponseException
+     * @expectedException Innmind\Rest\Client\Exception\UnsupportedResponse
      */
     public function testThrowWhenReadResponseContentTypeNotSupported()
     {
@@ -485,14 +482,14 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('fulfill')
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Content-Type',
                             new ContentType(
@@ -505,7 +502,7 @@ class ServerTest extends TestCase
                 )
             );
 
-        $this->server->read('foo', new Identity('uuid'));
+        $this->server->read('foo', new Identity\Identity('uuid'));
     }
 
     public function testRead()
@@ -520,7 +517,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/bar' &&
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 1 &&
@@ -528,14 +525,14 @@ class ServerTest extends TestCase
                     (string) $request->body() === '';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $response
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
                 new Headers(
-                    (new Map('string', HeaderInterface::class))
+                    (new Map('string', Header::class))
                         ->put(
                             'Content-Type',
                             new ContentType(
@@ -554,7 +551,7 @@ class ServerTest extends TestCase
                 new StringStream('{"resource":{"uuid":"bar","url":"example.com"}}')
             );
 
-        $resource = $this->server->read('foo', new Identity('bar'));
+        $resource = $this->server->read('foo', new Identity\Identity('bar'));
 
         $this->assertInstanceOf(HttpResource::class, $resource);
         $this->assertSame('foo', $resource->name());
@@ -581,7 +578,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'POST' &&
                     $request->headers()->count() === 2 &&
@@ -590,14 +587,14 @@ class ServerTest extends TestCase
                     (string) $request->body() === '{"resource":{"url":"foobar"}}';
             }))
             ->willReturn(
-                $response = $this->createMock(ResponseInterface::class)
+                $response = $this->createMock(Response::class)
             );
         $this
             ->identityNormalizer
             ->expects($this->once())
             ->method('supportsDenormalization')
             ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof ResponseInterface && $format === 'rest_identity';
+                return $data instanceof Response && $format === 'rest_identity';
             }));
         $this
             ->identityNormalizer
@@ -609,7 +606,7 @@ class ServerTest extends TestCase
                 null,
                 ['definition' => $this->definition]
             )
-            ->willReturn($expected = new Identity('some-uuid'));
+            ->willReturn($expected = new Identity\Identity('some-uuid'));
 
         $identity = $this->server->create(
             new HttpResource(
@@ -640,7 +637,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'PUT' &&
                     $request->headers()->count() === 2 &&
@@ -649,11 +646,11 @@ class ServerTest extends TestCase
                     (string) $request->body() === '{"resource":{"url":"foobar"}}';
             }))
             ->willReturn(
-                $this->createMock(ResponseInterface::class)
+                $this->createMock(Response::class)
             );
 
         $return = $this->server->update(
-            new Identity('some-uuid'),
+            new Identity\Identity('some-uuid'),
             new HttpResource(
                 'foo',
                 (new Map('string', Property::class))
@@ -682,44 +679,45 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'DELETE' &&
                     $request->headers()->count() === 0 &&
                     (string) $request->body() === '';
             }))
             ->willReturn(
-                $this->createMock(ResponseInterface::class)
+                $this->createMock(Response::class)
             );
 
         $return = $this->server->remove(
             'foo',
-            new Identity('some-uuid')
+            new Identity\Identity('some-uuid')
         );
 
         $this->assertSame($this->server, $return);
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 3 must be of type SetInterface<Innmind\Rest\Client\Link>
      */
     public function testThrowWhenInvalidSetOfLinks()
     {
         $this->server->link(
             'foo',
-            $this->createMock(IdentityInterface::class),
+            $this->createMock(Identity::class),
             new Set('string')
         );
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenEmptySetOfLinks()
     {
         $this->server->link(
             'foo',
-            $this->createMock(IdentityInterface::class),
+            $this->createMock(Identity::class),
             new Set(Link::class)
         );
     }
@@ -742,14 +740,14 @@ class ServerTest extends TestCase
 
         $this->server->link(
             'foo',
-            new Identity('some-uuid'),
+            new Identity\Identity('some-uuid'),
             (new Set(Link::class))
                 ->add(new Link(
                     'baz',
-                    new Identity('cano'),
+                    new Identity\Identity('cano'),
                     'canonical',
-                    (new Map('string', ParameterInterface::class))
-                        ->put('attr', new Parameter('attr', 'val'))
+                    (new Map('string', Parameter::class))
+                        ->put('attr', new Parameter\Parameter('attr', 'val'))
                 ))
         );
     }
@@ -772,7 +770,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'LINK' &&
                     (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
@@ -784,39 +782,40 @@ class ServerTest extends TestCase
             $this->server,
             $this->server->link(
                 'foo',
-                new Identity('some-uuid'),
+                new Identity\Identity('some-uuid'),
                 (new Set(Link::class))
                     ->add(new Link(
                         'bar',
-                        new Identity('cano'),
+                        new Identity\Identity('cano'),
                         'canonical',
-                        (new Map('string', ParameterInterface::class))
-                            ->put('attr', new Parameter('attr', 'val'))
+                        (new Map('string', Parameter::class))
+                            ->put('attr', new Parameter\Parameter('attr', 'val'))
                     ))
             )
         );
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 3 must be of type SetInterface<Innmind\Rest\Client\Link>
      */
     public function testThrowWhenInvalidSetOfLinksToUnlink()
     {
         $this->server->unlink(
             'foo',
-            $this->createMock(IdentityInterface::class),
+            $this->createMock(Identity::class),
             new Set('string')
         );
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenEmptySetOfLinksToUnlink()
     {
         $this->server->unlink(
             'foo',
-            $this->createMock(IdentityInterface::class),
+            $this->createMock(Identity::class),
             new Set(Link::class)
         );
     }
@@ -839,14 +838,14 @@ class ServerTest extends TestCase
 
         $this->server->unlink(
             'foo',
-            new Identity('some-uuid'),
+            new Identity\Identity('some-uuid'),
             (new Set(Link::class))
                 ->add(new Link(
                     'baz',
-                    new Identity('cano'),
+                    new Identity\Identity('cano'),
                     'canonical',
-                    (new Map('string', ParameterInterface::class))
-                        ->put('attr', new Parameter('attr', 'val'))
+                    (new Map('string', Parameter::class))
+                        ->put('attr', new Parameter\Parameter('attr', 'val'))
                 ))
         );
     }
@@ -869,7 +868,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('fulfill')
-            ->with($this->callback(function(RequestInterface $request): bool {
+            ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'UNLINK' &&
                     (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
@@ -881,14 +880,14 @@ class ServerTest extends TestCase
             $this->server,
             $this->server->unlink(
                 'foo',
-                new Identity('some-uuid'),
+                new Identity\Identity('some-uuid'),
                 (new Set(Link::class))
                     ->add(new Link(
                         'bar',
-                        new Identity('cano'),
+                        new Identity\Identity('cano'),
                         'canonical',
-                        (new Map('string', ParameterInterface::class))
-                            ->put('attr', new Parameter('attr', 'val'))
+                        (new Map('string', Parameter::class))
+                            ->put('attr', new Parameter\Parameter('attr', 'val'))
                     ))
             )
         );

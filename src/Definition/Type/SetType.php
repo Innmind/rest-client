@@ -5,8 +5,8 @@ namespace Innmind\Rest\Client\Definition\Type;
 
 use Innmind\Rest\Client\{
     Definition\Types,
-    Definition\TypeInterface,
-    Exception\InvalidArgumentException,
+    Definition\Type,
+    Exception\DomainException,
     Exception\NormalizationException,
     Exception\DenormalizationException
 };
@@ -16,14 +16,14 @@ use Innmind\Immutable\{
     SetInterface
 };
 
-final class SetType implements TypeInterface
+final class SetType implements Type
 {
     const PATTERN = '~set<(?<inner>.+)>~';
 
     private $inner;
     private $denormalized;
 
-    public function __construct(TypeInterface $inner)
+    public function __construct(Type $inner)
     {
         $this->inner = $inner;
         $this->denormalized = new Set(
@@ -32,12 +32,12 @@ final class SetType implements TypeInterface
         );
     }
 
-    public static function fromString(string $type, Types $types): TypeInterface
+    public static function fromString(string $type, Types $types): Type
     {
         $type = new Str($type);
 
         if (!$type->matches(self::PATTERN)) {
-            throw new InvalidArgumentException;
+            throw new DomainException;
         }
 
         return new self(

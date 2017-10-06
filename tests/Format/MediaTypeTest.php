@@ -20,7 +20,7 @@ class MediaTypeTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Filesystem\Exception\InvalidMediaTypeStringException
+     * @expectedException Innmind\Filesystem\Exception\InvalidMediaTypeString
      */
     public function testThrowWhenInvalidMediaTypeGiven()
     {

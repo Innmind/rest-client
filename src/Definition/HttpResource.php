@@ -5,9 +5,9 @@ namespace Innmind\Rest\Client\Definition;
 
 use Innmind\Rest\Client\{
     Link,
-    Exception\InvalidArgumentException
+    Exception\DomainException
 };
-use Innmind\url\UrlInterface;
+use Innmind\Url\UrlInterface;
 use Innmind\Immutable\MapInterface;
 
 final class HttpResource
@@ -29,16 +29,32 @@ final class HttpResource
         MapInterface $links,
         bool $rangeable
     ) {
+        if (empty($name)) {
+            throw new DomainException;
+        }
+
         if (
-            empty($name) ||
             (string) $properties->keyType() !== 'string' ||
-            (string) $properties->valueType() !== Property::class ||
+            (string) $properties->valueType() !== Property::class
+        ) {
+            throw new \TypeError(sprintf(
+                'Argument 4 must be of type MapInterface<string, %s>',
+                Property::class
+            ));
+        }
+
+        if (
             (string) $metas->keyType() !== 'scalar' ||
-            (string) $metas->valueType() !== 'variable' ||
+            (string) $metas->valueType() !== 'variable'
+        ) {
+            throw new \TypeError('Argument 5 must be of type MapInterface<scalar, variable>');
+        }
+
+        if (
             (string) $links->keyType() !== 'string' ||
             (string) $links->valueType() !== 'string'
         ) {
-            throw new InvalidArgumentException;
+            throw new \TypeError('Argument 6 must be of type MapInterface<string, string>');
         }
 
         $this->name = $name;

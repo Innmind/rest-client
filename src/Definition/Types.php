@@ -11,8 +11,8 @@ use Innmind\Rest\Client\{
     Definition\Type\MapType,
     Definition\Type\SetType,
     Definition\Type\StringType,
-    Exception\InvalidArgumentException,
-    Exception\UnknownTypeException
+    Exception\DomainException,
+    Exception\UnknownType
 };
 use Innmind\Immutable\{
     Set,
@@ -28,8 +28,8 @@ final class Types
     {
         $refl = new \ReflectionClass($class);
 
-        if (!$refl->implementsInterface(TypeInterface::class)) {
-            throw new InvalidArgumentException;
+        if (!$refl->implementsInterface(Type::class)) {
+            throw new DomainException;
         }
 
         $this->types[] = $class;
@@ -37,7 +37,7 @@ final class Types
         return $this;
     }
 
-    public function build(string $type): TypeInterface
+    public function build(string $type): Type
     {
         foreach ($this->types as $builder) {
             try {
@@ -46,12 +46,12 @@ final class Types
                     $type,
                     $this
                 );
-            } catch (InvalidArgumentException $e) {
+            } catch (DomainException $e) {
                 //pass
             }
         }
 
-        throw new UnknownTypeException;
+        throw new UnknownType;
     }
 
     /**

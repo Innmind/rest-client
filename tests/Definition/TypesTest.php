@@ -5,7 +5,7 @@ namespace Tests\Innmind\Rest\Client\Definition;
 
 use Innmind\Rest\Client\{
     Definition\Types,
-    Definition\TypeInterface,
+    Definition\Type,
     Definition\Type\BoolType,
     Definition\Type\DateType,
     Definition\Type\FloatType,
@@ -13,7 +13,7 @@ use Innmind\Rest\Client\{
     Definition\Type\MapType,
     Definition\Type\SetType,
     Definition\Type\StringType,
-    Exception\InvalidArgumentException
+    Exception\DomainException
 };
 use Innmind\Immutable\SetInterface;
 use PHPUnit\Framework\TestCase;
@@ -23,13 +23,13 @@ class TypesTest extends TestCase
     public function testRegister()
     {
         $types = new Types;
-        $object = $this->createMock(TypeInterface::class);
+        $object = $this->createMock(Type::class);
 
         $this->assertSame($types, $types->register(get_class($object)));
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenRegisteringInvalidType()
     {
@@ -39,11 +39,11 @@ class TypesTest extends TestCase
     public function testBuild()
     {
         $types = new Types;
-        $type1 = new class implements TypeInterface {
-            public static function fromString(string $type, Types $types): TypeInterface
+        $type1 = new class implements Type {
+            public static function fromString(string $type, Types $types): Type
             {
                 if ($type !== 'type1') {
-                    throw new InvalidArgumentException;
+                    throw new DomainException;
                 }
 
                 return new self;
@@ -62,11 +62,11 @@ class TypesTest extends TestCase
                 return 'type1';
             }
         };
-        $type2 = new class implements TypeInterface {
-            public static function fromString(string $type, Types $types): TypeInterface
+        $type2 = new class implements Type {
+            public static function fromString(string $type, Types $types): Type
             {
                 if ($type !== 'type2') {
-                    throw new InvalidArgumentException;
+                    throw new DomainException;
                 }
 
                 return new self;
@@ -96,7 +96,7 @@ class TypesTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\UnknownTypeException
+     * @expectedException Innmind\Rest\Client\Exception\UnknownType
      */
     public function testThrowWhenBuildingUnknownType()
     {

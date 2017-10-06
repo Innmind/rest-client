@@ -8,8 +8,8 @@ use Innmind\Rest\Client\{
     Definition\Identity,
     Definition\Property,
     Link,
-    Link\ParameterInterface,
-    IdentityInterface
+    Link\Parameter,
+    Identity as IdentityInterface
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\Map;
@@ -40,7 +40,7 @@ class HttpResourceTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenEmptyName()
     {
@@ -56,7 +56,8 @@ class HttpResourceTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 4 must be of type MapInterface<string, Innmind\Rest\Client\Definition\Property>
      */
     public function testThrowWhenInvalidPropertyMap()
     {
@@ -72,7 +73,8 @@ class HttpResourceTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 5 must be of type MapInterface<scalar, variable>
      */
     public function testThrowWhenInvalidMetaMap()
     {
@@ -88,7 +90,8 @@ class HttpResourceTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException TypeError
+     * @expectedExceptionMessage Argument 6 must be of type MapInterface<string, string>
      */
     public function testThrowWhenInvalidLinkMap()
     {
@@ -97,7 +100,7 @@ class HttpResourceTest extends TestCase
             $this->createMock(UrlInterface::class),
             new Identity('uuid'),
             new Map('string', Property::class),
-            new Map('string', 'scalar'),
+            new Map('scalar', 'variable'),
             new Map('string', 'scalar'),
             true
         );
@@ -120,13 +123,13 @@ class HttpResourceTest extends TestCase
             'foo',
             $this->createMock(IdentityInterface::class),
             'baz',
-            new Map('string', ParameterInterface::class)
+            new Map('string', Parameter::class)
         );
         $allowed = new Link(
             'res',
             $this->createMock(IdentityInterface::class),
             'rel',
-            new Map('string', ParameterInterface::class)
+            new Map('string', Parameter::class)
         );
 
         $this->assertFalse($resource->allowsLink($notAllowed));

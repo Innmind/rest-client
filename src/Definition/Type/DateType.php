@@ -5,14 +5,14 @@ namespace Innmind\Rest\Client\Definition\Type;
 
 use Innmind\Rest\Client\{
     Definition\Types,
-    Definition\TypeInterface,
-    Exception\InvalidArgumentException,
+    Definition\Type,
+    Exception\DomainException,
     Exception\NormalizationException,
     Exception\DenormalizationException
 };
 use Innmind\Immutable\Str;
 
-final class DateType implements TypeInterface
+final class DateType implements Type
 {
     const PATTERN = '~date<(?<format>.+)>~';
 
@@ -21,18 +21,18 @@ final class DateType implements TypeInterface
     public function __construct(string $format)
     {
         if (empty($format)) {
-            throw new InvalidArgumentException;
+            throw new DomainException;
         }
 
         $this->format = $format;
     }
 
-    public static function fromString(string $type, Types $types): TypeInterface
+    public static function fromString(string $type, Types $types): Type
     {
         $type = new Str($type);
 
         if (!$type->matches(self::PATTERN)) {
-            throw new InvalidArgumentException;
+            throw new DomainException;
         }
 
         return new self(

@@ -5,17 +5,16 @@ namespace Tests\Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\{
     Server\ServerFactory,
-    Server\FactoryInterface,
+    Server\Factory,
     Server\Server,
-    Server\Capabilities\FactoryInterface as CapabilitiesFactoryInterface,
-    ServerInterface,
-    Translator\SpecificationTranslatorInterface,
+    Server\Capabilities\Factory as CapabilitiesFactoryInterface,
+    Translator\SpecificationTranslator,
     Formats,
     Format\Format,
     Format\MediaType
 };
 use Innmind\Url\UrlInterface;
-use Innmind\HttpTransport\TransportInterface;
+use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Immutable\{
     Map,
@@ -32,10 +31,10 @@ class ServerFactoryTest extends TestCase
     public function setUp()
     {
         $this->factory = new ServerFactory(
-            $this->createMock(TransportInterface::class),
+            $this->createMock(Transport::class),
             $this->createMock(ResolverInterface::class),
             $this->createMock(Serializer::class),
-            $this->createMock(SpecificationTranslatorInterface::class),
+            $this->createMock(SpecificationTranslator::class),
             new Formats(
                 (new Map('string', Format::class))
                     ->put(
@@ -56,7 +55,7 @@ class ServerFactoryTest extends TestCase
     public function testInterface()
     {
         $this->assertInstanceOf(
-            FactoryInterface::class,
+            Factory::class,
             $this->factory
         );
     }

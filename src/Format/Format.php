@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Format;
 
-use Innmind\Rest\Client\Exception\InvalidArgumentException;
+use Innmind\Rest\Client\Exception\DomainException;
 use Innmind\Immutable\SetInterface;
 
 final class Format
@@ -15,11 +15,15 @@ final class Format
 
     public function __construct(string $name, SetInterface $types, int $priority)
     {
-        if (
-            (string) $types->type() !== MediaType::class ||
-            $types->size() === 0
-        ) {
-            throw new InvalidArgumentException;
+        if ((string) $types->type() !== MediaType::class) {
+            throw new \TypeError(sprintf(
+                'Argument 2 must be of type SetInterface<%s>',
+                MediaType::class
+            ));
+        }
+
+        if ($types->size() === 0) {
+            throw new DomainException;
         }
 
         $this->name = $name;

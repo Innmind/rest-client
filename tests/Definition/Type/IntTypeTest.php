@@ -6,7 +6,7 @@ namespace Tests\Innmind\Rest\Client\Definition\Type;
 use Innmind\Rest\Client\Definition\{
     Type\IntType,
     Types,
-    TypeInterface
+    Type
 };
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +14,7 @@ class IntTypeTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(TypeInterface::class, new IntType);
+        $this->assertInstanceOf(Type::class, new IntType);
     }
 
     public function testFromString()
@@ -28,7 +28,7 @@ class IntTypeTest extends TestCase
     }
 
     /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
+     * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenBuildInvalidType()
     {

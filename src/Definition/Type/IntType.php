@@ -5,18 +5,18 @@ namespace Innmind\Rest\Client\Definition\Type;
 
 use Innmind\Rest\Client\{
     Definition\Types,
-    Definition\TypeInterface,
-    Exception\InvalidArgumentException,
+    Definition\Type,
+    Exception\DomainException,
     Exception\NormalizationException,
     Exception\DenormalizationException
 };
 
-final class IntType implements TypeInterface
+final class IntType implements Type
 {
-    public static function fromString(string $type, Types $types): TypeInterface
+    public static function fromString(string $type, Types $types): Type
     {
         if ($type !== 'int') {
-            throw new InvalidArgumentException;
+            throw new DomainException;
         }
 
         return new self;

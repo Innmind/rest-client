@@ -5,8 +5,8 @@ namespace Innmind\Rest\Client\Definition\Type;
 
 use Innmind\Rest\Client\{
     Definition\Types,
-    Definition\TypeInterface,
-    Exception\InvalidArgumentException,
+    Definition\Type,
+    Exception\DomainException,
     Exception\NormalizationException,
     Exception\DenormalizationException
 };
@@ -16,7 +16,7 @@ use Innmind\Immutable\{
     MapInterface
 };
 
-final class MapType implements TypeInterface
+final class MapType implements Type
 {
     const PATTERN = '~map<(?<key>.+), ?(?<value>.+)>~';
 
@@ -24,7 +24,7 @@ final class MapType implements TypeInterface
     private $value;
     private $denormalized;
 
-    public function __construct(TypeInterface $key, TypeInterface $value)
+    public function __construct(Type $key, Type $value)
     {
         $this->key = $key;
         $this->value = $value;
@@ -36,12 +36,12 @@ final class MapType implements TypeInterface
         );
     }
 
-    public static function fromString(string $type, Types $types): TypeInterface
+    public static function fromString(string $type, Types $types): Type
     {
         $type = new Str($type);
 
         if (!$type->matches(self::PATTERN)) {
-            throw new InvalidArgumentException;
+            throw new DomainException;
         }
 
         $matches = $type->capture(self::PATTERN);

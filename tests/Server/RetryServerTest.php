@@ -5,9 +5,9 @@ namespace Tests\Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\{
     Server\RetryServer,
-    Server\CapabilitiesInterface,
-    ServerInterface,
-    IdentityInterface,
+    Server\Capabilities,
+    Server,
+    Identity,
     HttpResource,
     HttpResource\Property,
     Request\Range,
@@ -15,11 +15,11 @@ use Innmind\Rest\Client\{
     Exception\NormalizationException,
     Exception\DenormalizationException
 };
-use Innmind\HttpTransport\Exception\ClientErrorException;
+use Innmind\HttpTransport\Exception\ClientError;
 use Innmind\Http\Message\{
-    RequestInterface,
-    ResponseInterface,
-    StatusCode
+    Request,
+    Response,
+    StatusCode\StatusCode
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Specification\SpecificationInterface;
@@ -38,14 +38,14 @@ class RetryServerTest extends TestCase
     public function setUp()
     {
         $this->server = new RetryServer(
-            $this->inner = $this->createMock(ServerInterface::class)
+            $this->inner = $this->createMock(Server::class)
         );
     }
 
     public function testInterface()
     {
         $this->assertInstanceOf(
-            ServerInterface::class,
+            Server::class,
             $this->server
         );
     }
@@ -86,7 +86,7 @@ class RetryServerTest extends TestCase
             ->expects($this->at(1))
             ->method('capabilities')
             ->willReturn(
-                $capabilities = $this->createMock(CapabilitiesInterface::class)
+                $capabilities = $this->createMock(Capabilities::class)
             );
         $capabilities
             ->expects($this->once())
@@ -128,7 +128,7 @@ class RetryServerTest extends TestCase
 
     public function testRead()
     {
-        $identity = $this->createMock(IdentityInterface::class);
+        $identity = $this->createMock(Identity::class);
         $this
             ->inner
             ->expects($this->once())
@@ -151,7 +151,7 @@ class RetryServerTest extends TestCase
      */
     public function testRetryRead(\Throwable $e)
     {
-        $identity = $this->createMock(IdentityInterface::class);
+        $identity = $this->createMock(Identity::class);
         $this
             ->inner
             ->expects($this->at(0))
@@ -165,7 +165,7 @@ class RetryServerTest extends TestCase
             ->expects($this->at(1))
             ->method('capabilities')
             ->willReturn(
-                $capabilities = $this->createMock(CapabilitiesInterface::class)
+                $capabilities = $this->createMock(Capabilities::class)
             );
         $capabilities
             ->expects($this->once())
@@ -192,7 +192,7 @@ class RetryServerTest extends TestCase
      */
     public function testDoesntRetryRead()
     {
-        $identity = $this->createMock(IdentityInterface::class);
+        $identity = $this->createMock(Identity::class);
         $this
             ->inner
             ->expects($this->once())
@@ -221,7 +221,7 @@ class RetryServerTest extends TestCase
             ->method('create')
             ->with($resource)
             ->willReturn(
-                $expected = $this->createMock(IdentityInterface::class)
+                $expected = $this->createMock(Identity::class)
             );
 
         $identity = $this->server->create($resource);
@@ -251,7 +251,7 @@ class RetryServerTest extends TestCase
             ->expects($this->at(1))
             ->method('capabilities')
             ->willReturn(
-                $capabilities = $this->createMock(CapabilitiesInterface::class)
+                $capabilities = $this->createMock(Capabilities::class)
             );
         $capabilities
             ->expects($this->once())
@@ -262,7 +262,7 @@ class RetryServerTest extends TestCase
             ->method('create')
             ->with($resource)
             ->willReturn(
-                $expected = $this->createMock(IdentityInterface::class)
+                $expected = $this->createMock(Identity::class)
             );
 
         $identity = $this->server->create($resource);
@@ -297,7 +297,7 @@ class RetryServerTest extends TestCase
 
     public function testUpdate()
     {
-        $identity = $this->createMock(IdentityInterface::class);
+        $identity = $this->createMock(Identity::class);
         $resource = new HttpResource(
             'foo',
             new Map('string', Property::class)
@@ -319,7 +319,7 @@ class RetryServerTest extends TestCase
      */
     public function testRetryUpdate(\Throwable $e)
     {
-        $identity = $this->createMock(IdentityInterface::class);
+        $identity = $this->createMock(Identity::class);
         $resource = new HttpResource(
             'foo',
             new Map('string', Property::class)
@@ -337,7 +337,7 @@ class RetryServerTest extends TestCase
             ->expects($this->at(1))
             ->method('capabilities')
             ->willReturn(
-                $capabilities = $this->createMock(CapabilitiesInterface::class)
+                $capabilities = $this->createMock(Capabilities::class)
             );
         $capabilities
             ->expects($this->once())
@@ -359,7 +359,7 @@ class RetryServerTest extends TestCase
      */
     public function testDoesntRetryUpdate()
     {
-        $identity = $this->createMock(IdentityInterface::class);
+        $identity = $this->createMock(Identity::class);
         $resource = new HttpResource(
             'foo',
             new Map('string', Property::class)
@@ -382,7 +382,7 @@ class RetryServerTest extends TestCase
 
     public function testRemove()
     {
-        $identity = $this->createMock(IdentityInterface::class);
+        $identity = $this->createMock(Identity::class);
         $this
             ->inner
             ->expects($this->once())
@@ -400,7 +400,7 @@ class RetryServerTest extends TestCase
      */
     public function testRetryRemove(\Throwable $e)
     {
-        $identity = $this->createMock(IdentityInterface::class);
+        $identity = $this->createMock(Identity::class);
         $this
             ->inner
             ->expects($this->at(0))
@@ -414,7 +414,7 @@ class RetryServerTest extends TestCase
             ->expects($this->at(1))
             ->method('capabilities')
             ->willReturn(
-                $capabilities = $this->createMock(CapabilitiesInterface::class)
+                $capabilities = $this->createMock(Capabilities::class)
             );
         $capabilities
             ->expects($this->once())
@@ -436,7 +436,7 @@ class RetryServerTest extends TestCase
      */
     public function testDoesntRetryRemove()
     {
-        $identity = $this->createMock(IdentityInterface::class);
+        $identity = $this->createMock(Identity::class);
         $this
             ->inner
             ->expects($this->once())
@@ -460,7 +460,7 @@ class RetryServerTest extends TestCase
             ->expects($this->once())
             ->method('capabilities')
             ->willReturn(
-                $expected = $this->createMock(CapabilitiesInterface::class)
+                $expected = $this->createMock(Capabilities::class)
             );
 
         $this->assertSame(
@@ -487,7 +487,7 @@ class RetryServerTest extends TestCase
 
     public function testLink()
     {
-        $identity = $this->createMock(IdentityInterface::class);
+        $identity = $this->createMock(Identity::class);
         $links = new Set(Link::class);
         $this
             ->inner
@@ -506,7 +506,7 @@ class RetryServerTest extends TestCase
      */
     public function testRetryLink(\Throwable $e)
     {
-        $identity = $this->createMock(IdentityInterface::class);
+        $identity = $this->createMock(Identity::class);
         $links = new Set(Link::class);
         $this
             ->inner
@@ -519,7 +519,7 @@ class RetryServerTest extends TestCase
             ->expects($this->at(1))
             ->method('capabilities')
             ->willReturn(
-                $capabilities = $this->createMock(CapabilitiesInterface::class)
+                $capabilities = $this->createMock(Capabilities::class)
             );
         $capabilities
             ->expects($this->once())
@@ -541,7 +541,7 @@ class RetryServerTest extends TestCase
      */
     public function testDoesntRetryLink()
     {
-        $identity = $this->createMock(IdentityInterface::class);
+        $identity = $this->createMock(Identity::class);
         $links = new Set(Link::class);
         $this
             ->inner
@@ -559,7 +559,7 @@ class RetryServerTest extends TestCase
 
     public function testUnlink()
     {
-        $identity = $this->createMock(IdentityInterface::class);
+        $identity = $this->createMock(Identity::class);
         $links = new Set(Link::class);
         $this
             ->inner
@@ -578,7 +578,7 @@ class RetryServerTest extends TestCase
      */
     public function testRetryUnlink(\Throwable $e)
     {
-        $identity = $this->createMock(IdentityInterface::class);
+        $identity = $this->createMock(Identity::class);
         $links = new Set(Link::class);
         $this
             ->inner
@@ -591,7 +591,7 @@ class RetryServerTest extends TestCase
             ->expects($this->at(1))
             ->method('capabilities')
             ->willReturn(
-                $capabilities = $this->createMock(CapabilitiesInterface::class)
+                $capabilities = $this->createMock(Capabilities::class)
             );
         $capabilities
             ->expects($this->once())
@@ -613,7 +613,7 @@ class RetryServerTest extends TestCase
      */
     public function testDoesntRetryUnlink()
     {
-        $identity = $this->createMock(IdentityInterface::class);
+        $identity = $this->createMock(Identity::class);
         $links = new Set(Link::class);
         $this
             ->inner
@@ -638,11 +638,11 @@ class RetryServerTest extends TestCase
         ];
     }
 
-    private function createException(): ClientErrorException
+    private function createException(): ClientError
     {
-        $exception = new ClientErrorException(
-            $this->createMock(RequestInterface::class),
-            $response = $this->createMock(ResponseInterface::class)
+        $exception = new ClientError(
+            $this->createMock(Request::class),
+            $response = $this->createMock(Response::class)
         );
         $response
             ->expects($this->once())
