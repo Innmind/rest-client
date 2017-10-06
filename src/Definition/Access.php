@@ -3,7 +3,11 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Definition;
 
-use Innmind\Immutable\SetInterface;
+use Innmind\Immutable\{
+    SetInterface,
+    Set,
+    Sequence
+};
 
 final class Access
 {
@@ -13,13 +17,14 @@ final class Access
 
     private $mask;
 
-    public function __construct(SetInterface $mask)
+    public function __construct(string ...$mask)
     {
-        if ((string) $mask->type() !== 'string') {
-            throw new \TypeError('Argument 1 must be of type SetInterface<string>');
-        }
-
-        $this->mask = $mask;
+        $this->mask = (new Sequence(...$mask))->reduce(
+            new Set('string'),
+            static function (Set $carry, string $element): Set {
+                return $carry->add($element);
+            }
+        );
     }
 
     public function isReadable(): bool

@@ -175,9 +175,7 @@ final class Server implements ServerInterface
             [
                 'definition' => $definition,
                 'response' => $response,
-                'access' => new Access(
-                    (new Set('string'))->add(Access::READ)
-                ),
+                'access' => new Access(Access::READ),
             ]
         );
     }
@@ -212,9 +210,7 @@ final class Server implements ServerInterface
                         'json',
                         [
                             'definition' => $definition,
-                            'access' => new Access(
-                                (new Set('string'))->add(Access::CREATE)
-                            ),
+                            'access' => new Access(Access::CREATE),
                         ]
                     )
                 )
@@ -264,9 +260,7 @@ final class Server implements ServerInterface
                         'json',
                         [
                             'definition' => $definition,
-                            'access' => new Access(
-                                (new Set('string'))->add(Access::UPDATE)
-                            ),
+                            'access' => new Access(Access::UPDATE),
                         ]
                     )
                 )

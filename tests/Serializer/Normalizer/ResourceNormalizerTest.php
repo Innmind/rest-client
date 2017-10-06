@@ -133,9 +133,7 @@ class ResourceNormalizerTest extends TestCase
             null,
             [
                 'definition' => $this->definition,
-                'access' => new Access(
-                    (new Set('string'))->add('READ')
-                ),
+                'access' => new Access('READ'),
             ]
         );
     }
@@ -151,9 +149,7 @@ class ResourceNormalizerTest extends TestCase
             null,
             [
                 'definition' => $this->definition,
-                'access' => new Access(
-                    (new Set('string'))->add('READ')
-                ),
+                'access' => new Access('READ'),
             ]
         );
     }
@@ -168,9 +164,7 @@ class ResourceNormalizerTest extends TestCase
             Unknown::class,
             null,
             [
-                'access' => new Access(
-                    (new Set('string'))->add('READ')
-                ),
+                'access' => new Access('READ'),
             ]
         );
     }
@@ -186,9 +180,7 @@ class ResourceNormalizerTest extends TestCase
             null,
             [
                 'definition' => [],
-                'access' => new Access(
-                    (new Set('string'))->add('READ')
-                ),
+                'access' => new Access('READ'),
             ]
         );
     }
@@ -238,9 +230,7 @@ class ResourceNormalizerTest extends TestCase
             null,
             [
                 'definition' => $this->definition,
-                'access' => new Access(
-                    (new Set('string'))->add('READ')
-                ),
+                'access' => new Access('READ'),
             ]
         );
 
@@ -269,9 +259,7 @@ class ResourceNormalizerTest extends TestCase
             null,
             [
                 'definition' => $this->definition,
-                'access' => new Access(
-                    (new Set('string'))->add('READ')
-                ),
+                'access' => new Access('READ'),
             ]
         );
 
@@ -298,9 +286,7 @@ class ResourceNormalizerTest extends TestCase
             null,
             [
                 'definition' => $this->definition,
-                'access' => new Access(
-                    (new Set('string'))->add('READ')
-                ),
+                'access' => new Access('READ'),
             ]
         );
     }
@@ -332,9 +318,7 @@ class ResourceNormalizerTest extends TestCase
             null,
             [
                 'definition' => $this->definition,
-                'access' => new Access(
-                    (new Set('string'))->add('CREATE')
-                )
+                'access' => new Access('CREATE'),
             ]
         );
     }
@@ -351,9 +335,7 @@ class ResourceNormalizerTest extends TestCase
             ),
             null,
             [
-                'access' => new Access(
-                    (new Set('string'))->add('CREATE')
-                )
+                'access' => new Access('CREATE'),
             ]
         );
     }
@@ -371,9 +353,7 @@ class ResourceNormalizerTest extends TestCase
             null,
             [
                 'definition' => [],
-                'access' => new Access(
-                    (new Set('string'))->add('CREATE')
-                )
+                'access' => new Access('CREATE'),
             ]
         );
     }
@@ -437,9 +417,7 @@ class ResourceNormalizerTest extends TestCase
             null,
             [
                 'definition' => $this->definition,
-                'access' => new Access(
-                    (new Set('string'))->add('CREATE')
-                )
+                'access' => new Access('CREATE'),
             ]
         );
 
@@ -478,9 +456,7 @@ class ResourceNormalizerTest extends TestCase
             null,
             [
                 'definition' => $this->definition,
-                'access' => new Access(
-                    (new Set('string'))->add('CREATE')
-                )
+                'access' => new Access('CREATE'),
             ]
         );
 
@@ -512,9 +488,7 @@ class ResourceNormalizerTest extends TestCase
             null,
             [
                 'definition' => $this->definition,
-                'access' => new Access(
-                    (new Set('string'))->add('CREATE')
-                )
+                'access' => new Access('CREATE'),
             ]
         );
 
@@ -538,9 +512,7 @@ class ResourceNormalizerTest extends TestCase
             null,
             [
                 'definition' => $this->definition,
-                'access' => new Access(
-                    (new Set('string'))->add('CREATE')
-                )
+                'access' => new Access('CREATE'),
             ]
         );
     }

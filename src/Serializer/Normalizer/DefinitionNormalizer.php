@@ -120,12 +120,7 @@ final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInt
 
     private function buildProperty(string $name, array $definition): Property
     {
-        $mask = new Set('string');
         $variants = new Set('string');
-
-        foreach ($definition['access'] as $access) {
-            $mask = $mask->add($access);
-        }
 
         foreach ($definition['variants'] as $variant) {
             $variants = $variants->add($variant);
@@ -134,7 +129,7 @@ final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInt
         return new Property(
             $name,
             $this->types->build($definition['type']),
-            new Access($mask),
+            new Access(...$definition['access']),
             $variants,
             $definition['optional']
         );

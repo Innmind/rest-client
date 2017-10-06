@@ -21,7 +21,7 @@ class PropertyTest extends TestCase
         new Property(
             '',
             $this->createMock(Type::class),
-            new Access(new Set('string')),
+            new Access,
             new Set('string'),
             true
         );
@@ -36,7 +36,7 @@ class PropertyTest extends TestCase
         new Property(
             'foo',
             $this->createMock(Type::class),
-            new Access(new Set('string')),
+            new Access,
             new Set('int'),
             true
         );
@@ -47,7 +47,7 @@ class PropertyTest extends TestCase
         $property = new Property(
             'foo',
             $type = $this->createMock(Type::class),
-            $access = new Access(new Set('string')),
+            $access = new Access,
             $variants = new Set('string'),
             true
         );
@@ -64,7 +64,7 @@ class PropertyTest extends TestCase
         $property = new Property(
             'foo',
             $this->createMock(Type::class),
-            new Access(new Set('string')),
+            new Access,
             new Set('string'),
             false
         );
