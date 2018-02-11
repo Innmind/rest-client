@@ -6,7 +6,7 @@ namespace Innmind\Rest\Client\Server\Capabilities;
 use Innmind\Rest\Client\Server\Capabilities as CapabilitiesInterface;
 use Innmind\Url\UrlInterface;
 use Innmind\Filesystem\Adapter;
-use SYmfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 final class CacheFactory implements Factory
 {
