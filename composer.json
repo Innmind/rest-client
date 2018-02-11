@@ -24,7 +24,8 @@
         "innmind/filesystem": "~3.0",
         "innmind/url-resolver": "~3.0",
         "innmind/http-transport": "~3.0",
-        "willdurand/negotiation": "^2.2"
+        "willdurand/negotiation": "^2.2",
+        "innmind/compose": "^1.0"
     },
     "autoload": {
         "psr-4": {
