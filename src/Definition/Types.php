@@ -24,15 +24,30 @@ final class Types
     private static $defaults;
     private $types = [];
 
-    public function register(string $class): self
+    public function __construct(string ...$types)
     {
-        $refl = new \ReflectionClass($class);
-
-        if (!$refl->implementsInterface(Type::class)) {
-            throw new DomainException;
+        if (empty($types)) {
+            $types = self::defaults()->toPrimitive();
         }
 
-        $this->types[] = $class;
+        foreach ($types as $type) {
+            $refl = new \ReflectionClass($type);
+
+            if (!$refl->implementsInterface(Type::class)) {
+                throw new DomainException;
+            }
+        }
+
+        $this->types = $types;
+    }
+
+    public function register(string $class): self
+    {
+        @trigger_error('Register types via the constructor', E_USER_DEPRECATED);
+
+        $types = $this->types;
+        $types[] = $class;
+        $this->types = (new self(...$types))->types;
 
         return $this;
     }
