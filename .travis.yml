@@ -5,9 +5,8 @@ php:
 matrix:
   allow_failures:
   - php: nightly
-  - php: 7.2
-before_script: composer install --prefer-source
-script: phpunit --coverage-clover=coverage.clover
+before_script: composer install
+script: vendor/bin/phpunit --coverage-clover=coverage.clover
 after_script:
     - if [ "$TRAVIS_PHP_VERSION" != "nightly" ]; then wget https://scrutinizer-ci.com/ocular.phar; fi
     - if [ "$TRAVIS_PHP_VERSION" != "nightly" ]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi

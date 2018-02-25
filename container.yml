@@ -1,7 +1,6 @@
 arguments:
     transport: Innmind\HttpTransport\Transport
     urlResolver: Innmind\UrlResolver\ResolverInterface
-    serializer: Symfony\Component\Serializer\Serializer
     cache: Innmind\Filesystem\Adapter
     types: '?set<string>'
     contentTypes: Innmind\Rest\Client\Formats ?? $formats.contentTypes
@@ -50,8 +49,17 @@ services:
             - '...$types'
 
     normalizer:
+        capabilitiesNames Innmind\Rest\Client\Serializer\Normalizer\CapabilitiesNamesNormalizer: []
         definition Innmind\Rest\Client\Serializer\Normalizer\DefinitionNormalizer:
             - '$definition.types'
+        identities Innmind\Rest\Client\Serializer\Normalizer\IdentitiesNormalizer:
+            - $resolveIdentity
+        identity Innmind\Rest\Client\Serializer\Normalizer\IdentityNormalizer:
+            - $resolveIdentity
+        resource Innmind\Rest\Client\Serializer\Normalizer\ResourceNormalizer: []
+
+    resolveIdentity Innmind\Rest\Client\Visitor\ResolveIdentity:
+        - $urlResolver
 
     translator:
         specification Innmind\Rest\Client\Translator\Specification\SpecificationTranslator: []
@@ -76,3 +84,10 @@ services:
                 application Innmind\Rest\Client\Format\MediaType:
                     - 'application/json'
                     - 0
+
+    serializer Innmind\Rest\Client\Serializer::build:
+        - '$normalizer.capabilitiesNames'
+        - '$normalizer.definition'
+        - '$normalizer.identities'
+        - '$normalizer.identity'
+        - '$normalizer.resource'
