@@ -13,7 +13,6 @@ use Innmind\Immutable\Map;
 use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Filesystem\Adapter;
-use Symfony\Component\Serializer\Serializer;
 use PHPUnit\Framework\TestCase;
 
 class ContainerTest extends TestCase
@@ -25,7 +24,6 @@ class ContainerTest extends TestCase
             (new Map('string', 'mixed'))
                 ->put('transport', $this->createMock(Transport::class))
                 ->put('urlResolver', $this->createMock(ResolverInterface::class))
-                ->put('serializer', new Serializer)
                 ->put('cache', $this->createMock(Adapter::class))
         );
 
