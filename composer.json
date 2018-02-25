@@ -20,7 +20,7 @@
         "innmind/specification": "^1.0",
         "guzzlehttp/guzzle": "^6.2",
         "innmind/http": "~3.0",
-        "symfony/serializer": "~3.0",
+        "symfony/serializer": "~3.0|~4.0",
         "innmind/filesystem": "~3.0",
         "innmind/url-resolver": "~3.0",
         "innmind/http-transport": "~3.0",
