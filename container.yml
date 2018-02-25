@@ -50,8 +50,17 @@ services:
             - '...$types'
 
     normalizer:
+        capabilitiesNames Innmind\Rest\Client\Serializer\Normalizer\CapabilitiesNamesNormalizer: []
         definition Innmind\Rest\Client\Serializer\Normalizer\DefinitionNormalizer:
             - '$definition.types'
+        identities Innmind\Rest\Client\Serializer\Normalizer\IdentitiesNormalizer:
+            - $resolveIdentity
+        identity Innmind\Rest\Client\Serializer\Normalizer\IdentityNormalizer:
+            - $resolveIdentity
+        resource Innmind\Rest\Client\Serializer\Normalizer\ResourceNormalizer: []
+
+    resolveIdentity Innmind\Rest\Client\Visitor\ResolveIdentity:
+        - $urlResolver
 
     translator:
         specification Innmind\Rest\Client\Translator\Specification\SpecificationTranslator: []
