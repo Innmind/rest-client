@@ -18,28 +18,15 @@ composer require innmind/rest-client
 ## Usage
 
 ```php
-use Innmind\Compose\{
-    ContainerBuilder\ContainerBuilder,
-    Loader\Yaml
-};
-use Innmind\Url\Path;
-use Innmind\Immutable\Map;
-use Innmind\HttpTransport\Transport;
-use Innmind\UrlResolver\ResolverInterface;
-use Innmind\Filesystem\Adapter;
-use Symfony\Component\Serializer\Serializer;
+use function Innmind\Rest\Client\bootstrap;
 
-$container = (new ContainerBuilder(new Yaml))(
-    new Path('container.yml'),
-    (new Map('string', 'mixed'))
-        ->put('transport', /* instance of Transport */))
-        ->put('urlResolver', /* instance of ResolverInterface */))
-        ->put('serializer', /* instance of Serializer */)
-        ->put('cache', /* instance of Adapter */))
+$client = bootstrap(
+    /* instance of Innmind\HttpTransport\Transport */,
+    /* instance of Innmind\UrlResolver\ResolverInterface */,
+    /* instance of Innmind\Filesystem\Adapter */
 );
 
-$container
-    ->get('client')
+$client
     ->server('http://example.com/')
     ->capabilities()
     ->names();
