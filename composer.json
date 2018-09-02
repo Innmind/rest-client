@@ -24,13 +24,13 @@
         "innmind/filesystem": "~3.0",
         "innmind/url-resolver": "~3.0",
         "innmind/http-transport": "~3.0",
-        "willdurand/negotiation": "^2.2",
-        "innmind/compose": "^1.0"
+        "willdurand/negotiation": "^2.2"
     },
     "autoload": {
         "psr-4": {
             "Innmind\\Rest\\Client\\": "src/"
-        }
+        },
+        "files": ["src/bootstrap.php"]
     },
     "autoload-dev": {
         "psr-4": {
@@ -41,6 +41,7 @@
         "test": "vendor/bin/phpunit --colors=always"
     },
     "require-dev": {
-        "phpunit/phpunit": "~6.0"
+        "phpunit/phpunit": "~6.0",
+        "innmind/compose": "^1.0"
     }
 }
