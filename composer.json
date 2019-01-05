@@ -41,7 +41,6 @@
         "test": "vendor/bin/phpunit --colors=always"
     },
     "require-dev": {
-        "phpunit/phpunit": "~6.0",
-        "innmind/compose": "^1.0"
+        "phpunit/phpunit": "~6.0"
     }
 }
