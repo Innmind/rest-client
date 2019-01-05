@@ -268,7 +268,7 @@ class ServerTest extends TestCase
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 1 &&
                     $request->headers()->has('range') &&
-                    (string) $request->headers()->get('range') === 'Range : resource=10-20' &&
+                    (string) $request->headers()->get('range') === 'Range: resource=10-20' &&
                     (string) $request->body() === '';
             }))
             ->willReturn(
@@ -393,7 +393,7 @@ class ServerTest extends TestCase
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 1 &&
                     $request->headers()->has('range') &&
-                    (string) $request->headers()->get('range') === 'Range : resource=10-20' &&
+                    (string) $request->headers()->get('range') === 'Range: resource=10-20' &&
                     (string) $request->body() === '';
             }))
             ->willReturn(
@@ -521,7 +521,7 @@ class ServerTest extends TestCase
                 return (string) $request->url() === 'http://example.com/foo/bar' &&
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 1 &&
-                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
+                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml' &&
                     (string) $request->body() === '';
             }))
             ->willReturn(
@@ -582,8 +582,8 @@ class ServerTest extends TestCase
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'POST' &&
                     $request->headers()->count() === 2 &&
-                    (string) $request->headers()->get('Content-Type') === 'Content-Type : application/json' &&
-                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
+                    (string) $request->headers()->get('Content-Type') === 'Content-Type: application/json' &&
+                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml' &&
                     (string) $request->body() === '{"resource":{"url":"foobar"}}';
             }))
             ->willReturn(
@@ -641,8 +641,8 @@ class ServerTest extends TestCase
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'PUT' &&
                     $request->headers()->count() === 2 &&
-                    (string) $request->headers()->get('Content-Type') === 'Content-Type : application/json' &&
-                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
+                    (string) $request->headers()->get('Content-Type') === 'Content-Type: application/json' &&
+                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml' &&
                     (string) $request->body() === '{"resource":{"url":"foobar"}}';
             }))
             ->willReturn(
@@ -773,8 +773,8 @@ class ServerTest extends TestCase
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'LINK' &&
-                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
-                    (string) $request->headers()->get('Link') === 'Link : </foo/cano>; rel="canonical";attr=val' &&
+                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml' &&
+                    (string) $request->headers()->get('Link') === 'Link: </foo/cano>; rel="canonical";attr=val' &&
                     (string) $request->body() === '';
             }));
 
@@ -871,8 +871,8 @@ class ServerTest extends TestCase
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'UNLINK' &&
-                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
-                    (string) $request->headers()->get('Link') === 'Link : </foo/cano>; rel="canonical";attr=val' &&
+                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml' &&
+                    (string) $request->headers()->get('Link') === 'Link: </foo/cano>; rel="canonical";attr=val' &&
                     (string) $request->body() === '';
             }));
 

@@ -205,7 +205,7 @@ class CapabilitiesTest extends TestCase
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'OPTIONS' &&
                     $request->headers()->has('Accept') &&
-                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml';
+                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
