@@ -3,11 +3,12 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\Server\Capabilities;
 
-use Innmind\Rest\Client\Server\{
-    Capabilities\CacheFactory,
-    Capabilities\Factory,
-    Capabilities,
-    Capabilities\CacheCapabilities,
+use Innmind\Rest\Client\{
+    Server\Capabilities\CacheFactory,
+    Server\Capabilities\Factory,
+    Server\Capabilities,
+    Server\Capabilities\CacheCapabilities,
+    Serializer\Decode,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Filesystem\Adapter;
@@ -23,6 +24,7 @@ class CacheFactoryTest extends TestCase
     {
         $this->make = new CacheFactory(
             $this->createMock(Adapter::class),
+            $this->createMock(Decode::class),
             $this->createMock(SerializerInterface::class),
             $this->inner = $this->createMock(Factory::class)
         );

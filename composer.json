@@ -23,7 +23,8 @@
         "innmind/filesystem": "~3.0",
         "innmind/url-resolver": "~3.0",
         "innmind/http-transport": "~4.0",
-        "willdurand/negotiation": "^2.2"
+        "willdurand/negotiation": "^2.2",
+        "innmind/json": "^1.1"
     },
     "autoload": {
         "psr-4": {

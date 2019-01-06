@@ -10,6 +10,7 @@ use Innmind\Rest\Client\{
     Definition\HttpResource,
     Serializer\Normalizer\DefinitionNormalizer,
     Serializer\Normalizer\CapabilitiesNamesNormalizer,
+    Serializer\Decode,
 };
 use Innmind\Filesystem\{
     Adapter\MemoryAdapter,
@@ -49,6 +50,7 @@ class CacheCapabilitiesTest extends TestCase
         $this->capabilities = new CacheCapabilities(
             $this->inner = $this->createMock(Capabilities::class),
             $this->filesystem = new MemoryAdapter,
+            new Decode\Json,
             $this->serializer = new Serializer(
                 [
                     new DefinitionNormalizer($types),

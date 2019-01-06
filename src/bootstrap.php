@@ -13,6 +13,7 @@ use Innmind\Rest\Client\{
     Server\Capabilities\Factory\Factory,
     Server\DefinitionFactory,
     Serializer\Normalizer,
+    Serializer\Decode,
     Definition\Types,
     Visitor\ResolveIdentity,
     Translator\Specification\SpecificationTranslator,
@@ -51,6 +52,8 @@ function bootstrap(
         new Normalizer\ResourceNormalizer
     );
 
+    $decode = new Decode\Json;
+
     return new Client\Client(
         new RetryServerFactory(
             new ServerFactory(
@@ -62,6 +65,7 @@ function bootstrap(
                 new RefreshLimitedFactory(
                     new CacheFactory(
                         $cache,
+                        $decode,
                         $serializer,
                         new Factory(
                             $transport,

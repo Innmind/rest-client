@@ -6,6 +6,7 @@ namespace Innmind\Rest\Client\Server\Capabilities;
 use Innmind\Rest\Client\{
     Server\Capabilities as CapabilitiesInterface,
     Definition\HttpResource,
+    Serializer\Decode,
 };
 use Innmind\Filesystem\{
     Adapter,
@@ -27,6 +28,7 @@ final class CacheCapabilities implements CapabilitiesInterface
 {
     private $capabilities;
     private $filesystem;
+    private $decode;
     private $serializer;
     private $directory;
     private $names;
@@ -35,11 +37,13 @@ final class CacheCapabilities implements CapabilitiesInterface
     public function __construct(
         CapabilitiesInterface $capabilities,
         Adapter $filesystem,
+        Decode $decode,
         SerializerInterface $serializer,
         UrlInterface $host
     ) {
         $this->capabilities = $capabilities;
         $this->filesystem = $filesystem;
+        $this->decode = $decode;
         $this->serializer = $serializer;
         $this->directory = \md5((string) $host);
         $this->definitions = new Map('string', HttpResource::class);
@@ -56,10 +60,9 @@ final class CacheCapabilities implements CapabilitiesInterface
 
         try {
             $file = $this->load('.names');
-            return $this->names = $this->serializer->deserialize(
-                (string) $file->content(),
-                'capabilities_names',
-                'json'
+            return $this->names = $this->serializer->denormalize(
+                ($this->decode)($file->content()),
+                'capabilities_names'
             );
         } catch (FileNotFound $e) {
             $this->names = $this->capabilities->names();
@@ -77,10 +80,10 @@ final class CacheCapabilities implements CapabilitiesInterface
 
         try {
             $file = $this->load($name);
-            $definition = $this->serializer->deserialize(
-                (string) $file->content(),
+            $definition = $this->serializer->denormalize(
+                ($this->decode)($file->content()),
                 HttpResource::class,
-                'json',
+                null,
                 ['name' => $name]
             );
             $this->definitions = $this->definitions->put(
