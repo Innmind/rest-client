@@ -51,8 +51,6 @@ function bootstrap(
     $types = new Types(...($types ?? []));
     $resolveIdentity = new ResolveIdentity($urlResolver);
 
-    $serializer = Serializer::build();
-
     $denormalizeDefinition = new DenormalizeDefinition($types);
 
     $decode = new Decode\Json;
