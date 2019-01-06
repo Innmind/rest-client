@@ -5,8 +5,8 @@ namespace Innmind\Rest\Client\Serializer\Normalizer;
 
 use Innmind\Rest\Client\Exception\LogicException;
 use Innmind\Immutable\{
+    SetInterface,
     Set,
-    SetInterface
 };
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 

@@ -9,7 +9,7 @@ use Innmind\Rest\Client\{
     Visitor\ResolveIdentity,
     Definition\HttpResource,
     Definition\Identity,
-    Definition\Property
+    Definition\Property,
 };
 use Innmind\Http\{
     Message\Response,
@@ -17,14 +17,14 @@ use Innmind\Http\{
     Header,
     Header\Value,
     Header\Link,
-    Header\LinkValue
+    Header\LinkValue,
 };
 use Innmind\Url\Url;
 use Innmind\UrlResolver\UrlResolver;
 use Innmind\Immutable\{
     Map,
+    SetInterface,
     Set,
-    SetInterface
 };
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use PHPUnit\Framework\TestCase;

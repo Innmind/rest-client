@@ -8,12 +8,12 @@ use Innmind\Rest\Client\{
     Definition\Type,
     Exception\DomainException,
     Exception\NormalizationException,
-    Exception\DenormalizationException
+    Exception\DenormalizationException,
 };
 use Innmind\Immutable\{
     Str,
+    MapInterface,
     Map,
-    MapInterface
 };
 
 final class MapType implements Type

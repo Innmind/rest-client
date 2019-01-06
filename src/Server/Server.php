@@ -18,12 +18,12 @@ use Innmind\Rest\Client\{
     Format\Format,
     Link,
     Link\Parameter,
-    Definition\HttpResource as Definition
+    Definition\HttpResource as Definition,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\Url\{
     UrlInterface,
-    Url
+    Url,
 };
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Http\{
@@ -41,13 +41,13 @@ use Innmind\Http\{
     Header\ContentTypeValue,
     Header\Parameter as HeaderParameter,
     Header\Link as LinkHeader,
-    Header\LinkValue
+    Header\LinkValue,
 };
 use Innmind\Filesystem\Stream\StringStream;
 use Innmind\Immutable\{
     SetInterface,
     Map,
-    Set
+    Set,
 };
 use Innmind\Specification\SpecificationInterface;
 use Symfony\Component\Serializer\Serializer;

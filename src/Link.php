@@ -5,11 +5,11 @@ namespace Innmind\Rest\Client;
 
 use Innmind\Rest\Client\{
     Link\Parameter,
-    Exception\DomainException
+    Exception\DomainException,
 };
 use Innmind\Immutable\{
     MapInterface,
-    Map
+    Map,
 };
 
 final class Link

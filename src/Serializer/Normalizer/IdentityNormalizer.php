@@ -8,11 +8,11 @@ use Innmind\Rest\Client\{
     Exception\LogicException,
     Exception\IdentityNotFound,
     Visitor\ResolveIdentity,
-    Definition\HttpResource
+    Definition\HttpResource,
 };
 use Innmind\Http\{
     Message\Response,
-    Header\Location
+    Header\Location,
 };
 use Innmind\Url\Url;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;

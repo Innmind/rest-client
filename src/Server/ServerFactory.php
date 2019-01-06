@@ -6,7 +6,7 @@ namespace Innmind\Rest\Client\Server;
 use Innmind\Rest\Client\{
     Server as ServerInterface,
     Translator\SpecificationTranslator,
-    Formats
+    Formats,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\HttpTransport\Transport;

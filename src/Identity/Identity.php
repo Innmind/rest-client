@@ -5,7 +5,7 @@ namespace Innmind\Rest\Client\Identity;
 
 use Innmind\Rest\Client\{
     Identity as IdentityInterface,
-    Exception\DomainException
+    Exception\DomainException,
 };
 
 class Identity implements IdentityInterface

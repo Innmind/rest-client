@@ -5,7 +5,7 @@ namespace Innmind\Rest\Client;
 
 use Innmind\Rest\Client\{
     HttpResource\Property,
-    Exception\DomainException
+    Exception\DomainException,
 };
 use Innmind\Immutable\MapInterface;
 

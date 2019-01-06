@@ -10,15 +10,15 @@ use Innmind\Rest\Client\{
     HttpResource\Property,
     Definition\HttpResource as ResourceDefinition,
     Definition\Access,
-    Definition\Types
+    Definition\Types,
 };
 use Innmind\Immutable\{
     Set,
-    Map
+    Map,
 };
 use Symfony\Component\Serializer\Normalizer\{
     DenormalizerInterface,
-    NormalizerInterface
+    NormalizerInterface,
 };
 use PHPUnit\Framework\TestCase;
 

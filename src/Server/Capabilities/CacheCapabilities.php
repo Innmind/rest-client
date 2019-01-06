@@ -5,21 +5,21 @@ namespace Innmind\Rest\Client\Server\Capabilities;
 
 use Innmind\Rest\Client\{
     Server\Capabilities as CapabilitiesInterface,
-    Definition\HttpResource
+    Definition\HttpResource,
 };
 use Innmind\Filesystem\{
     Adapter,
     File,
     Directory,
     Stream\StringStream,
-    Exception\FileNotFound
+    Exception\FileNotFound,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\{
     SetInterface,
     Set,
     MapInterface,
-    Map
+    Map,
 };
 use Symfony\Component\Serializer\SerializerInterface;
 

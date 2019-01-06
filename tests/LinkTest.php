@@ -6,11 +6,11 @@ namespace Tests\Innmind\Rest\Client;
 use Innmind\Rest\Client\{
     Link,
     Link\Parameter,
-    Identity
+    Identity,
 };
 use Innmind\Immutable\{
     MapInterface,
-    Map
+    Map,
 };
 use PHPUnit\Framework\TestCase;
 

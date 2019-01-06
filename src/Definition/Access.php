@@ -6,7 +6,7 @@ namespace Innmind\Rest\Client\Definition;
 use Innmind\Immutable\{
     SetInterface,
     Set,
-    Sequence
+    Sequence,
 };
 
 final class Access

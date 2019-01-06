@@ -12,11 +12,11 @@ use Innmind\Rest\Client\{
     Definition\Type\SetType,
     Definition\Type\StringType,
     Exception\DomainException,
-    Exception\UnknownType
+    Exception\UnknownType,
 };
 use Innmind\Immutable\{
+    SetInterface,
     Set,
-    SetInterface
 };
 
 final class Types

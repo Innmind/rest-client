@@ -22,13 +22,13 @@ use Innmind\Rest\Client\{
     HttpResource\Property,
     Translator\Specification\SpecificationTranslator,
     Link,
-    Link\Parameter
+    Link\Parameter,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\UrlResolver;
 use Innmind\Url\{
     Url,
-    UrlInterface
+    UrlInterface,
 };
 use Innmind\Http\{
     Message\Request,
@@ -38,19 +38,19 @@ use Innmind\Http\{
     Header\ContentType,
     Header\ContentTypeValue,
     Header\Location,
-    Header\LocationValue
+    Header\LocationValue,
 };
 use Innmind\Filesystem\Stream\StringStream;
 use Innmind\Immutable\{
     Map,
+    SetInterface,
     Set,
-    SetInterface
 };
 use Innmind\Specification\ComparatorInterface;
 use Symfony\Component\Serializer\{
     Serializer,
     Encoder\JsonEncoder,
-    Normalizer\DenormalizerInterface
+    Normalizer\DenormalizerInterface,
 };
 use PHPUnit\Framework\TestCase;
 

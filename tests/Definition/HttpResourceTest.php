@@ -9,7 +9,7 @@ use Innmind\Rest\Client\{
     Definition\Property,
     Link,
     Link\Parameter,
-    Identity as IdentityInterface
+    Identity as IdentityInterface,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\Map;

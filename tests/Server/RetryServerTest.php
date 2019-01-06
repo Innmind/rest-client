@@ -13,20 +13,20 @@ use Innmind\Rest\Client\{
     Request\Range,
     Link,
     Exception\NormalizationException,
-    Exception\DenormalizationException
+    Exception\DenormalizationException,
 };
 use Innmind\HttpTransport\Exception\ClientError;
 use Innmind\Http\Message\{
     Request,
     Response,
-    StatusCode\StatusCode
+    StatusCode\StatusCode,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Specification\SpecificationInterface;
 use Innmind\Immutable\{
     SetInterface,
     Map,
-    Set
+    Set,
 };
 use PHPUnit\Framework\TestCase;
 

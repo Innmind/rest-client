@@ -8,13 +8,13 @@ use Innmind\Rest\Client\{
     Server\Capabilities,
     Definition\HttpResource,
     Definition\Property,
-    Definition\Identity
+    Definition\Identity,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\{
     MapInterface,
     SetInterface,
-    Map
+    Map,
 };
 use PHPUnit\Framework\TestCase;
 

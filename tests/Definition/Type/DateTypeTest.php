@@ -6,7 +6,7 @@ namespace Tests\Innmind\Rest\Client\Definition\Type;
 use Innmind\Rest\Client\Definition\{
     Type\DateType,
     Types,
-    Type
+    Type,
 };
 use PHPUnit\Framework\TestCase;
 

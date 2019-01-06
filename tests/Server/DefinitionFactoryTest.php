@@ -7,7 +7,7 @@ use Innmind\Rest\Client\{
     Server\DefinitionFactory,
     Definition\Types,
     Definition\HttpResource,
-    Serializer\Normalizer\DefinitionNormalizer
+    Serializer\Normalizer\DefinitionNormalizer,
 };
 use Innmind\Http\{
     Message\Response,
@@ -15,7 +15,7 @@ use Innmind\Http\{
     Headers\Headers,
     Header,
     Header\ContentType,
-    Header\ContentTypeValue
+    Header\ContentTypeValue,
 };
 use Innmind\Filesystem\Stream\StringStream;
 use Innmind\Url\Url;

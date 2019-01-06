@@ -8,11 +8,11 @@ use Innmind\Rest\Client\Definition\{
     Type\DateType,
     Type\IntType,
     Types,
-    Type
+    Type,
 };
 use Innmind\Immutable\{
+    MapInterface,
     Map,
-    MapInterface
 };
 use PHPUnit\Framework\TestCase;
 

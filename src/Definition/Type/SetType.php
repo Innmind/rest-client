@@ -8,12 +8,12 @@ use Innmind\Rest\Client\{
     Definition\Type,
     Exception\DomainException,
     Exception\NormalizationException,
-    Exception\DenormalizationException
+    Exception\DenormalizationException,
 };
 use Innmind\Immutable\{
     Str,
+    SetInterface,
     Set,
-    SetInterface
 };
 
 final class SetType implements Type

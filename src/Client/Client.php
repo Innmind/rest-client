@@ -6,7 +6,7 @@ namespace Innmind\Rest\Client\Client;
 use Innmind\Rest\Client\{
     Client as ClientInterface,
     Server,
-    Server\Factory
+    Server\Factory,
 };
 use Innmind\Url\Url;
 use Innmind\Immutable\Map;

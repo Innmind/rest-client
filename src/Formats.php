@@ -7,12 +7,12 @@ use Innmind\Rest\Client\{
     Format\Format,
     Format\MediaType,
     Exception\InvalidArgumentException,
-    Exception\DomainException
+    Exception\DomainException,
 };
 use Innmind\Immutable\{
     MapInterface,
     SetInterface,
-    Set
+    Set,
 };
 use Negotiation\Negotiator;
 

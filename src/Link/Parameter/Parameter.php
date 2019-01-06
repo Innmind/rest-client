@@ -5,7 +5,7 @@ namespace Innmind\Rest\Client\Link\Parameter;
 
 use Innmind\Rest\Client\{
     Link\Parameter as ParameterInterface,
-    Exception\DomainException
+    Exception\DomainException,
 };
 
 final class Parameter implements ParameterInterface

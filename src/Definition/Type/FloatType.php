@@ -8,7 +8,7 @@ use Innmind\Rest\Client\{
     Definition\Type,
     Exception\DomainException,
     Exception\NormalizationException,
-    Exception\DenormalizationException
+    Exception\DenormalizationException,
 };
 
 final class FloatType implements Type

@@ -6,11 +6,11 @@ namespace Tests\Innmind\Rest\Client\Serializer\Normalizer;
 use Innmind\Rest\Client\{
     Serializer\Normalizer\DefinitionNormalizer,
     Definition\Types,
-    Definition\HttpResource
+    Definition\HttpResource,
 };
 use Symfony\Component\Serializer\Normalizer\{
     DenormalizerInterface,
-    NormalizerInterface
+    NormalizerInterface,
 };
 use PHPUnit\Framework\TestCase;
 

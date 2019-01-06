@@ -9,12 +9,12 @@ use Innmind\Rest\Client\{
     Definition\HttpResource,
     Exception\InvalidArgumentException,
     Format\Format,
-    Formats
+    Formats,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\Url\{
     UrlInterface,
-    Url
+    Url,
 };
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Http\{
@@ -26,14 +26,14 @@ use Innmind\Http\{
     Header\Value,
     Header\LinkValue,
     Header\Accept,
-    Header\AcceptValue
+    Header\AcceptValue,
 };
 use Innmind\Filesystem\Stream\NullStream;
 use Innmind\Immutable\{
     MapInterface,
     SetInterface,
     Map,
-    Set
+    Set,
 };
 
 final class Capabilities implements CapabilitiesInterface

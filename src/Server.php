@@ -5,7 +5,7 @@ namespace Innmind\Rest\Client;
 
 use Innmind\Rest\Client\{
     Server\Capabilities,
-    Request\Range
+    Request\Range,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\SetInterface;

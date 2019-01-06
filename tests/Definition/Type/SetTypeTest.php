@@ -7,11 +7,11 @@ use Innmind\Rest\Client\Definition\{
     Type\SetType,
     Type\DateType,
     Types,
-    Type
+    Type,
 };
 use Innmind\Immutable\{
+    SetInterface,
     Set,
-    SetInterface
 };
 use PHPUnit\Framework\TestCase;
 

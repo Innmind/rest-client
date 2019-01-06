@@ -8,7 +8,7 @@ use Innmind\Rest\Client\{
     Server\Capabilities\Capabilities,
     Server\Capabilities\Factory as FactoryInterface,
     Server\DefinitionFactory,
-    Formats
+    Formats,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\UrlResolver\ResolverInterface;

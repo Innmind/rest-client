@@ -5,7 +5,7 @@ namespace Innmind\Rest\Client\Definition;
 
 use Innmind\Rest\Client\{
     Link,
-    Exception\DomainException
+    Exception\DomainException,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\MapInterface;

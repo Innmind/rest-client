@@ -7,7 +7,7 @@ use Innmind\Rest\Client\{
     Client\Client,
     Client as ClientInterface,
     Server\Factory,
-    Server
+    Server,
 };
 use PHPUnit\Framework\TestCase;
 

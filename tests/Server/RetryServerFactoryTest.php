@@ -6,7 +6,7 @@ namespace Tests\Innmind\Rest\Client\Server;
 use Innmind\Rest\Client\Server\{
     RetryServerFactory,
     Factory,
-    RetryServer
+    RetryServer,
 };
 use Innmind\Url\UrlInterface;
 use PHPUnit\Framework\TestCase;

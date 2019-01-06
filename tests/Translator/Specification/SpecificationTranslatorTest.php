@@ -5,14 +5,14 @@ namespace Tests\Innmind\Rest\Client\Translator\Specification;
 
 use Innmind\Rest\Client\Translator\{
     Specification\SpecificationTranslator,
-    SpecificationTranslator as SpecificationTranslatorInterface
+    SpecificationTranslator as SpecificationTranslatorInterface,
 };
 use Innmind\Specification\{
     ComparatorInterface,
     CompositeInterface,
     Operator,
     NotInterface,
-    SpecificationInterface
+    SpecificationInterface,
 };
 use PHPUnit\Framework\TestCase;
 

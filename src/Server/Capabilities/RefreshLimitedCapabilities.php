@@ -5,11 +5,11 @@ namespace Innmind\Rest\Client\Server\Capabilities;
 
 use Innmind\Rest\Client\{
     Server\Capabilities as CapabilitiesInterface,
-    Definition\HttpResource
+    Definition\HttpResource,
 };
 use Innmind\Immutable\{
     SetInterface,
-    MapInterface
+    MapInterface,
 };
 
 final class RefreshLimitedCapabilities implements CapabilitiesInterface

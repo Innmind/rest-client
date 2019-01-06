@@ -9,16 +9,16 @@ use Innmind\Rest\Client\{
     Definition\Property,
     Definition\Identity,
     Definition\Access,
-    Definition\Types
+    Definition\Types,
 };
 use Innmind\Url\Url;
 use Innmind\Immutable\{
     Map,
-    Set
+    Set,
 };
 use Symfony\Component\Serializer\Normalizer\{
     DenormalizerInterface,
-    NormalizerInterface
+    NormalizerInterface,
 };
 
 final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInterface

@@ -7,7 +7,7 @@ use Innmind\Rest\Client\Server\{
     Capabilities\RefreshLimitedFactory,
     Capabilities\Factory,
     Capabilities,
-    Capabilities\RefreshLimitedCapabilities
+    Capabilities\RefreshLimitedCapabilities,
 };
 use Innmind\Url\UrlInterface;
 use Symfony\Component\Serializer\SerializerInterface;

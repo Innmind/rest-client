@@ -7,16 +7,16 @@ use Innmind\Rest\Client\{
     Identity,
     Exception\LogicException,
     Definition\HttpResource,
-    Visitor\ResolveIdentity
+    Visitor\ResolveIdentity,
 };
 use Innmind\Http\{
     Message\Response,
     Header\Value,
-    Header\LinkValue
+    Header\LinkValue,
 };
 use Innmind\Immutable\{
+    SetInterface,
     Set,
-    SetInterface
 };
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 

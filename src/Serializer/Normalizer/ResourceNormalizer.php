@@ -10,12 +10,12 @@ use Innmind\Rest\Client\{
     HttpResource,
     HttpResource\Property,
     Exception\LogicException,
-    Exception\MissingProperty
+    Exception\MissingProperty,
 };
 use Innmind\Immutable\Map;
 use Symfony\Component\Serializer\Normalizer\{
     DenormalizerInterface,
-    NormalizerInterface
+    NormalizerInterface,
 };
 
 final class ResourceNormalizer implements DenormalizerInterface, NormalizerInterface

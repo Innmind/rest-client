@@ -6,7 +6,7 @@ namespace Innmind\Rest\Client\Server;
 use Innmind\Rest\Client\Definition\HttpResource;
 use Innmind\Immutable\{
     MapInterface,
-    SetInterface
+    SetInterface,
 };
 
 interface Capabilities

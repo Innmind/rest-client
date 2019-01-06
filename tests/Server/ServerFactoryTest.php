@@ -11,14 +11,14 @@ use Innmind\Rest\Client\{
     Translator\SpecificationTranslator,
     Formats,
     Format\Format,
-    Format\MediaType
+    Format\MediaType,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Immutable\{
     Map,
-    Set
+    Set,
 };
 use Symfony\Component\Serializer\Serializer;
 use PHPUnit\Framework\TestCase;

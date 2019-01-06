@@ -6,11 +6,11 @@ namespace Innmind\Rest\Client\Server;
 use Innmind\Rest\Client\{
     Definition\HttpResource,
     Serializer\Normalizer\DefinitionNormalizer,
-    Exception\DomainException
+    Exception\DomainException,
 };
 use Innmind\Http\Message\{
     Response,
-    StatusCode\StatusCode
+    StatusCode\StatusCode,
 };
 use Innmind\Url\UrlInterface;
 

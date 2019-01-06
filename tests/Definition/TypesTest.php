@@ -13,7 +13,7 @@ use Innmind\Rest\Client\{
     Definition\Type\MapType,
     Definition\Type\SetType,
     Definition\Type\StringType,
-    Exception\DomainException
+    Exception\DomainException,
 };
 use Innmind\Immutable\SetInterface;
 use PHPUnit\Framework\TestCase;

@@ -12,14 +12,14 @@ use Innmind\Rest\Client\{
     Definition\Types,
     Formats,
     Format\Format,
-    Format\MediaType
+    Format\MediaType,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\{
     Map,
-    Set
+    Set,
 };
 use PHPUnit\Framework\TestCase;
 

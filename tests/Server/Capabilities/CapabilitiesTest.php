@@ -12,7 +12,7 @@ use Innmind\Rest\Client\{
     Serializer\Normalizer\DefinitionNormalizer,
     Formats,
     Format\Format,
-    Format\MediaType
+    Format\MediaType,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\Url\Url;
@@ -27,14 +27,14 @@ use Innmind\Http\{
     Header\Link,
     Header\LinkValue,
     Header\ContentType,
-    Header\ContentTypeValue
+    Header\ContentTypeValue,
 };
 use Innmind\Filesystem\Stream\StringStream;
 use Innmind\Immutable\{
+    MapInterface,
     Map,
     SetInterface,
     Set,
-    MapInterface
 };
 use PHPUnit\Framework\TestCase;
 

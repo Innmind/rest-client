@@ -7,7 +7,7 @@ use Innmind\Rest\Client\Server\{
     Capabilities\CacheFactory,
     Capabilities\Factory,
     Capabilities,
-    Capabilities\CacheCapabilities
+    Capabilities\CacheCapabilities,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Filesystem\Adapter;

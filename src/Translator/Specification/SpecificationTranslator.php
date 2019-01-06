@@ -7,13 +7,13 @@ use Innmind\Rest\Client\{
     Translator\SpecificationTranslator as SpecificationTranslatorInterface,
     Exception\OnlyEqualityCanBeTranslated,
     Exception\OnlyAndCompositionCanBeTranslated,
-    Exception\SpecificationCantBeTranslated
+    Exception\SpecificationCantBeTranslated,
 };
 use Innmind\Specification\{
     SpecificationInterface,
     ComparatorInterface,
     CompositeInterface,
-    Operator
+    Operator,
 };
 
 /**

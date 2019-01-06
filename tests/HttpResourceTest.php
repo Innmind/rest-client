@@ -5,7 +5,7 @@ namespace Tests\Innmind\Rest\Client;
 
 use Innmind\Rest\Client\{
     HttpResource,
-    HttpResource\Property
+    HttpResource\Property,
 };
 use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;

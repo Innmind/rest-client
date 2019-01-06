@@ -9,7 +9,7 @@ use Innmind\Rest\Client\{
     HttpResource,
     Request\Range,
     Exception\NormalizationException,
-    Exception\DenormalizationException
+    Exception\DenormalizationException,
 };
 use Innmind\HttpTransport\Exception\ClientError;
 use Innmind\Http\Message\StatusCode\StatusCode;

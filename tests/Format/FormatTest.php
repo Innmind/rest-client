@@ -5,7 +5,7 @@ namespace Tests\Innmind\Rest\Client\Format;
 
 use Innmind\Rest\Client\Format\{
     Format,
-    MediaType
+    MediaType,
 };
 use Innmind\Immutable\Set;
 use PHPUnit\Framework\TestCase;

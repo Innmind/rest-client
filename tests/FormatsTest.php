@@ -6,12 +6,12 @@ namespace Tests\Innmind\Rest\Client;
 use Innmind\Rest\Client\{
     Formats,
     Format\Format,
-    Format\MediaType
+    Format\MediaType,
 };
 use Innmind\Immutable\{
     Map,
+    SetInterface,
     Set,
-    SetInterface
 };
 use PHPUnit\Framework\TestCase;
 

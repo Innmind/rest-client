@@ -9,23 +9,23 @@ use Innmind\Rest\Client\{
     Definition\Types,
     Definition\HttpResource,
     Serializer\Normalizer\DefinitionNormalizer,
-    Serializer\Normalizer\CapabilitiesNamesNormalizer
+    Serializer\Normalizer\CapabilitiesNamesNormalizer,
 };
 use Innmind\Filesystem\{
     Adapter\MemoryAdapter,
     Directory\Directory,
     File\File,
-    Stream\StringStream
+    Stream\StringStream,
 };
 use Innmind\Url\Url;
 use Innmind\Immutable\{
-    Set,
     SetInterface,
-    MapInterface
+    Set,
+    MapInterface,
 };
 use Symfony\Component\Serializer\{
     Serializer,
-    Encoder\JsonEncoder
+    Encoder\JsonEncoder,
 };
 use PHPUnit\Framework\TestCase;
 

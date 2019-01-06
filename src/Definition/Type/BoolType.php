@@ -6,7 +6,7 @@ namespace Innmind\Rest\Client\Definition\Type;
 use Innmind\Rest\Client\{
     Definition\Types,
     Definition\Type,
-    Exception\DomainException
+    Exception\DomainException,
 };
 
 final class BoolType implements Type
