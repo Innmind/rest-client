@@ -18,6 +18,7 @@ use Innmind\Rest\Client\{
     Serializer\Denormalizer\DenormalizeResource,
     Serializer\Normalizer\NormalizeResource,
     Serializer\Encode,
+    Serializer\Decode,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\HttpTransport\Transport;
@@ -26,7 +27,6 @@ use Innmind\Immutable\{
     Map,
     Set,
 };
-use Symfony\Component\Serializer\Serializer;
 use PHPUnit\Framework\TestCase;
 
 class ServerFactoryTest extends TestCase
@@ -44,7 +44,7 @@ class ServerFactoryTest extends TestCase
             new DenormalizeResource,
             new NormalizeResource,
             new Encode\Json,
-            $this->createMock(Serializer::class),
+            new Decode\Json,
             $this->createMock(SpecificationTranslator::class),
             Formats::of(
                 new Format(

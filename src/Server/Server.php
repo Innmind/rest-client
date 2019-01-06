@@ -24,6 +24,7 @@ use Innmind\Rest\Client\{
     Serializer\Denormalizer\DenormalizeResource,
     Serializer\Normalizer\NormalizeResource,
     Serializer\Encode,
+    Serializer\Decode,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\Url\{
@@ -54,7 +55,6 @@ use Innmind\Immutable\{
     Set,
 };
 use Innmind\Specification\Specification;
-use Symfony\Component\Serializer\Serializer;
 
 final class Server implements ServerInterface
 {
@@ -67,7 +67,7 @@ final class Server implements ServerInterface
     private $denormalizeResource;
     private $normalizeResource;
     private $encode;
-    private $serializer;
+    private $decode;
     private $translate;
     private $formats;
 
@@ -81,7 +81,7 @@ final class Server implements ServerInterface
         DenormalizeResource $denormalizeResource,
         NormalizeResource $normalizeResource,
         Encode $encode,
-        Serializer $serializer,
+        Decode $decode,
         SpecificationTranslator $translate,
         Formats $formats
     ) {
@@ -94,7 +94,7 @@ final class Server implements ServerInterface
         $this->denormalizeResource = $denormalizeResource;
         $this->normalizeResource = $normalizeResource;
         $this->encode = $encode;
-        $this->serializer = $serializer;
+        $this->decode = $decode;
         $this->translate = $translate;
         $this->formats = $formats;
     }
@@ -177,9 +177,9 @@ final class Server implements ServerInterface
             throw new UnsupportedResponse('', 0, $e);
         }
 
-        $data = $this->serializer->decode(
-            (string) $response->body(),
-            $format->name()
+        $data = ($this->decode)(
+            $format->name(),
+            $response->body()
         );
 
         return ($this->denormalizeResource)(

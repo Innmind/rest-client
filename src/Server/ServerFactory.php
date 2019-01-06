@@ -12,6 +12,7 @@ use Innmind\Rest\Client\{
     Serializer\Denormalizer\DenormalizeResource,
     Serializer\Normalizer\NormalizeResource,
     Serializer\Encode,
+    Serializer\Decode,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\HttpTransport\Transport;
@@ -27,7 +28,7 @@ final class ServerFactory implements Factory
     private $denormalizeResource;
     private $normalizeResource;
     private $encode;
-    private $serializer;
+    private $decode;
     private $translator;
     private $formats;
     private $capabilities;
@@ -40,7 +41,7 @@ final class ServerFactory implements Factory
         DenormalizeResource $denormalizeResource,
         NormalizeResource $normalizeResource,
         Encode $encode,
-        Serializer $serializer,
+        Decode $decode,
         SpecificationTranslator $translator,
         Formats $formats,
         Capabilities\Factory $capabilities
@@ -52,7 +53,7 @@ final class ServerFactory implements Factory
         $this->denormalizeResource = $denormalizeResource;
         $this->normalizeResource = $normalizeResource;
         $this->encode = $encode;
-        $this->serializer = $serializer;
+        $this->decode = $decode;
         $this->translator = $translator;
         $this->formats = $formats;
         $this->capabilities = $capabilities;
@@ -70,7 +71,7 @@ final class ServerFactory implements Factory
             $this->denormalizeResource,
             $this->normalizeResource,
             $this->encode,
-            $this->serializer,
+            $this->decode,
             $this->translator,
             $this->formats
         );

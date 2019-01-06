@@ -11,6 +11,7 @@ use Innmind\Rest\Client\{
     Serializer\Denormalizer\DenormalizeDefinition,
     Serializer\Denormalizer\DenormalizeResource,
     Serializer\Encode,
+    Serializer\Decode,
     Definition\HttpResource as HttpResourceDefinition,
     Definition\Identity as IdentityDefinition,
     Definition\Property as PropertyDefinition,
@@ -57,12 +58,6 @@ use Innmind\Specification\{
     Comparator,
     Sign,
 };
-use Symfony\Component\Serializer\{
-    Serializer,
-    Encoder\JsonEncoder,
-    Normalizer\DenormalizerInterface,
-    Normalizer\NormalizerInterface,
-};
 use PHPUnit\Framework\TestCase;
 
 class ServerTest extends TestCase
@@ -85,12 +80,7 @@ class ServerTest extends TestCase
             new DenormalizeResource,
             new NormalizeResource,
             new Encode\Json,
-            new Serializer(
-                [
-                    $this->createMock(NormalizerInterface::class),
-                ],
-                [new JsonEncoder]
-            ),
+            new Decode\Json,
             new SpecificationTranslator,
             Formats::of(
                 new Format(

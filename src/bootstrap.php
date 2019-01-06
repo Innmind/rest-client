@@ -67,7 +67,7 @@ function bootstrap(
                 new DenormalizeResource,
                 new NormalizeResource,
                 new Encode\Json,
-                $serializer,
+                $decode,
                 new SpecificationTranslator,
                 $contentTypes,
                 new RefreshLimitedFactory(
