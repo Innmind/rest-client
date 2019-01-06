@@ -7,6 +7,7 @@ use Innmind\Rest\Client\{
     Server\Capabilities as CapabilitiesInterface,
     Definition\HttpResource,
     Serializer\Decode,
+    Serializer\Denormalizer\DenormalizeCapabilitiesNames,
 };
 use Innmind\Filesystem\{
     Adapter,
@@ -29,6 +30,7 @@ final class CacheCapabilities implements CapabilitiesInterface
     private $capabilities;
     private $filesystem;
     private $decode;
+    private $denormalize;
     private $serializer;
     private $directory;
     private $names;
@@ -38,12 +40,14 @@ final class CacheCapabilities implements CapabilitiesInterface
         CapabilitiesInterface $capabilities,
         Adapter $filesystem,
         Decode $decode,
+        DenormalizeCapabilitiesNames $denormalize,
         SerializerInterface $serializer,
         UrlInterface $host
     ) {
         $this->capabilities = $capabilities;
         $this->filesystem = $filesystem;
         $this->decode = $decode;
+        $this->denormalize = $denormalize;
         $this->serializer = $serializer;
         $this->directory = \md5((string) $host);
         $this->definitions = new Map('string', HttpResource::class);
@@ -60,9 +64,8 @@ final class CacheCapabilities implements CapabilitiesInterface
 
         try {
             $file = $this->load('.names');
-            return $this->names = $this->serializer->denormalize(
-                ($this->decode)($file->content()),
-                'capabilities_names'
+            return $this->names = ($this->denormalize)(
+                ($this->decode)($file->content())
             );
         } catch (FileNotFound $e) {
             $this->names = $this->capabilities->names();

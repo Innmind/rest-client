@@ -14,10 +14,9 @@ class SerializerTest extends TestCase
 {
     public function testBuild()
     {
-        $serializer = Serializer::build(new CapabilitiesNamesNormalizer);
+        $serializer = Serializer::build();
 
         $this->assertInstanceOf(SfSerializer::class, $serializer);
-        $this->assertTrue($serializer->supportsDenormalization([], 'capabilities_names'));
         $this->assertTrue($serializer->supportsDecoding('json'));
     }
 }
