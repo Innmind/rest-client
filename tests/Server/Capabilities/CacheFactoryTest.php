@@ -10,6 +10,8 @@ use Innmind\Rest\Client\{
     Server\Capabilities\CacheCapabilities,
     Serializer\Decode,
     Serializer\Denormalizer\DenormalizeCapabilitiesNames,
+    Serializer\Denormalizer\DenormalizeDefinition,
+    Definition\Types,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Filesystem\Adapter;
@@ -23,10 +25,13 @@ class CacheFactoryTest extends TestCase
 
     public function setUp()
     {
+        $types = new Types(...Types::defaults());
+
         $this->make = new CacheFactory(
             $this->createMock(Adapter::class),
             $this->createMock(Decode::class),
             new DenormalizeCapabilitiesNames,
+            new DenormalizeDefinition($types),
             $this->createMock(SerializerInterface::class),
             $this->inner = $this->createMock(Factory::class)
         );

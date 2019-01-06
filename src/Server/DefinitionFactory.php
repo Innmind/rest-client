@@ -5,7 +5,7 @@ namespace Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\{
     Definition\HttpResource,
-    Serializer\Normalizer\DefinitionNormalizer,
+    Serializer\Denormalizer\DenormalizeDefinition,
     Exception\DomainException,
 };
 use Innmind\Http\Message\{
@@ -16,11 +16,11 @@ use Innmind\Url\UrlInterface;
 
 final class DefinitionFactory
 {
-    private $denormalizer;
+    private $denormalize;
 
-    public function __construct(DefinitionNormalizer $denormalizer)
+    public function __construct(DenormalizeDefinition $denormalize)
     {
-        $this->denormalizer = $denormalizer;
+        $this->denormalize = $denormalize;
     }
 
     public function make(
@@ -41,11 +41,6 @@ final class DefinitionFactory
         $data = \json_decode((string) $response->body(), true);
         $data['url'] = (string) $url;
 
-        return $this->denormalizer->denormalize(
-            $data,
-            HttpResource::class,
-            null,
-            ['name' => $name]
-        );
+        return ($this->denormalize)($data, $name);
     }
 }

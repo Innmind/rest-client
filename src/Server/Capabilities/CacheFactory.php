@@ -7,6 +7,7 @@ use Innmind\Rest\Client\{
     Server\Capabilities as CapabilitiesInterface,
     Serializer\Decode,
     Serializer\Denormalizer\DenormalizeCapabilitiesNames,
+    Serializer\Denormalizer\DenormalizeDefinition,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Filesystem\Adapter;
@@ -16,20 +17,23 @@ final class CacheFactory implements Factory
 {
     private $filesystem;
     private $decode;
-    private $denormalize;
+    private $denormalizeNames;
+    private $denormalizeDefinition;
     private $serializer;
     private $make;
 
     public function __construct(
         Adapter $filesystem,
         Decode $decode,
-        DenormalizeCapabilitiesNames $denormalize,
+        DenormalizeCapabilitiesNames $denormalizeNames,
+        DenormalizeDefinition $denormalizeDefinition,
         SerializerInterface $serializer,
         Factory $make
     ) {
         $this->filesystem = $filesystem;
         $this->decode = $decode;
-        $this->denormalize = $denormalize;
+        $this->denormalizeNames = $denormalizeNames;
+        $this->denormalizeDefinition = $denormalizeDefinition;
         $this->serializer = $serializer;
         $this->make = $make;
     }
@@ -40,7 +44,8 @@ final class CacheFactory implements Factory
             ($this->make)($url),
             $this->filesystem,
             $this->decode,
-            $this->denormalize,
+            $this->denormalizeNames,
+            $this->denormalizeDefinition,
             $this->serializer,
             $url
         );

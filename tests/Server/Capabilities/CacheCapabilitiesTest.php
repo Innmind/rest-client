@@ -11,6 +11,7 @@ use Innmind\Rest\Client\{
     Serializer\Normalizer\DefinitionNormalizer,
     Serializer\Decode,
     Serializer\Denormalizer\DenormalizeCapabilitiesNames,
+    Serializer\Denormalizer\DenormalizeDefinition,
 };
 use Innmind\Filesystem\{
     Adapter\MemoryAdapter,
@@ -47,11 +48,14 @@ class CacheCapabilitiesTest extends TestCase
             $types->register($class);
         });
 
+        $denormalizeDefinition = new DenormalizeDefinition($types);
+
         $this->capabilities = new CacheCapabilities(
             $this->inner = $this->createMock(Capabilities::class),
             $this->filesystem = new MemoryAdapter,
             new Decode\Json,
             new DenormalizeCapabilitiesNames,
+            $denormalizeDefinition,
             $this->serializer = new Serializer(
                 [
                     new DefinitionNormalizer($types),
@@ -84,12 +88,7 @@ class CacheCapabilitiesTest extends TestCase
             'linkable_to' => [],
             'rangeable' => true,
         ];
-        $this->definition = $this->serializer->denormalize(
-            $this->raw,
-            HttpResource::class,
-            null,
-            ['name' => 'foo']
-        );
+        $this->definition = $denormalizeDefinition($this->raw, 'foo');
     }
 
     public function testInterface()

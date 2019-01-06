@@ -8,6 +8,7 @@ use Innmind\Rest\Client\{
     Definition\HttpResource,
     Serializer\Decode,
     Serializer\Denormalizer\DenormalizeCapabilitiesNames,
+    Serializer\Denormalizer\DenormalizeDefinition,
 };
 use Innmind\Filesystem\{
     Adapter,
@@ -30,7 +31,8 @@ final class CacheCapabilities implements CapabilitiesInterface
     private $capabilities;
     private $filesystem;
     private $decode;
-    private $denormalize;
+    private $denormalizeNames;
+    private $denormalizeDefinition;
     private $serializer;
     private $directory;
     private $names;
@@ -40,14 +42,16 @@ final class CacheCapabilities implements CapabilitiesInterface
         CapabilitiesInterface $capabilities,
         Adapter $filesystem,
         Decode $decode,
-        DenormalizeCapabilitiesNames $denormalize,
+        DenormalizeCapabilitiesNames $denormalizeNames,
+        DenormalizeDefinition $denormalizeDefinition,
         SerializerInterface $serializer,
         UrlInterface $host
     ) {
         $this->capabilities = $capabilities;
         $this->filesystem = $filesystem;
         $this->decode = $decode;
-        $this->denormalize = $denormalize;
+        $this->denormalizeNames = $denormalizeNames;
+        $this->denormalizeDefinition = $denormalizeDefinition;
         $this->serializer = $serializer;
         $this->directory = \md5((string) $host);
         $this->definitions = new Map('string', HttpResource::class);
@@ -64,7 +68,7 @@ final class CacheCapabilities implements CapabilitiesInterface
 
         try {
             $file = $this->load('.names');
-            return $this->names = ($this->denormalize)(
+            return $this->names = ($this->denormalizeNames)(
                 ($this->decode)($file->content())
             );
         } catch (FileNotFound $e) {
@@ -83,11 +87,9 @@ final class CacheCapabilities implements CapabilitiesInterface
 
         try {
             $file = $this->load($name);
-            $definition = $this->serializer->denormalize(
+            $definition = ($this->denormalizeDefinition)(
                 ($this->decode)($file->content()),
-                HttpResource::class,
-                null,
-                ['name' => $name]
+                $name
             );
             $this->definitions = $this->definitions->put(
                 $name,

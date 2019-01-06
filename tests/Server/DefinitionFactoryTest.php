@@ -7,7 +7,7 @@ use Innmind\Rest\Client\{
     Server\DefinitionFactory,
     Definition\Types,
     Definition\HttpResource,
-    Serializer\Normalizer\DefinitionNormalizer,
+    Serializer\Denormalizer\DenormalizeDefinition,
 };
 use Innmind\Http\{
     Message\Response,
@@ -34,7 +34,7 @@ class DefinitionFactoryTest extends TestCase
         });
 
         $this->factory = new DefinitionFactory(
-            new DefinitionNormalizer($types)
+            new DenormalizeDefinition($types)
         );
     }
 

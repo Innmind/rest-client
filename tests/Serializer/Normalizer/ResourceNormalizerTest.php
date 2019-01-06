@@ -5,7 +5,7 @@ namespace Tests\Innmind\Rest\Client\Serializer\Normalizer;
 
 use Innmind\Rest\Client\{
     Serializer\Normalizer\ResourceNormalizer,
-    Serializer\Normalizer\DefinitionNormalizer,
+    Serializer\Denormalizer\DenormalizeDefinition,
     HttpResource,
     HttpResource\Property,
     Definition\HttpResource as ResourceDefinition,
@@ -34,7 +34,7 @@ class ResourceNormalizerTest extends TestCase
         Types::defaults()->foreach(function(string $class) use ($types) {
             $types->register($class);
         });
-        $this->definition = (new DefinitionNormalizer($types))->denormalize(
+        $this->definition = (new DenormalizeDefinition($types))(
             [
                 'url' => 'http://example.com/foo',
                 'identity' => 'uuid',
@@ -70,9 +70,7 @@ class ResourceNormalizerTest extends TestCase
                 'linkable_to' => [],
                 'rangeable' => true,
             ],
-            ResourceDefinition::class,
-            null,
-            ['name' => 'foo']
+            'foo'
         );
     }
 

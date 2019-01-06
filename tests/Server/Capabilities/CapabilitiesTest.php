@@ -9,7 +9,7 @@ use Innmind\Rest\Client\{
     Server\DefinitionFactory,
     Definition\Types,
     Definition\HttpResource,
-    Serializer\Normalizer\DefinitionNormalizer,
+    Serializer\Denormalizer\DenormalizeDefinition,
     Formats,
     Format\Format,
     Format\MediaType,
@@ -55,7 +55,7 @@ class CapabilitiesTest extends TestCase
             Url::fromString('http://example.com/'),
             new UrlResolver,
             new DefinitionFactory(
-                new DefinitionNormalizer($types)
+                new DenormalizeDefinition($types)
             ),
             Formats::of(
                 new Format(

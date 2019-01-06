@@ -9,6 +9,7 @@ use Innmind\Rest\Client\{
     Server\Capabilities,
     Serializer\Normalizer\DefinitionNormalizer,
     Serializer\Normalizer\ResourceNormalizer,
+    Serializer\Denormalizer\DenormalizeDefinition,
     Definition\HttpResource as HttpResourceDefinition,
     Definition\Identity as IdentityDefinition,
     Definition\Property as PropertyDefinition,
@@ -110,7 +111,7 @@ class ServerTest extends TestCase
         Types::defaults()->foreach(function(string $class) use ($types) {
             $types->register($class);
         });
-        $this->definition = (new DefinitionNormalizer($types))->denormalize(
+        $this->definition = (new DenormalizeDefinition($types))(
             [
                 'url' => 'http://example.com/foo',
                 'identity' => 'uuid',
@@ -136,9 +137,7 @@ class ServerTest extends TestCase
                 ],
                 'rangeable' => true,
             ],
-            HttpResourceDefinition::class,
-            null,
-            ['name' => 'foo']
+            'foo'
         );
     }
 

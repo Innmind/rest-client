@@ -9,76 +9,16 @@ use Innmind\Rest\Client\{
     Definition\Property,
     Definition\Identity,
     Definition\Access,
-    Definition\Types,
 };
 use Innmind\Url\Url;
 use Innmind\Immutable\{
     Map,
     Set,
 };
-use Symfony\Component\Serializer\Normalizer\{
-    DenormalizerInterface,
-    NormalizerInterface,
-};
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInterface
+final class DefinitionNormalizer implements NormalizerInterface
 {
-    private $types;
-
-    public function __construct(Types $types)
-    {
-        $this->types = $types;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function denormalize($definition, $class, $format = null, array $context = []): HttpResource
-    {
-        if (
-            !$this->supportsDenormalization($definition, $class) ||
-            !isset($context['name'])
-        ) {
-            throw new LogicException;
-        }
-
-        $properties = new Map('string', Property::class);
-        $metas = Map::of(
-            'scalar',
-            'variable',
-            \array_keys($definition['metas']),
-            \array_values($definition['metas'])
-        );
-        $links = Map::of(
-            'string',
-            'string',
-            \array_keys($definition['linkable_to']),
-            \array_values($definition['linkable_to'])
-        );
-
-        foreach ($definition['properties'] as $name => $value) {
-            $properties = $properties->put(
-                $name,
-                $this->buildProperty($name, $value)
-            );
-        }
-
-        return new HttpResource(
-            $context['name'],
-            Url::fromString($definition['url']),
-            new Identity($definition['identity']),
-            $properties,
-            $metas,
-            $links,
-            $definition['rangeable']
-        );
-    }
-
-    public function supportsDenormalization($data, $type, $format = null): bool
-    {
-        return \is_array($data) && $type === HttpResource::class;
-    }
-
     public function normalize($data, $format = null, array $context = []): array
     {
         if (!$this->supportsNormalization($data, $format)) {
@@ -118,18 +58,5 @@ final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInt
     public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof HttpResource;
-    }
-
-    private function buildProperty(string $name, array $definition): Property
-    {
-        $variants = Set::of('string', ...\array_values($definition['variants']));
-
-        return new Property(
-            $name,
-            $this->types->build($definition['type']),
-            new Access(...$definition['access']),
-            $variants,
-            $definition['optional']
-        );
     }
 }

@@ -8,7 +8,7 @@ use Innmind\Rest\Client\{
     Server\Capabilities\Factory as FactoryInterface,
     Server\Capabilities,
     Server\DefinitionFactory,
-    Serializer\Normalizer\DefinitionNormalizer,
+    Serializer\Denormalizer\DenormalizeDefinition,
     Definition\Types,
     Formats,
     Format\Format,
@@ -33,7 +33,7 @@ class FactoryTest extends TestCase
             $this->createMock(Transport::class),
             $this->createMock(ResolverInterface::class),
             new DefinitionFactory(
-                new DefinitionNormalizer(new Types)
+                new DenormalizeDefinition(new Types)
             ),
             Formats::of(
                 new Format(
