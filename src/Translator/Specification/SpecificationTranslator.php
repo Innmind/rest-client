@@ -10,10 +10,11 @@ use Innmind\Rest\Client\{
     Exception\SpecificationCantBeTranslated,
 };
 use Innmind\Specification\{
-    SpecificationInterface,
-    ComparatorInterface,
-    CompositeInterface,
+    Specification,
+    Comparator,
+    Composite,
     Operator,
+    Sign,
 };
 
 /**
@@ -21,11 +22,11 @@ use Innmind\Specification\{
  */
 final class SpecificationTranslator implements SpecificationTranslatorInterface
 {
-    public function translate(SpecificationInterface $specification): string
+    public function translate(Specification $specification): string
     {
         switch (true) {
-            case $specification instanceof ComparatorInterface:
-                if ($specification->sign() !== '==') {
+            case $specification instanceof Comparator:
+                if (!$specification->sign()->equals(Sign::equality())) {
                     throw new OnlyEqualityCanBeTranslated;
                 }
 
@@ -35,8 +36,8 @@ final class SpecificationTranslator implements SpecificationTranslatorInterface
                     $specification->value()
                 );
 
-            case $specification instanceof CompositeInterface:
-                if ((string) $specification->operator() === Operator::OR) {
+            case $specification instanceof Composite:
+                if ($specification->operator()->equals(Operator::or())) {
                     throw new OnlyAndCompositionCanBeTranslated;
                 }
 

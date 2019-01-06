@@ -3,12 +3,12 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Translator;
 
-use Innmind\Specification\SpecificationInterface;
+use Innmind\Specification\Specification;
 
 /**
  * Build an http query out of a specification
  */
 interface SpecificationTranslator
 {
-    public function translate(SpecificationInterface $specification): string;
+    public function translate(Specification $specification): string;
 }

@@ -22,7 +22,7 @@ use Innmind\Http\Message\{
     StatusCode\StatusCode,
 };
 use Innmind\Url\UrlInterface;
-use Innmind\Specification\SpecificationInterface;
+use Innmind\Specification\Specification;
 use Innmind\Immutable\{
     SetInterface,
     Map,
@@ -52,7 +52,7 @@ class RetryServerTest extends TestCase
 
     public function testAll()
     {
-        $specification = $this->createMock(SpecificationInterface::class);
+        $specification = $this->createMock(Specification::class);
         $range = new Range(0, 42);
         $this
             ->inner
@@ -71,7 +71,7 @@ class RetryServerTest extends TestCase
      */
     public function testRetryAll(\Throwable $e)
     {
-        $specification = $this->createMock(SpecificationInterface::class);
+        $specification = $this->createMock(Specification::class);
         $range = new Range(0, 42);
         $this
             ->inner
@@ -108,7 +108,7 @@ class RetryServerTest extends TestCase
      */
     public function testDoesntRetryAll()
     {
-        $specification = $this->createMock(SpecificationInterface::class);
+        $specification = $this->createMock(Specification::class);
         $range = new Range(0, 42);
         $this
             ->inner

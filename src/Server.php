@@ -9,7 +9,7 @@ use Innmind\Rest\Client\{
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\SetInterface;
-use Innmind\Specification\SpecificationInterface;
+use Innmind\Specification\Specification;
 
 interface Server
 {
@@ -18,7 +18,7 @@ interface Server
      */
     public function all(
         string $name,
-        SpecificationInterface $specification = null,
+        Specification $specification = null,
         Range $range = null
     ): SetInterface;
     public function read(string $name, Identity $identity): HttpResource;

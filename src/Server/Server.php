@@ -49,7 +49,7 @@ use Innmind\Immutable\{
     Map,
     Set,
 };
-use Innmind\Specification\SpecificationInterface;
+use Innmind\Specification\Specification;
 use Symfony\Component\Serializer\Serializer;
 
 final class Server implements ServerInterface
@@ -85,7 +85,7 @@ final class Server implements ServerInterface
      */
     public function all(
         string $name,
-        SpecificationInterface $specification = null,
+        Specification $specification = null,
         Range $range = null
     ): SetInterface {
         $definition = $this->capabilities->get($name);

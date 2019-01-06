@@ -46,7 +46,10 @@ use Innmind\Immutable\{
     SetInterface,
     Set,
 };
-use Innmind\Specification\ComparatorInterface;
+use Innmind\Specification\{
+    Comparator,
+    Sign,
+};
 use Symfony\Component\Serializer\{
     Serializer,
     Encoder\JsonEncoder,
@@ -324,7 +327,7 @@ class ServerTest extends TestCase
             ->willReturn(
                 $response = $this->createMock(Response::class)
             );
-        $specification = $this->createMock(ComparatorInterface::class);
+        $specification = $this->createMock(Comparator::class);
         $specification
             ->expects($this->once())
             ->method('property')
@@ -332,7 +335,7 @@ class ServerTest extends TestCase
         $specification
             ->expects($this->once())
             ->method('sign')
-            ->willReturn('==');
+            ->willReturn(Sign::equality());
         $specification
             ->expects($this->once())
             ->method('value')
@@ -394,7 +397,7 @@ class ServerTest extends TestCase
             ->willReturn(
                 $response = $this->createMock(Response::class)
             );
-        $specification = $this->createMock(ComparatorInterface::class);
+        $specification = $this->createMock(Comparator::class);
         $specification
             ->expects($this->once())
             ->method('property')
@@ -402,7 +405,7 @@ class ServerTest extends TestCase
         $specification
             ->expects($this->once())
             ->method('sign')
-            ->willReturn('==');
+            ->willReturn(Sign::equality());
         $specification
             ->expects($this->once())
             ->method('value')
