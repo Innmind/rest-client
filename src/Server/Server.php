@@ -59,7 +59,7 @@ final class Server implements ServerInterface
     private $capabilities;
     private $resolver;
     private $serializer;
-    private $specificationTranslator;
+    private $translate;
     private $formats;
 
     public function __construct(
@@ -68,7 +68,7 @@ final class Server implements ServerInterface
         Capabilities $capabilities,
         ResolverInterface $resolver,
         Serializer $serializer,
-        SpecificationTranslator $specificationTranslator,
+        SpecificationTranslator $translate,
         Formats $formats
     ) {
         $this->url = $url;
@@ -76,7 +76,7 @@ final class Server implements ServerInterface
         $this->capabilities = $capabilities;
         $this->resolver = $resolver;
         $this->serializer = $serializer;
-        $this->specificationTranslator = $specificationTranslator;
+        $this->translate = $translate;
         $this->formats = $formats;
     }
 
@@ -95,7 +95,7 @@ final class Server implements ServerInterface
         }
 
         if ($specification !== null) {
-            $query = '?'.$this->specificationTranslator->translate($specification);
+            $query = '?'.($this->translate)($specification);
         }
 
         $url = $this->resolver->resolve(

@@ -22,7 +22,7 @@ use Innmind\Specification\{
  */
 final class SpecificationTranslator implements SpecificationTranslatorInterface
 {
-    public function translate(Specification $specification): string
+    public function __invoke(Specification $specification): string
     {
         switch (true) {
             case $specification instanceof Comparator:
@@ -43,8 +43,8 @@ final class SpecificationTranslator implements SpecificationTranslatorInterface
 
                 return \sprintf(
                     '%s&%s',
-                    $this->translate($specification->left()),
-                    $this->translate($specification->right())
+                    $this($specification->left()),
+                    $this($specification->right())
                 );
 
             default:

@@ -43,7 +43,7 @@ class SpecificationTranslatorTest extends TestCase
             ->method('value')
             ->willReturn('baz');
 
-        $query = (new SpecificationTranslator)->translate($spec);
+        $query = (new SpecificationTranslator)($spec);
 
         $this->assertSame('bar=baz', $query);
     }
@@ -65,7 +65,7 @@ class SpecificationTranslatorTest extends TestCase
             ->expects($this->never())
             ->method('value');
 
-        (new SpecificationTranslator)->translate($spec);
+        (new SpecificationTranslator)($spec);
     }
 
     public function testTranslateComposite()
@@ -110,7 +110,7 @@ class SpecificationTranslatorTest extends TestCase
             ->method('operator')
             ->willReturn(Operator::and());
 
-        $query = (new SpecificationTranslator)->translate($spec);
+        $query = (new SpecificationTranslator)($spec);
 
         $this->assertSame('bar=baz&foo=foobar', $query);
     }
@@ -132,7 +132,7 @@ class SpecificationTranslatorTest extends TestCase
             ->method('operator')
             ->willReturn(Operator::or());
 
-        (new SpecificationTranslator)->translate($spec);
+        (new SpecificationTranslator)($spec);
     }
 
     /**
@@ -140,7 +140,7 @@ class SpecificationTranslatorTest extends TestCase
      */
     public function testThrowWhenTranslatingNegativeSpecification()
     {
-        (new SpecificationTranslator)->translate(
+        (new SpecificationTranslator)(
             $this->createMock(Not::class)
         );
     }
@@ -150,7 +150,7 @@ class SpecificationTranslatorTest extends TestCase
      */
     public function testThrowWhenTranslatingUnknownSpecification()
     {
-        (new SpecificationTranslator)->translate(
+        (new SpecificationTranslator)(
             $this->createMock(Specification::class)
         );
     }

@@ -10,5 +10,5 @@ use Innmind\Specification\Specification;
  */
 interface SpecificationTranslator
 {
-    public function translate(Specification $specification): string;
+    public function __invoke(Specification $specification): string;
 }
