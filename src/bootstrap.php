@@ -39,8 +39,10 @@ function bootstrap(
     ResolverInterface $urlResolver,
     Adapter $cache,
     SetInterface $types = null,
-    Formats $contentTypes = null
+    Formats $contentTypes = null,
+    Decode $decode = null
 ): Client {
+    $decode = $decode ?? new Decode\Json;
     $contentTypes = $contentTypes ?? Formats::of(
         new Format(
             'json',
@@ -53,7 +55,6 @@ function bootstrap(
 
     $denormalizeDefinition = new DenormalizeDefinition($types);
 
-    $decode = new Decode\Json;
     $encode = new Encode\Json;
 
     return new Client\Client(
