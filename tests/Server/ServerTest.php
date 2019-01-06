@@ -7,8 +7,7 @@ use Innmind\Rest\Client\{
     Server\Server,
     Server as ServerInterface,
     Server\Capabilities,
-    Serializer\Normalizer\DefinitionNormalizer,
-    Serializer\Normalizer\ResourceNormalizer,
+    Serializer\Normalizer\NormalizeResource,
     Serializer\Denormalizer\DenormalizeDefinition,
     Serializer\Denormalizer\DenormalizeResource,
     Definition\HttpResource as HttpResourceDefinition,
@@ -61,6 +60,7 @@ use Symfony\Component\Serializer\{
     Serializer,
     Encoder\JsonEncoder,
     Normalizer\DenormalizerInterface,
+    Normalizer\NormalizerInterface,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -82,9 +82,10 @@ class ServerTest extends TestCase
             new ExtractIdentity(new ResolveIdentity($resolver)),
             new ExtractIdentities(new ResolveIdentity($resolver)),
             new DenormalizeResource,
+            new NormalizeResource,
             new Serializer(
                 [
-                    new ResourceNormalizer,
+                    $this->createMock(NormalizerInterface::class),
                 ],
                 [new JsonEncoder]
             ),

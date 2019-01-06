@@ -22,7 +22,7 @@ use Innmind\Rest\Client\{
     Response\ExtractIdentity,
     Response\ExtractIdentities,
     Serializer\Denormalizer\DenormalizeResource,
-    Serializer\Normalizer\NormalizeDefinition,
+    Serializer\Normalizer\NormalizeResource,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\Url\{
@@ -65,6 +65,7 @@ final class Server implements ServerInterface
     private $extractIdentity;
     private $extractIdentities;
     private $denormalizeResource;
+    private $normalizeResource;
     private $serializer;
     private $translate;
     private $formats;
@@ -77,6 +78,7 @@ final class Server implements ServerInterface
         ExtractIdentity $extractIdentity,
         ExtractIdentities $extractIdentities,
         DenormalizeResource $denormalizeResource,
+        NormalizeResource $normalizeResource,
         Serializer $serializer,
         SpecificationTranslator $translate,
         Formats $formats
@@ -88,6 +90,7 @@ final class Server implements ServerInterface
         $this->extractIdentity = $extractIdentity;
         $this->extractIdentities = $extractIdentities;
         $this->denormalizeResource = $denormalizeResource;
+        $this->normalizeResource = $normalizeResource;
         $this->serializer = $serializer;
         $this->translate = $translate;
         $this->formats = $formats;
@@ -201,13 +204,13 @@ final class Server implements ServerInterface
                     $this->generateAcceptHeader()
                 ),
                 new StringStream(
-                    $this->serializer->serialize(
-                        $resource,
-                        'json',
-                        [
-                            'definition' => $definition,
-                            'access' => new Access(Access::CREATE),
-                        ]
+                    $this->serializer->encode(
+                        ($this->normalizeResource)(
+                            $resource,
+                            $definition,
+                            new Access(Access::CREATE)
+                        ),
+                        'json'
                     )
                 )
             )
@@ -240,12 +243,12 @@ final class Server implements ServerInterface
                 ),
                 new StringStream(
                     $this->serializer->serialize(
-                        $resource,
-                        'json',
-                        [
-                            'definition' => $definition,
-                            'access' => new Access(Access::UPDATE),
-                        ]
+                        ($this->normalizeResource)(
+                            $resource,
+                            $definition,
+                            new Access(Access::UPDATE)
+                        ),
+                        'json'
                     )
                 )
             )
