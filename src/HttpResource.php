@@ -9,6 +9,7 @@ use Innmind\Rest\Client\{
 };
 use Innmind\Immutable\{
     MapInterface,
+    Map,
     Str,
 };
 
@@ -35,6 +36,17 @@ final class HttpResource
 
         $this->name = $name;
         $this->properties = $properties;
+    }
+
+    public static function of(string $name, Property ...$properties)
+    {
+        $map = Map::of('string', Property::class);
+
+        foreach ($properties as $property) {
+            $map = $map->put($property->name(), $property);
+        }
+
+        return new self($name, $map);
     }
 
     public function name(): string

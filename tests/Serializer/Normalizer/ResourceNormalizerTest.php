@@ -295,10 +295,7 @@ class ResourceNormalizerTest extends TestCase
     {
         $this->assertTrue(
             $this->normalizer->supportsNormalization(
-                new HttpResource(
-                    'foo',
-                    new Map('string', Property::class)
-                )
+                HttpResource::of('foo')
             )
         );
         $this->assertFalse(
@@ -329,10 +326,7 @@ class ResourceNormalizerTest extends TestCase
     public function testThrowWhenNormalizingWithoutDefinition()
     {
         $this->normalizer->normalize(
-            new HttpResource(
-                'foo',
-                new Map('string', Property::class)
-            ),
+            HttpResource::of('foo'),
             null,
             [
                 'access' => new Access('CREATE'),
@@ -346,10 +340,7 @@ class ResourceNormalizerTest extends TestCase
     public function testThrowWhenNormalizingWithInvalidDefinition()
     {
         $this->normalizer->normalize(
-            new HttpResource(
-                'foo',
-                new Map('string', Property::class)
-            ),
+            HttpResource::of('foo'),
             null,
             [
                 'definition' => [],
@@ -364,10 +355,7 @@ class ResourceNormalizerTest extends TestCase
     public function testThrowWhenNormalizingWithoutAccess()
     {
         $this->normalizer->normalize(
-            new HttpResource(
-                'foo',
-                new Map('string', Property::class)
-            ),
+            HttpResource::of('foo'),
             null,
             [
                 'definition' => $this->definition,
@@ -381,10 +369,7 @@ class ResourceNormalizerTest extends TestCase
     public function testThrowWhenNormalizingWithInvalidAccess()
     {
         $this->normalizer->normalize(
-            new HttpResource(
-                'foo',
-                new Map('string', Property::class)
-            ),
+            HttpResource::of('foo'),
             null,
             [
                 'definition' => $this->definition,
@@ -396,23 +381,10 @@ class ResourceNormalizerTest extends TestCase
     public function testNormalize()
     {
         $resource = $this->normalizer->normalize(
-            new HttpResource(
+            HttpResource::of(
                 'foo',
-                Map::of('string', Property::class)
-                    (
-                        'url',
-                        new Property(
-                            'url',
-                            'http://example.com/'
-                        )
-                    )
-                    (
-                        'onCreate',
-                        new Property(
-                            'onCreate',
-                            '42'
-                        )
-                    )
+                new Property('url', 'http://example.com/'),
+                new Property('onCreate', '42')
             ),
             null,
             [
@@ -435,23 +407,10 @@ class ResourceNormalizerTest extends TestCase
     public function testNormalizeWithVariant()
     {
         $resource = $this->normalizer->normalize(
-            new HttpResource(
+            HttpResource::of(
                 'foo',
-                Map::of('string', Property::class)
-                    (
-                        'uri',
-                        new Property(
-                            'uri',
-                            'http://example.com/'
-                        )
-                    )
-                    (
-                        'onCreate',
-                        new Property(
-                            'onCreate',
-                            '42'
-                        )
-                    )
+                new Property('uri', 'http://example.com/'),
+                new Property('onCreate', '42')
             ),
             null,
             [
@@ -474,16 +433,9 @@ class ResourceNormalizerTest extends TestCase
     public function testNormalizeWithOptionalProperty()
     {
         $resource = $this->normalizer->normalize(
-            new HttpResource(
+            HttpResource::of(
                 'foo',
-                Map::of('string', Property::class)
-                    (
-                        'onCreate',
-                        new Property(
-                            'onCreate',
-                            '42'
-                        )
-                    )
+                new Property('onCreate', '42')
             ),
             null,
             [
@@ -505,10 +457,7 @@ class ResourceNormalizerTest extends TestCase
     public function testThrowWhenNormalizingWithMissingProperty()
     {
         $this->normalizer->normalize(
-            new HttpResource(
-                'foo',
-                new Map('string', Property::class)
-            ),
+            HttpResource::of('foo'),
             null,
             [
                 'definition' => $this->definition,

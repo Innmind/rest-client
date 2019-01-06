@@ -23,6 +23,16 @@ class HttpResourceTest extends TestCase
         $this->assertSame($properties, $resource->properties());
     }
 
+    public function testOf()
+    {
+        $resource = HttpResource::of('foo', new Property('bar', 42));
+
+        $this->assertInstanceOf(HttpResource::class, $resource);
+        $this->assertSame('foo', $resource->name());
+        $this->assertCount(1, $resource->properties());
+        $this->assertSame(42, $resource->properties()->get('bar')->value());
+    }
+
     /**
      * @expectedException Innmind\Rest\Client\Exception\DomainException
      */

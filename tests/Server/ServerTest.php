@@ -601,16 +601,9 @@ class ServerTest extends TestCase
             ->willReturn($expected = new Identity\Identity('some-uuid'));
 
         $identity = $this->server->create(
-            new HttpResource(
+            HttpResource::of(
                 'foo',
-                Map::of('string', Property::class)
-                    (
-                        'url',
-                        new Property(
-                            'url',
-                            'foobar'
-                        )
-                    )
+                new Property('url', 'foobar')
             )
         );
 
@@ -643,16 +636,9 @@ class ServerTest extends TestCase
 
         $return = $this->server->update(
             new Identity\Identity('some-uuid'),
-            new HttpResource(
+            HttpResource::of(
                 'foo',
-                (new Map('string', Property::class))
-                    ->put(
-                        'url',
-                        new Property(
-                            'url',
-                            'foobar'
-                        )
-                    )
+                new Property('url', 'foobar')
             )
         );
 
