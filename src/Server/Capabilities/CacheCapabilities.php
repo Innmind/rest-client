@@ -94,18 +94,13 @@ final class CacheCapabilities implements CapabilitiesInterface
                 ($this->decode)('json', $file->content()),
                 $name
             );
-            $this->definitions = $this->definitions->put(
-                $name,
-                $definition
-            );
-
-            return $definition;
         } catch (FileNotFound $e) {
             $definition = $this->capabilities->get($name);
             $this->persist(
                 $name,
                 ($this->normalizeDefinition)($definition)
             );
+        } finally {
             $this->definitions = $this->definitions->put(
                 $name,
                 $definition
