@@ -20,20 +20,12 @@ use PHPUnit\Framework\TestCase;
 
 class TypesTest extends TestCase
 {
-    public function testRegister()
-    {
-        $types = new Types;
-        $object = $this->createMock(Type::class);
-
-        $this->assertSame($types, $types->register(get_class($object)));
-    }
-
     /**
      * @expectedException Innmind\Rest\Client\Exception\DomainException
      */
     public function testThrowWhenRegisteringInvalidType()
     {
-        (new Types)->register('stdClass');
+        new Types('stdClass');
     }
 
     public function testBuild()

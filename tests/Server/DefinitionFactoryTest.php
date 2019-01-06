@@ -29,13 +29,8 @@ class DefinitionFactoryTest extends TestCase
 
     public function setUp()
     {
-        $types = new Types;
-        Types::defaults()->foreach(function(string $class) use ($types) {
-            $types->register($class);
-        });
-
         $this->factory = new DefinitionFactory(
-            new DenormalizeDefinition($types),
+            new DenormalizeDefinition(new Types),
             new Json
         );
     }

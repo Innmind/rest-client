@@ -29,7 +29,7 @@ class SetTypeTest extends TestCase
     {
         $type = SetType::fromString(
             'set<date<c>>',
-            (new Types)->register(DateType::class)
+            new Types(DateType::class)
         );
 
         $this->assertInstanceOf(SetType::class, $type);

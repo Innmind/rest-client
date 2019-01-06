@@ -31,9 +31,7 @@ class MapTypeTest extends TestCase
 
     public function testFromString()
     {
-        $types = (new Types)
-            ->register(DateType::class)
-            ->register(IntType::class);
+        $types = new Types(DateType::class, IntType::class);
         $type = MapType::fromString(
             'map<int,date<c>>',
             $types

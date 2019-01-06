@@ -40,12 +40,7 @@ class CacheCapabilitiesTest extends TestCase
 
     public function setUp()
     {
-        $types = new Types;
-        Types::defaults()->foreach(function(string $class) use ($types) {
-            $types->register($class);
-        });
-
-        $denormalizeDefinition = new DenormalizeDefinition($types);
+        $denormalizeDefinition = new DenormalizeDefinition(new Types);
 
         $this->capabilities = new CacheCapabilities(
             $this->inner = $this->createMock(Capabilities::class),

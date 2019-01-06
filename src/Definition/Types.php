@@ -41,17 +41,6 @@ final class Types
         $this->types = $types;
     }
 
-    public function register(string $class): self
-    {
-        @trigger_error('Register types via the constructor', E_USER_DEPRECATED);
-
-        $types = $this->types;
-        $types[] = $class;
-        $this->types = (new self(...$types))->types;
-
-        return $this;
-    }
-
     public function build(string $type): Type
     {
         foreach ($this->types as $builder) {

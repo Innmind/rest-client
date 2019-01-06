@@ -46,17 +46,12 @@ class CapabilitiesTest extends TestCase
 
     public function setUp()
     {
-        $types = new Types;
-        Types::defaults()->foreach(function(string $class) use ($types) {
-            $types->register($class);
-        });
-
         $this->capabilities = new Capabilities(
             $this->transport = $this->createMock(Transport::class),
             Url::fromString('http://example.com/'),
             new UrlResolver,
             new DefinitionFactory(
-                new DenormalizeDefinition($types),
+                new DenormalizeDefinition(new Types),
                 new Json
             ),
             Formats::of(

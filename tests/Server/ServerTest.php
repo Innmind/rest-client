@@ -102,11 +102,7 @@ class ServerTest extends TestCase
             )
         );
 
-        $types = new Types;
-        Types::defaults()->foreach(function(string $class) use ($types) {
-            $types->register($class);
-        });
-        $this->definition = (new DenormalizeDefinition($types))(
+        $this->definition = (new DenormalizeDefinition(new Types))(
             [
                 'url' => 'http://example.com/foo',
                 'identity' => 'uuid',
