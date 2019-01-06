@@ -17,7 +17,6 @@ use Innmind\Rest\Client\{
 use Innmind\Url\UrlInterface;
 use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\ResolverInterface;
-use Symfony\Component\Serializer\Serializer;
 
 final class ServerFactory implements Factory
 {
