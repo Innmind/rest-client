@@ -30,7 +30,7 @@ final class SpecificationTranslator implements SpecificationTranslatorInterface
                     throw new OnlyEqualityCanBeTranslated;
                 }
 
-                return sprintf(
+                return \sprintf(
                     '%s=%s',
                     $specification->property(),
                     $specification->value()
@@ -41,7 +41,7 @@ final class SpecificationTranslator implements SpecificationTranslatorInterface
                     throw new OnlyAndCompositionCanBeTranslated;
                 }
 
-                return sprintf(
+                return \sprintf(
                     '%s&%s',
                     $this->translate($specification->left()),
                     $this->translate($specification->right())
