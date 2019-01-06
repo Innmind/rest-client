@@ -18,11 +18,11 @@ use Innmind\Immutable\{
 
 final class DenormalizeDefinition
 {
-    private $types;
+    private $build;
 
-    public function __construct(Types $types)
+    public function __construct(Types $build)
     {
-        $this->types = $types;
+        $this->build = $build;
     }
 
     public function __invoke(array $definition, string $name): HttpResource
@@ -65,7 +65,7 @@ final class DenormalizeDefinition
 
         return new Property(
             $name,
-            $this->types->build($definition['type']),
+            ($this->build)($definition['type']),
             new Access(...$definition['access']),
             $variants,
             $definition['optional']

@@ -13,7 +13,7 @@ use Innmind\Rest\Client\{
 
 final class StringType implements Type
 {
-    public static function fromString(string $type, Types $types): Type
+    public static function fromString(string $type, Types $build): Type
     {
         if ($type !== 'string') {
             throw new DomainException;

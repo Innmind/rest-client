@@ -41,7 +41,7 @@ final class Types
         $this->types = $types;
     }
 
-    public function build(string $type): Type
+    public function __invoke(string $type): Type
     {
         foreach ($this->types as $builder) {
             try {

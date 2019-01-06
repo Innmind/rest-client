@@ -32,7 +32,7 @@ final class SetType implements Type
         );
     }
 
-    public static function fromString(string $type, Types $types): Type
+    public static function fromString(string $type, Types $build): Type
     {
         $type = new Str($type);
 
@@ -41,7 +41,7 @@ final class SetType implements Type
         }
 
         return new self(
-            $types->build(
+            $build(
                 (string) $type
                     ->capture(self::PATTERN)
                     ->get('inner')

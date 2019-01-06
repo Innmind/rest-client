@@ -11,7 +11,7 @@ use Innmind\Rest\Client\{
 
 final class BoolType implements Type
 {
-    public static function fromString(string $type, Types $types): Type
+    public static function fromString(string $type, Types $build): Type
     {
         if ($type !== 'bool') {
             throw new DomainException;

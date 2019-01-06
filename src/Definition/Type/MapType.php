@@ -36,7 +36,7 @@ final class MapType implements Type
         );
     }
 
-    public static function fromString(string $type, Types $types): Type
+    public static function fromString(string $type, Types $build): Type
     {
         $type = new Str($type);
 
@@ -47,12 +47,8 @@ final class MapType implements Type
         $matches = $type->capture(self::PATTERN);
 
         return new self(
-            $types->build(
-                (string) $matches->get('key')
-            ),
-            $types->build(
-                (string) $matches->get('value')
-            )
+            $build((string) $matches->get('key')),
+            $build((string) $matches->get('value'))
         );
     }
 

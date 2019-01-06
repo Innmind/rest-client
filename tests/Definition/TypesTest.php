@@ -31,7 +31,7 @@ class TypesTest extends TestCase
     public function testBuild()
     {
         $type1 = new class implements Type {
-            public static function fromString(string $type, Types $types): Type
+            public static function fromString(string $type, Types $build): Type
             {
                 if ($type !== 'type1') {
                     throw new DomainException;
@@ -54,7 +54,7 @@ class TypesTest extends TestCase
             }
         };
         $type2 = new class implements Type {
-            public static function fromString(string $type, Types $types): Type
+            public static function fromString(string $type, Types $build): Type
             {
                 if ($type !== 'type2') {
                     throw new DomainException;
@@ -78,10 +78,10 @@ class TypesTest extends TestCase
         };
         $class1 = \get_class($type1);
         $class2 = \get_class($type2);
-        $types = new Types($class1, $class2);
+        $build = new Types($class1, $class2);
 
-        $this->assertInstanceOf($class1, $types->build('type1'));
-        $this->assertInstanceOf($class2, $types->build('type2'));
+        $this->assertInstanceOf($class1, $build('type1'));
+        $this->assertInstanceOf($class2, $build('type2'));
     }
 
     /**
@@ -89,7 +89,7 @@ class TypesTest extends TestCase
      */
     public function testThrowWhenBuildingUnknownType()
     {
-        (new Types)->build('type1');
+        (new Types)('type1');
     }
 
     public function testDefaults()
@@ -112,6 +112,6 @@ class TypesTest extends TestCase
             $defaults->toPrimitive()
         );
 
-        $this->assertInstanceOf(BoolType::class, (new Types)->build('bool'));
+        $this->assertInstanceOf(BoolType::class, (new Types)('bool'));
     }
 }
