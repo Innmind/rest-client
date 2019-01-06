@@ -33,13 +33,12 @@ function bootstrap(
     SetInterface $types = null,
     Formats $contentTypes = null
 ): Client {
-    $contentTypes = $contentTypes ?? new Formats(
-        Map::of('string', Format::class)
-            ('json', new Format(
-                'json',
-                Set::of(MediaType::class, new MediaType('application/json', 0)),
-                0
-            ))
+    $contentTypes = $contentTypes ?? Formats::of(
+        new Format(
+            'json',
+            Set::of(MediaType::class, new MediaType('application/json', 0)),
+            0
+        )
     );
     $types = new Types(...($types ?? []));
     $resolveIdentity = new ResolveIdentity($urlResolver);

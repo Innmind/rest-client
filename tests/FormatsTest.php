@@ -38,6 +38,23 @@ class FormatsTest extends TestCase
         $this->assertSame($format, $formats->get('json'));
     }
 
+    public function testOf()
+    {
+        $formats = Formats::of(
+            $format = new Format(
+                'json',
+                Set::of(
+                    MediaType::class,
+                    new MediaType('application/json', 42)
+                ),
+                42
+            )
+        );
+
+        $this->assertInstanceOf(Formats::class, $formats);
+        $this->assertSame($format, $formats->get('json'));
+    }
+
     /**
      * @expectedException TypeError
      * @expectedExceptionMessage Argument 1 must be of type MapInterface<string, Innmind\Rest\Client\Format\Format>

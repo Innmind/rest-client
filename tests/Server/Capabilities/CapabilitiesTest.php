@@ -57,28 +57,21 @@ class CapabilitiesTest extends TestCase
             new DefinitionFactory(
                 new DefinitionNormalizer($types)
             ),
-            new Formats(
-                Map::of('string', Format::class)
-                    (
-                        'json',
-                        new Format(
-                            'json',
-                            (new Set(MediaType::class))->add(
-                                new MediaType('application/json', 0)
-                            ),
-                            1
-                        )
-                    )
-                    (
-                        'xml',
-                        new Format(
-                            'xml',
-                            (new Set(MediaType::class))->add(
-                                new MediaType('text/xml', 0)
-                            ),
-                            0
-                        )
-                    )
+            Formats::of(
+                new Format(
+                    'json',
+                    (new Set(MediaType::class))->add(
+                        new MediaType('application/json', 0)
+                    ),
+                    1
+                ),
+                new Format(
+                    'xml',
+                    (new Set(MediaType::class))->add(
+                        new MediaType('text/xml', 0)
+                    ),
+                    0
+                )
             )
         );
     }

@@ -35,19 +35,15 @@ class ServerFactoryTest extends TestCase
             $this->createMock(ResolverInterface::class),
             $this->createMock(Serializer::class),
             $this->createMock(SpecificationTranslator::class),
-            new Formats(
-                Map::of('string', Format::class)
-                    (
-                        'json',
-                        new Format(
-                            'json',
-                            Set::of(
-                                MediaType::class,
-                                new MediaType('application/json', 0)
-                            ),
-                            1
-                        )
-                    )
+            Formats::of(
+                new Format(
+                    'json',
+                    Set::of(
+                        MediaType::class,
+                        new MediaType('application/json', 0)
+                    ),
+                    1
+                )
             ),
             $this->capabilities = $this->createMock(CapabilitiesFactoryInterface::class)
         );

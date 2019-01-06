@@ -80,30 +80,23 @@ class ServerTest extends TestCase
                 [new JsonEncoder]
             ),
             new SpecificationTranslator,
-            new Formats(
-                Map::of('string', Format::class)
-                    (
-                        'json',
-                        new Format(
-                            'json',
-                            Set::of(
-                                MediaType::class,
-                                new MediaType('application/json', 0)
-                            ),
-                            1
-                        )
-                    )
-                    (
-                        'xml',
-                        new Format(
-                            'xml',
-                            Set::of(
-                                MediaType::class,
-                                new MediaType('text/xml', 0)
-                            ),
-                            0
-                        )
-                    )
+            Formats::of(
+                new Format(
+                    'json',
+                    Set::of(
+                        MediaType::class,
+                        new MediaType('application/json', 0)
+                    ),
+                    1
+                ),
+                new Format(
+                    'xml',
+                    Set::of(
+                        MediaType::class,
+                        new MediaType('text/xml', 0)
+                    ),
+                    0
+                )
             )
         );
 
