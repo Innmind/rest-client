@@ -39,7 +39,7 @@ final class Capabilities implements CapabilitiesInterface
     private $fulfill;
     private $host;
     private $resolver;
-    private $factory;
+    private $make;
     private $formats;
     private $optionsUrl;
     private $names;
@@ -50,13 +50,13 @@ final class Capabilities implements CapabilitiesInterface
         Transport $fulfill,
         UrlInterface $host,
         ResolverInterface $resolver,
-        DefinitionFactory $factory,
+        DefinitionFactory $make,
         Formats $formats
     ) {
         $this->fulfill = $fulfill;
         $this->host = $host;
         $this->resolver = $resolver;
-        $this->factory = $factory;
+        $this->make = $make;
         $this->formats = $formats;
         $optionsUrl = $resolver->resolve((string) $host, '/*');
         $this->optionsUrl = Url::fromString($optionsUrl);
@@ -148,7 +148,7 @@ final class Capabilities implements CapabilitiesInterface
                 )
             )
         );
-        $definition = $this->factory->make(
+        $definition = ($this->make)(
             $name,
             $url,
             $response

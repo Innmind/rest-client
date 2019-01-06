@@ -28,7 +28,7 @@ final class DefinitionFactory
         $this->decode = $decode;
     }
 
-    public function make(
+    public function __invoke(
         string $name,
         UrlInterface $url,
         Response $response

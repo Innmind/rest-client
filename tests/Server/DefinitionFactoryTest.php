@@ -25,11 +25,11 @@ use PHPUnit\Framework\TestCase;
 
 class DefinitionFactoryTest extends TestCase
 {
-    private $factory;
+    private $make;
 
     public function setUp()
     {
-        $this->factory = new DefinitionFactory(
+        $this->make = new DefinitionFactory(
             new DenormalizeDefinition(new Types),
             new Json
         );
@@ -46,7 +46,7 @@ class DefinitionFactoryTest extends TestCase
             ->method('statusCode')
             ->willReturn(new StatusCode(404));
 
-        $this->factory->make('foo', Url::fromString('/'), $response);
+        ($this->make)('foo', Url::fromString('/'), $response);
     }
 
     /**
@@ -66,7 +66,7 @@ class DefinitionFactoryTest extends TestCase
                 new Headers
             );
 
-        $this->factory->make('foo', Url::fromString('/'), $response);
+        ($this->make)('foo', Url::fromString('/'), $response);
     }
 
     /**
@@ -93,7 +93,7 @@ class DefinitionFactoryTest extends TestCase
                 )
             );
 
-        $this->factory->make('foo', Url::fromString('/'), $response);
+        ($this->make)('foo', Url::fromString('/'), $response);
     }
 
     public function testMake()
@@ -121,7 +121,7 @@ class DefinitionFactoryTest extends TestCase
             ->method('body')
             ->willReturn(new StringStream('{"identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"linkable_to":[],"rangeable":true}'));
 
-        $definition = $this->factory->make(
+        $definition = ($this->make)(
             'foo',
             Url::fromString('http://example.com/foo'),
             $response
