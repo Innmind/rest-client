@@ -26,7 +26,7 @@ final class Types
 
     public function __construct(string ...$types)
     {
-        if (empty($types)) {
+        if (count($types) === 0) {
             $types = self::defaults()->toPrimitive();
         }
 
