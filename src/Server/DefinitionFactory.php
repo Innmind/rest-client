@@ -6,6 +6,7 @@ namespace Innmind\Rest\Client\Server;
 use Innmind\Rest\Client\{
     Definition\HttpResource,
     Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Decode,
     Exception\DomainException,
 };
 use Innmind\Http\Message\{
@@ -17,10 +18,14 @@ use Innmind\Url\UrlInterface;
 final class DefinitionFactory
 {
     private $denormalize;
+    private $decode;
 
-    public function __construct(DenormalizeDefinition $denormalize)
-    {
+    public function __construct(
+        DenormalizeDefinition $denormalize,
+        Decode $decode
+    ) {
         $this->denormalize = $denormalize;
+        $this->decode = $decode;
     }
 
     public function make(
@@ -38,7 +43,7 @@ final class DefinitionFactory
             throw new DomainException;
         }
 
-        $data = \json_decode((string) $response->body(), true);
+        $data = ($this->decode)('json', $response->body());
         $data['url'] = (string) $url;
 
         return ($this->denormalize)($data, $name);

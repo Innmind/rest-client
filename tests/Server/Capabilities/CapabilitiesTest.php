@@ -10,6 +10,7 @@ use Innmind\Rest\Client\{
     Definition\Types,
     Definition\HttpResource,
     Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Decode\Json,
     Formats,
     Format\Format,
     Format\MediaType,
@@ -55,7 +56,8 @@ class CapabilitiesTest extends TestCase
             Url::fromString('http://example.com/'),
             new UrlResolver,
             new DefinitionFactory(
-                new DenormalizeDefinition($types)
+                new DenormalizeDefinition($types),
+                new Json
             ),
             Formats::of(
                 new Format(

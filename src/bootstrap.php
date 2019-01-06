@@ -80,7 +80,7 @@ function bootstrap(
                         new Factory(
                             $transport,
                             $urlResolver,
-                            new DefinitionFactory($denormalizeDefinition),
+                            new DefinitionFactory($denormalizeDefinition, $decode),
                             $contentTypes
                         )
                     )

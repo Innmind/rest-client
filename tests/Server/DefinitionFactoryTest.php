@@ -8,6 +8,7 @@ use Innmind\Rest\Client\{
     Definition\Types,
     Definition\HttpResource,
     Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Decode\Json,
 };
 use Innmind\Http\{
     Message\Response,
@@ -34,7 +35,8 @@ class DefinitionFactoryTest extends TestCase
         });
 
         $this->factory = new DefinitionFactory(
-            new DenormalizeDefinition($types)
+            new DenormalizeDefinition($types),
+            new Json
         );
     }
 

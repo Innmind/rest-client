@@ -9,6 +9,7 @@ use Innmind\Rest\Client\{
     Server\Capabilities,
     Server\DefinitionFactory,
     Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Decode\Json,
     Definition\Types,
     Formats,
     Format\Format,
@@ -33,7 +34,8 @@ class FactoryTest extends TestCase
             $this->createMock(Transport::class),
             $this->createMock(ResolverInterface::class),
             new DefinitionFactory(
-                new DenormalizeDefinition(new Types)
+                new DenormalizeDefinition(new Types),
+                new Json
             ),
             Formats::of(
                 new Format(
