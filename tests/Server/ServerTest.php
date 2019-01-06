@@ -10,6 +10,7 @@ use Innmind\Rest\Client\{
     Serializer\Normalizer\NormalizeResource,
     Serializer\Denormalizer\DenormalizeDefinition,
     Serializer\Denormalizer\DenormalizeResource,
+    Serializer\Encode,
     Definition\HttpResource as HttpResourceDefinition,
     Definition\Identity as IdentityDefinition,
     Definition\Property as PropertyDefinition,
@@ -83,6 +84,7 @@ class ServerTest extends TestCase
             new ExtractIdentities(new ResolveIdentity($resolver)),
             new DenormalizeResource,
             new NormalizeResource,
+            new Encode\Json,
             new Serializer(
                 [
                     $this->createMock(NormalizerInterface::class),

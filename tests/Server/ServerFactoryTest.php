@@ -17,6 +17,7 @@ use Innmind\Rest\Client\{
     Visitor\ResolveIdentity,
     Serializer\Denormalizer\DenormalizeResource,
     Serializer\Normalizer\NormalizeResource,
+    Serializer\Encode,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\HttpTransport\Transport;
@@ -42,6 +43,7 @@ class ServerFactoryTest extends TestCase
             new ExtractIdentities(new ResolveIdentity($resolver)),
             new DenormalizeResource,
             new NormalizeResource,
+            new Encode\Json,
             $this->createMock(Serializer::class),
             $this->createMock(SpecificationTranslator::class),
             Formats::of(

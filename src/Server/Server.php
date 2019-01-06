@@ -23,6 +23,7 @@ use Innmind\Rest\Client\{
     Response\ExtractIdentities,
     Serializer\Denormalizer\DenormalizeResource,
     Serializer\Normalizer\NormalizeResource,
+    Serializer\Encode,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\Url\{
@@ -47,7 +48,6 @@ use Innmind\Http\{
     Header\Link as LinkHeader,
     Header\LinkValue,
 };
-use Innmind\Filesystem\Stream\StringStream;
 use Innmind\Immutable\{
     SetInterface,
     Map,
@@ -66,6 +66,7 @@ final class Server implements ServerInterface
     private $extractIdentities;
     private $denormalizeResource;
     private $normalizeResource;
+    private $encode;
     private $serializer;
     private $translate;
     private $formats;
@@ -79,6 +80,7 @@ final class Server implements ServerInterface
         ExtractIdentities $extractIdentities,
         DenormalizeResource $denormalizeResource,
         NormalizeResource $normalizeResource,
+        Encode $encode,
         Serializer $serializer,
         SpecificationTranslator $translate,
         Formats $formats
@@ -91,6 +93,7 @@ final class Server implements ServerInterface
         $this->extractIdentities = $extractIdentities;
         $this->denormalizeResource = $denormalizeResource;
         $this->normalizeResource = $normalizeResource;
+        $this->encode = $encode;
         $this->serializer = $serializer;
         $this->translate = $translate;
         $this->formats = $formats;
@@ -203,14 +206,11 @@ final class Server implements ServerInterface
                     ),
                     $this->generateAcceptHeader()
                 ),
-                new StringStream(
-                    $this->serializer->encode(
-                        ($this->normalizeResource)(
-                            $resource,
-                            $definition,
-                            new Access(Access::CREATE)
-                        ),
-                        'json'
+                ($this->encode)(
+                    ($this->normalizeResource)(
+                        $resource,
+                        $definition,
+                        new Access(Access::CREATE)
                     )
                 )
             )
@@ -241,14 +241,11 @@ final class Server implements ServerInterface
                     ),
                     $this->generateAcceptHeader()
                 ),
-                new StringStream(
-                    $this->serializer->serialize(
-                        ($this->normalizeResource)(
-                            $resource,
-                            $definition,
-                            new Access(Access::UPDATE)
-                        ),
-                        'json'
+                ($this->encode)(
+                    ($this->normalizeResource)(
+                        $resource,
+                        $definition,
+                        new Access(Access::UPDATE)
                     )
                 )
             )
