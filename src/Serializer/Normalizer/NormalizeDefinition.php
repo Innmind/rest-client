@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Serializer\Normalizer;
 
 use Innmind\Rest\Client\{
-    Exception\LogicException,
     Definition\HttpResource,
     Definition\Property,
     Definition\Identity,
@@ -15,20 +14,15 @@ use Innmind\Immutable\{
     Map,
     Set,
 };
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-final class DefinitionNormalizer implements NormalizerInterface
+final class NormalizeDefinition
 {
-    public function normalize($data, $format = null, array $context = []): array
+    public function __invoke(HttpResource $definition): array
     {
-        if (!$this->supportsNormalization($data, $format)) {
-            throw new LogicException;
-        }
-
         return [
-            'url' => (string) $data->url(),
-            'identity' => (string) $data->identity(),
-            'properties' => $data
+            'url' => (string) $definition->url(),
+            'identity' => (string) $definition->identity(),
+            'properties' => $definition
                 ->properties()
                 ->reduce(
                     [],
@@ -44,19 +38,14 @@ final class DefinitionNormalizer implements NormalizerInterface
                     }
                 ),
             'metas' => array_combine(
-                $data->metas()->keys()->toPrimitive(),
-                $data->metas()->values()->toPrimitive()
+                $definition->metas()->keys()->toPrimitive(),
+                $definition->metas()->values()->toPrimitive()
             ),
             'linkable_to' => array_combine(
-                $data->links()->keys()->toPrimitive(),
-                $data->links()->values()->toPrimitive()
+                $definition->links()->keys()->toPrimitive(),
+                $definition->links()->values()->toPrimitive()
             ),
-            'rangeable' => $data->isRangeable(),
+            'rangeable' => $definition->isRangeable(),
         ];
-    }
-
-    public function supportsNormalization($data, $format = null): bool
-    {
-        return $data instanceof HttpResource;
     }
 }

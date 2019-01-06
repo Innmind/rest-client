@@ -11,6 +11,7 @@ use Innmind\Rest\Client\{
     Serializer\Decode,
     Serializer\Denormalizer\DenormalizeCapabilitiesNames,
     Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Normalizer\NormalizeDefinition,
     Definition\Types,
 };
 use Innmind\Url\UrlInterface;
@@ -32,6 +33,7 @@ class CacheFactoryTest extends TestCase
             $this->createMock(Decode::class),
             new DenormalizeCapabilitiesNames,
             new DenormalizeDefinition($types),
+            new NormalizeDefinition,
             $this->createMock(SerializerInterface::class),
             $this->inner = $this->createMock(Factory::class)
         );

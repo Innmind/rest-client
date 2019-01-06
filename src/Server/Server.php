@@ -22,6 +22,7 @@ use Innmind\Rest\Client\{
     Response\ExtractIdentity,
     Response\ExtractIdentities,
     Serializer\Denormalizer\DenormalizeResource,
+    Serializer\Normalizer\NormalizeDefinition,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\Url\{

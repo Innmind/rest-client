@@ -8,6 +8,7 @@ use Innmind\Rest\Client\{
     Serializer\Decode,
     Serializer\Denormalizer\DenormalizeCapabilitiesNames,
     Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Normalizer\NormalizeDefinition,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Filesystem\Adapter;
@@ -19,6 +20,7 @@ final class CacheFactory implements Factory
     private $decode;
     private $denormalizeNames;
     private $denormalizeDefinition;
+    private $normalizeDefinition;
     private $serializer;
     private $make;
 
@@ -27,6 +29,7 @@ final class CacheFactory implements Factory
         Decode $decode,
         DenormalizeCapabilitiesNames $denormalizeNames,
         DenormalizeDefinition $denormalizeDefinition,
+        NormalizeDefinition $normalizeDefinition,
         SerializerInterface $serializer,
         Factory $make
     ) {
@@ -34,6 +37,7 @@ final class CacheFactory implements Factory
         $this->decode = $decode;
         $this->denormalizeNames = $denormalizeNames;
         $this->denormalizeDefinition = $denormalizeDefinition;
+        $this->normalizeDefinition = $normalizeDefinition;
         $this->serializer = $serializer;
         $this->make = $make;
     }
@@ -46,6 +50,7 @@ final class CacheFactory implements Factory
             $this->decode,
             $this->denormalizeNames,
             $this->denormalizeDefinition,
+            $this->normalizeDefinition,
             $this->serializer,
             $url
         );

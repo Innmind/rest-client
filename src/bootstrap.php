@@ -17,6 +17,7 @@ use Innmind\Rest\Client\{
     Serializer\Denormalizer\DenormalizeCapabilitiesNames,
     Serializer\Denormalizer\DenormalizeDefinition,
     Serializer\Denormalizer\DenormalizeResource,
+    Serializer\Normalizer\NormalizeDefinition,
     Definition\Types,
     Visitor\ResolveIdentity,
     Translator\Specification\SpecificationTranslator,
@@ -50,7 +51,6 @@ function bootstrap(
     $resolveIdentity = new ResolveIdentity($urlResolver);
 
     $serializer = Serializer::build(
-        $definitionNormalizer = new Normalizer\DefinitionNormalizer,
         new Normalizer\ResourceNormalizer
     );
 
@@ -75,6 +75,7 @@ function bootstrap(
                         $decode,
                         new DenormalizeCapabilitiesNames,
                         $denormalizeDefinition,
+                        new NormalizeDefinition,
                         $serializer,
                         new Factory(
                             $transport,

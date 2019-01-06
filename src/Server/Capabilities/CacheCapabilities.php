@@ -9,6 +9,7 @@ use Innmind\Rest\Client\{
     Serializer\Decode,
     Serializer\Denormalizer\DenormalizeCapabilitiesNames,
     Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Normalizer\NormalizeDefinition,
 };
 use Innmind\Filesystem\{
     Adapter,
@@ -33,6 +34,7 @@ final class CacheCapabilities implements CapabilitiesInterface
     private $decode;
     private $denormalizeNames;
     private $denormalizeDefinition;
+    private $normalizeDefinition;
     private $serializer;
     private $directory;
     private $names;
@@ -44,6 +46,7 @@ final class CacheCapabilities implements CapabilitiesInterface
         Decode $decode,
         DenormalizeCapabilitiesNames $denormalizeNames,
         DenormalizeDefinition $denormalizeDefinition,
+        NormalizeDefinition $normalizeDefinition,
         SerializerInterface $serializer,
         UrlInterface $host
     ) {
@@ -52,6 +55,7 @@ final class CacheCapabilities implements CapabilitiesInterface
         $this->decode = $decode;
         $this->denormalizeNames = $denormalizeNames;
         $this->denormalizeDefinition = $denormalizeDefinition;
+        $this->normalizeDefinition = $normalizeDefinition;
         $this->serializer = $serializer;
         $this->directory = \md5((string) $host);
         $this->definitions = new Map('string', HttpResource::class);
@@ -99,7 +103,10 @@ final class CacheCapabilities implements CapabilitiesInterface
             return $definition;
         } catch (FileNotFound $e) {
             $definition = $this->capabilities->get($name);
-            $this->persist($name, $definition);
+            $this->persist(
+                $name,
+                ($this->normalizeDefinition)($definition)
+            );
             $this->definitions = $this->definitions->put(
                 $name,
                 $definition
@@ -155,7 +162,7 @@ final class CacheCapabilities implements CapabilitiesInterface
         return $directory->get($file);
     }
 
-    private function persist(string $name, $data): self
+    private function persist(string $name, array $data): self
     {
         if ($this->filesystem->has($this->directory)) {
             $directory = $this->filesystem->get($this->directory);
@@ -167,7 +174,7 @@ final class CacheCapabilities implements CapabilitiesInterface
             new File\File(
                 $name.'.json',
                 new StringStream(
-                    $this->serializer->serialize(
+                    $this->serializer->encode(
                         $data,
                         'json'
                     )

@@ -8,10 +8,10 @@ use Innmind\Rest\Client\{
     Server\Capabilities,
     Definition\Types,
     Definition\HttpResource,
-    Serializer\Normalizer\DefinitionNormalizer,
     Serializer\Decode,
     Serializer\Denormalizer\DenormalizeCapabilitiesNames,
     Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Normalizer\NormalizeDefinition,
 };
 use Innmind\Filesystem\{
     Adapter\MemoryAdapter,
@@ -28,6 +28,7 @@ use Innmind\Immutable\{
 use Symfony\Component\Serializer\{
     Serializer,
     Encoder\JsonEncoder,
+    Normalizer\GetSetMethodNormalizer,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -36,6 +37,7 @@ class CacheCapabilitiesTest extends TestCase
     private $capabilities;
     private $inner;
     private $filesystem;
+    private $normalizeDefinition;
     private $serializer;
     private $directory;
     private $definition;
@@ -56,10 +58,9 @@ class CacheCapabilitiesTest extends TestCase
             new Decode\Json,
             new DenormalizeCapabilitiesNames,
             $denormalizeDefinition,
+            $this->normalizeDefinition = new NormalizeDefinition,
             $this->serializer = new Serializer(
-                [
-                    new DefinitionNormalizer($types),
-                ],
+                [new GetSetMethodNormalizer],
                 [new JsonEncoder]
             ),
             Url::fromString('http://example.com/')
@@ -203,7 +204,7 @@ class CacheCapabilitiesTest extends TestCase
         $this->assertInstanceOf(HttpResource::class, $definition);
         $this->assertSame(
             $this->raw,
-            $this->serializer->normalize($definition)
+            ($this->normalizeDefinition)($definition)
         );
         $this->assertSame($definition, $this->capabilities->get('foo'));
     }
