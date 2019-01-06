@@ -25,7 +25,7 @@ final class Client implements ClientInterface
     public function server(string $url): Server
     {
         $url = Url::fromString($url);
-        $hash = md5((string) $url);
+        $hash = \md5((string) $url);
 
         if ($this->servers->contains($hash)) {
             return $this->servers->get($hash);

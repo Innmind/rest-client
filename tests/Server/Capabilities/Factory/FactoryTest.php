@@ -36,12 +36,13 @@ class FactoryTest extends TestCase
                 new DefinitionNormalizer(new Types)
             ),
             new Formats(
-                (new Map('string', Format::class))
-                    ->put(
+                Map::of('string', Format::class)
+                    (
                         'json',
                         new Format(
                             'json',
-                            (new Set(MediaType::class))->add(
+                            Set::of(
+                                MediaType::class,
                                 new MediaType('application/json', 0)
                             ),
                             1

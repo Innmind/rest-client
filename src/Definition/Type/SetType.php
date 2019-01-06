@@ -75,7 +75,7 @@ final class SetType implements Type
      */
     public function denormalize($data)
     {
-        if (!is_array($data)) {
+        if (!\is_array($data)) {
             throw new DenormalizationException('The value must be an array');
         }
 

@@ -47,7 +47,7 @@ final class DateType implements Type
      */
     public function normalize($data)
     {
-        if (is_string($data)) {
+        if (\is_string($data)) {
             try {
                 $data = new \DateTimeImmutable($data);
             } catch (\Exception $e) {
@@ -69,7 +69,7 @@ final class DateType implements Type
      */
     public function denormalize($data)
     {
-        if (!is_string($data)) {
+        if (!\is_string($data)) {
             throw new DenormalizationException('The value must be a string');
         }
 

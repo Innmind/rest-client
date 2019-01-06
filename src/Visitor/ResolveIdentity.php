@@ -20,13 +20,13 @@ final class ResolveIdentity
         UrlInterface $destination
     ): string {
         $source = (string) $source;
-        $source = rtrim($source, '/').'/';
+        $source = \rtrim($source, '/').'/';
 
         $trueDestination = $this->resolver->resolve(
             $source,
             (string) $destination
         );
 
-        return str_replace($source, '', $trueDestination);
+        return \str_replace($source, '', $trueDestination);
     }
 }

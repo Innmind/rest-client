@@ -103,11 +103,10 @@ final class Server implements ServerInterface
             $query ?? (string) $definition->url()
         );
         $url = Url::fromString($url);
-        $headers = new Map('string', Header::class);
+        $headers = Headers::of();
 
         if ($range !== null) {
-            $headers = $headers->put(
-                'Range',
+            $headers = Headers::of(
                 new RangeHeader(
                     new RangeValue(
                         'resource',
@@ -121,9 +120,9 @@ final class Server implements ServerInterface
         $response = ($this->fulfill)(
             new Request(
                 $url,
-                new Method(Method::GET),
+                Method::get(),
                 new ProtocolVersion(1, 1),
-                new Headers($headers)
+                $headers
             )
         );
 
@@ -144,14 +143,10 @@ final class Server implements ServerInterface
                     $definition->url(),
                     $identity
                 ),
-                new Method(Method::GET),
+                Method::get(),
                 new ProtocolVersion(1, 1),
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Accept',
-                            $this->generateAcceptHeader()
-                        )
+                Headers::of(
+                    $this->generateAcceptHeader()
                 )
             )
         );
@@ -186,23 +181,16 @@ final class Server implements ServerInterface
         $response = ($this->fulfill)(
             new Request(
                 $definition->url(),
-                new Method(Method::POST),
+                Method::post(),
                 new ProtocolVersion(1, 1),
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Content-Type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'application',
-                                    'json'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'application',
+                            'json'
                         )
-                        ->put(
-                            'Accept',
-                            $this->generateAcceptHeader()
-                        )
+                    ),
+                    $this->generateAcceptHeader()
                 ),
                 new StringStream(
                     $this->serializer->serialize(
@@ -236,23 +224,16 @@ final class Server implements ServerInterface
                     $definition->url(),
                     $identity
                 ),
-                new Method(Method::PUT),
+                Method::put(),
                 new ProtocolVersion(1, 1),
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Content-Type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'application',
-                                    'json'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'application',
+                            'json'
                         )
-                        ->put(
-                            'Accept',
-                            $this->generateAcceptHeader()
-                        )
+                    ),
+                    $this->generateAcceptHeader()
                 ),
                 new StringStream(
                     $this->serializer->serialize(
@@ -279,7 +260,7 @@ final class Server implements ServerInterface
                     $definition->url(),
                     $identity
                 ),
-                new Method(Method::DELETE),
+                Method::delete(),
                 new ProtocolVersion(1, 1)
             )
         );
@@ -314,12 +295,11 @@ final class Server implements ServerInterface
                     $definition->url(),
                     $identity
                 ),
-                new Method(Method::LINK),
+                Method::link(),
                 new ProtocolVersion(1, 1),
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put('Accept', $this->generateAcceptHeader())
-                        ->put('Link', $this->generateLinkHeader($links))
+                Headers::of(
+                    $this->generateAcceptHeader(),
+                    $this->generateLinkHeader($links)
                 )
             )
         );
@@ -354,12 +334,11 @@ final class Server implements ServerInterface
                     $definition->url(),
                     $identity
                 ),
-                new Method(Method::UNLINK),
+                Method::unlink(),
                 new ProtocolVersion(1, 1),
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put('Accept', $this->generateAcceptHeader())
-                        ->put('Link', $this->generateLinkHeader($links))
+                Headers::of(
+                    $this->generateAcceptHeader(),
+                    $this->generateLinkHeader($links)
                 )
             )
         );
@@ -382,7 +361,7 @@ final class Server implements ServerInterface
         Identity $identity
     ): UrlInterface {
         $url = (string) $url;
-        $url = rtrim($url, '/').'/'.$identity;
+        $url = \rtrim($url, '/').'/'.$identity;
 
         return Url::fromString($url);
     }

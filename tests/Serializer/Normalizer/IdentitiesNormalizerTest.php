@@ -14,7 +14,6 @@ use Innmind\Rest\Client\{
 use Innmind\Http\{
     Message\Response,
     Headers\Headers,
-    Header,
     Header\Value,
     Header\Link,
     Header\LinkValue,
@@ -139,9 +138,7 @@ class IdentitiesNormalizerTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    new Map('string', Header::class)
-                )
+                Headers::of()
             );
 
         $identities = $this->normalizer->denormalize(
@@ -166,25 +163,21 @@ class IdentitiesNormalizerTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Link',
-                            new Link(
-                                new LinkValue(
-                                    Url::fromString('/foo/42'),
-                                    'resource'
-                                ),
-                                new LinkValue(
-                                    Url::fromString('/foo/66'),
-                                    'resource'
-                                ),
-                                new LinkValue(
-                                    Url::fromString('/foo?range[]=10&range[]=20'),
-                                    'next'
-                                )
-                            )
+                Headers::of(
+                    new Link(
+                        new LinkValue(
+                            Url::fromString('/foo/42'),
+                            'resource'
+                        ),
+                        new LinkValue(
+                            Url::fromString('/foo/66'),
+                            'resource'
+                        ),
+                        new LinkValue(
+                            Url::fromString('/foo?range[]=10&range[]=20'),
+                            'next'
                         )
+                    )
                 )
             );
 

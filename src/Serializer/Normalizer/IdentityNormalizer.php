@@ -53,8 +53,7 @@ final class IdentityNormalizer implements DenormalizerInterface
         $header = Url::fromString((string) $header);
 
         return new Identity\Identity(
-            call_user_func(
-                $this->resolveIdentity,
+            ($this->resolveIdentity)(
                 $definition->url(),
                 $header
             )

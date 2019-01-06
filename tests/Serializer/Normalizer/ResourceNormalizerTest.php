@@ -398,15 +398,15 @@ class ResourceNormalizerTest extends TestCase
         $resource = $this->normalizer->normalize(
             new HttpResource(
                 'foo',
-                (new Map('string', Property::class))
-                    ->put(
+                Map::of('string', Property::class)
+                    (
                         'url',
                         new Property(
                             'url',
                             'http://example.com/'
                         )
                     )
-                    ->put(
+                    (
                         'onCreate',
                         new Property(
                             'onCreate',
@@ -437,15 +437,15 @@ class ResourceNormalizerTest extends TestCase
         $resource = $this->normalizer->normalize(
             new HttpResource(
                 'foo',
-                (new Map('string', Property::class))
-                    ->put(
+                Map::of('string', Property::class)
+                    (
                         'uri',
                         new Property(
                             'uri',
                             'http://example.com/'
                         )
                     )
-                    ->put(
+                    (
                         'onCreate',
                         new Property(
                             'onCreate',
@@ -476,8 +476,8 @@ class ResourceNormalizerTest extends TestCase
         $resource = $this->normalizer->normalize(
             new HttpResource(
                 'foo',
-                (new Map('string', Property::class))
-                    ->put(
+                Map::of('string', Property::class)
+                    (
                         'onCreate',
                         new Property(
                             'onCreate',

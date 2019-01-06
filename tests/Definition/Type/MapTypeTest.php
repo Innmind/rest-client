@@ -67,25 +67,22 @@ class MapTypeTest extends TestCase
         $this->assertSame(
             [2 => '30/01/2016'],
             $date->normalize(
-                (new Map('string', 'string'))->put('2', '2016-01-30')
+                Map::of('string', 'string')
+                    ('2', '2016-01-30')
             )
         );
         $this->assertSame(
             [2 => '30/01/2016'],
             $date->normalize(
-                (new Map('string', \DateTimeInterface::class))->put(
-                    '2',
-                    new \DateTime('2016-01-30')
-                )
+                Map::of('string', \DateTimeInterface::class)
+                    ('2', new \DateTime('2016-01-30'))
             )
         );
         $this->assertSame(
             [2 => '30/01/2016'],
             $date->normalize(
-                (new Map('string', \DateTimeInterface::class))->put(
-                    '2',
-                    new \DateTimeImmutable('2016-01-30')
-                )
+                Map::of('string', \DateTimeInterface::class)
+                    ('2', new \DateTimeImmutable('2016-01-30'))
             )
         );
     }

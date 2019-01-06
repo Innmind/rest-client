@@ -58,8 +58,8 @@ class CapabilitiesTest extends TestCase
                 new DefinitionNormalizer($types)
             ),
             new Formats(
-                (new Map('string', Format::class))
-                    ->put(
+                Map::of('string', Format::class)
+                    (
                         'json',
                         new Format(
                             'json',
@@ -69,7 +69,7 @@ class CapabilitiesTest extends TestCase
                             1
                         )
                     )
-                    ->put(
+                    (
                         'xml',
                         new Format(
                             'xml',
@@ -136,21 +136,17 @@ class CapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Link',
-                            new Link(
-                                new LinkValue(
-                                    Url::fromString('/foo'),
-                                    'foo'
-                                ),
-                                new LinkValue(
-                                    Url::fromString('/bar'),
-                                    'bar'
-                                )
-                            )
+                Headers::of(
+                    new Link(
+                        new LinkValue(
+                            Url::fromString('/foo'),
+                            'foo'
+                        ),
+                        new LinkValue(
+                            Url::fromString('/bar'),
+                            'bar'
                         )
+                    )
                 )
             );
 
@@ -180,21 +176,17 @@ class CapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Link',
-                            new Link(
-                                new LinkValue(
-                                    Url::fromString('/foo'),
-                                    'foo'
-                                ),
-                                new LinkValue(
-                                    Url::fromString('/bar'),
-                                    'bar'
-                                )
-                            )
+                Headers::of(
+                    new Link(
+                        new LinkValue(
+                            Url::fromString('/foo'),
+                            'foo'
+                        ),
+                        new LinkValue(
+                            Url::fromString('/bar'),
+                            'bar'
                         )
+                    )
                 )
             );
         $this
@@ -214,17 +206,13 @@ class CapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Content-Type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'application',
-                                    'json'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'application',
+                            'json'
                         )
+                    )
                 )
             );
         $response
@@ -261,21 +249,17 @@ class CapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Link',
-                            new Link(
-                                new LinkValue(
-                                    Url::fromString('/foo'),
-                                    'foo'
-                                ),
-                                new LinkValue(
-                                    Url::fromString('/bar'),
-                                    'bar'
-                                )
-                            )
+                Headers::of(
+                    new Link(
+                        new LinkValue(
+                            Url::fromString('/foo'),
+                            'foo'
+                        ),
+                        new LinkValue(
+                            Url::fromString('/bar'),
+                            'bar'
                         )
+                    )
                 )
             );
         $this
@@ -293,17 +277,13 @@ class CapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Content-Type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'application',
-                                    'json'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'application',
+                            'json'
                         )
+                    )
                 )
             );
         $response
@@ -329,17 +309,13 @@ class CapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Content-Type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'application',
-                                    'json'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'application',
+                            'json'
                         )
+                    )
                 )
             );
         $response

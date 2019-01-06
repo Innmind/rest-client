@@ -81,22 +81,24 @@ class ServerTest extends TestCase
             ),
             new SpecificationTranslator,
             new Formats(
-                (new Map('string', Format::class))
-                    ->put(
+                Map::of('string', Format::class)
+                    (
                         'json',
                         new Format(
                             'json',
-                            (new Set(MediaType::class))->add(
+                            Set::of(
+                                MediaType::class,
                                 new MediaType('application/json', 0)
                             ),
                             1
                         )
                     )
-                    ->put(
+                    (
                         'xml',
                         new Format(
                             'xml',
-                            (new Set(MediaType::class))->add(
+                            Set::of(
+                                MediaType::class,
                                 new MediaType('text/xml', 0)
                             ),
                             0
@@ -458,9 +460,7 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    new Map('string', Header::class)
-                )
+                new Headers
             );
 
         $this->server->read('foo', new Identity\Identity('uuid'));
@@ -488,17 +488,13 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Content-Type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'text',
-                                    'plain'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'text',
+                            'plain'
                         )
+                    )
                 )
             );
 
@@ -531,17 +527,13 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Content-Type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'application',
-                                    'json'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'application',
+                            'json'
                         )
+                    )
                 )
             );
         $response
@@ -611,8 +603,8 @@ class ServerTest extends TestCase
         $identity = $this->server->create(
             new HttpResource(
                 'foo',
-                (new Map('string', Property::class))
-                    ->put(
+                Map::of('string', Property::class)
+                    (
                         'url',
                         new Property(
                             'url',
@@ -741,14 +733,16 @@ class ServerTest extends TestCase
         $this->server->link(
             'foo',
             new Identity\Identity('some-uuid'),
-            (new Set(Link::class))
-                ->add(new Link(
+            Set::of(
+                Link::class,
+                new Link(
                     'baz',
                     new Identity\Identity('cano'),
                     'canonical',
                     (new Map('string', Parameter::class))
                         ->put('attr', new Parameter\Parameter('attr', 'val'))
-                ))
+                )
+            )
         );
     }
 
@@ -783,14 +777,16 @@ class ServerTest extends TestCase
             $this->server->link(
                 'foo',
                 new Identity\Identity('some-uuid'),
-                (new Set(Link::class))
-                    ->add(new Link(
+                Set::of(
+                    Link::class,
+                    new Link(
                         'bar',
                         new Identity\Identity('cano'),
                         'canonical',
                         (new Map('string', Parameter::class))
                             ->put('attr', new Parameter\Parameter('attr', 'val'))
-                    ))
+                    )
+                )
             )
         );
     }
@@ -839,14 +835,16 @@ class ServerTest extends TestCase
         $this->server->unlink(
             'foo',
             new Identity\Identity('some-uuid'),
-            (new Set(Link::class))
-                ->add(new Link(
+            Set::of(
+                Link::class,
+                new Link(
                     'baz',
                     new Identity\Identity('cano'),
                     'canonical',
                     (new Map('string', Parameter::class))
                         ->put('attr', new Parameter\Parameter('attr', 'val'))
-                ))
+                )
+            )
         );
     }
 
@@ -881,14 +879,16 @@ class ServerTest extends TestCase
             $this->server->unlink(
                 'foo',
                 new Identity\Identity('some-uuid'),
-                (new Set(Link::class))
-                    ->add(new Link(
+                Set::of(
+                    Link::class,
+                    new Link(
                         'bar',
                         new Identity\Identity('cano'),
                         'canonical',
                         (new Map('string', Parameter::class))
                             ->put('attr', new Parameter\Parameter('attr', 'val'))
-                    ))
+                    )
+                )
             )
         );
     }

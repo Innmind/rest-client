@@ -41,7 +41,7 @@ final class CacheCapabilities implements CapabilitiesInterface
         $this->capabilities = $capabilities;
         $this->filesystem = $filesystem;
         $this->serializer = $serializer;
-        $this->directory = md5((string) $host);
+        $this->directory = \md5((string) $host);
         $this->definitions = new Map('string', HttpResource::class);
     }
 

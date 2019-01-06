@@ -84,8 +84,8 @@ class TypesTest extends TestCase
                 return 'type2';
             }
         };
-        $class1 = get_class($type1);
-        $class2 = get_class($type2);
+        $class1 = \get_class($type1);
+        $class2 = \get_class($type2);
         $types = new Types($class1, $class2);
 
         $this->assertInstanceOf($class1, $types->build('type1'));

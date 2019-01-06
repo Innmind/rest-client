@@ -43,22 +43,24 @@ final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInt
         }
 
         $properties = new Map('string', Property::class);
-        $metas = new Map('scalar', 'variable');
-        $links = new Map('string', 'string');
+        $metas = Map::of(
+            'scalar',
+            'variable',
+            \array_keys($definition['metas']),
+            \array_values($definition['metas'])
+        );
+        $links = Map::of(
+            'string',
+            'string',
+            \array_keys($definition['linkable_to']),
+            \array_values($definition['linkable_to'])
+        );
 
         foreach ($definition['properties'] as $name => $value) {
             $properties = $properties->put(
                 $name,
                 $this->buildProperty($name, $value)
             );
-        }
-
-        foreach ($definition['metas'] as $key => $value) {
-            $metas = $metas->put($key, $value);
-        }
-
-        foreach ($definition['linkable_to'] as $key => $value) {
-            $links = $links->put($key, $value);
         }
 
         return new HttpResource(
@@ -74,7 +76,7 @@ final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInt
 
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return is_array($data) && $type === HttpResource::class;
+        return \is_array($data) && $type === HttpResource::class;
     }
 
     public function normalize($data, $format = null, array $context = []): array
@@ -120,11 +122,7 @@ final class DefinitionNormalizer implements DenormalizerInterface, NormalizerInt
 
     private function buildProperty(string $name, array $definition): Property
     {
-        $variants = new Set('string');
-
-        foreach ($definition['variants'] as $variant) {
-            $variants = $variants->add($variant);
-        }
+        $variants = Set::of('string', ...\array_values($definition['variants']));
 
         return new Property(
             $name,

@@ -76,9 +76,9 @@ final class ResourceNormalizer implements DenormalizerInterface, NormalizerInter
 
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return is_array($data) &&
+        return \is_array($data) &&
             isset($data['resource']) &&
-            is_array($data['resource']) &&
+            \is_array($data['resource']) &&
             $type === HttpResource::class;
     }
 

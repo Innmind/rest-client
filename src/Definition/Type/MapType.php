@@ -83,7 +83,7 @@ final class MapType implements Type
      */
     public function denormalize($data)
     {
-        if (!is_array($data) && !$data instanceof \Traversable) {
+        if (!\is_array($data) && !$data instanceof \Traversable) {
             throw new DenormalizationException('The value must be an array');
         }
 

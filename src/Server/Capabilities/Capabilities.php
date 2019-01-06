@@ -22,13 +22,11 @@ use Innmind\Http\{
     Message\Method\Method,
     Headers\Headers,
     ProtocolVersion\ProtocolVersion,
-    Header,
     Header\Value,
     Header\LinkValue,
     Header\Accept,
     Header\AcceptValue,
 };
-use Innmind\Filesystem\Stream\NullStream;
 use Innmind\Immutable\{
     MapInterface,
     SetInterface,
@@ -79,10 +77,8 @@ final class Capabilities implements CapabilitiesInterface
             (
                 new Request(
                     $this->optionsUrl,
-                    new Method(Method::OPTIONS),
-                    new ProtocolVersion(1, 1),
-                    new Headers,
-                    new NullStream
+                    Method::options(),
+                    new ProtocolVersion(1, 1)
                 )
             )
             ->headers();
@@ -128,33 +124,28 @@ final class Capabilities implements CapabilitiesInterface
         $response = ($this->fulfill)(
             new Request(
                 $url,
-                new Method(Method::OPTIONS),
+                Method::options(),
                 new ProtocolVersion(1, 1),
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Accept',
-                            new Accept(
-                                ...$this
-                                    ->formats
-                                    ->all()
-                                    ->values()
-                                    ->sort(function(Format $a, Format $b): bool {
-                                        return $a->priority() < $b->priority();
-                                    })
-                                    ->reduce(
-                                        new Set(Value::class),
-                                        function(Set $values, Format $format): Set {
-                                            return $values->add(new AcceptValue(
-                                                $format->preferredMediaType()->topLevel(),
-                                                $format->preferredMediaType()->subType()
-                                            ));
-                                        }
-                                    )
+                Headers::of(
+                    new Accept(
+                        ...$this
+                            ->formats
+                            ->all()
+                            ->values()
+                            ->sort(function(Format $a, Format $b): bool {
+                                return $a->priority() < $b->priority();
+                            })
+                            ->reduce(
+                                new Set(Value::class),
+                                function(Set $values, Format $format): Set {
+                                    return $values->add(new AcceptValue(
+                                        $format->preferredMediaType()->topLevel(),
+                                        $format->preferredMediaType()->subType()
+                                    ));
+                                }
                             )
-                        )
-                ),
-                new NullStream
+                    )
+                )
             )
         );
         $definition = $this->factory->make(

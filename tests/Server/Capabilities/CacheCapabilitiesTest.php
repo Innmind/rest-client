@@ -105,9 +105,7 @@ class CacheCapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('names')
             ->willReturn(
-                (new Set('string'))
-                    ->add('foo')
-                    ->add('bar')
+                Set::of('string', 'foo', 'bar')
             );
         $names = $this->capabilities->names();
 
@@ -194,7 +192,7 @@ class CacheCapabilitiesTest extends TestCase
                 (new Directory($this->directory))->add(
                     new File(
                         'foo.json',
-                        new StringStream(json_encode($this->raw))
+                        new StringStream(\json_encode($this->raw))
                     )
                 )
             );
@@ -216,7 +214,7 @@ class CacheCapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('names')
             ->willReturn(
-                (new Set('string'))->add('foo')->add('bar')
+                Set::of('string', 'foo', 'bar')
             );
         $this
             ->inner
@@ -256,9 +254,7 @@ class CacheCapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('names')
             ->willReturn(
-                (new Set('string'))
-                    ->add('foo')
-                    ->add('bar')
+                Set::of('string', 'foo', 'bar')
             );
         $this
             ->filesystem

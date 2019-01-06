@@ -14,7 +14,7 @@ use Innmind\Rest\Client\{
 use Innmind\Http\{
     Message\Response,
     Headers\Headers,
-    Header,
+    Header\Header,
     Header\Value\Value,
     Header\HeaderValue,
     Header\Location,
@@ -164,15 +164,11 @@ class IdentityNormalizerTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Location',
-                            new Header\Header(
-                                'Location',
-                                new Value('http://example.com/foo/42')
-                            )
-                        )
+                Headers::of(
+                    new Header(
+                        'Location',
+                        new Value('http://example.com/foo/42')
+                    )
                 )
             );
 
@@ -191,16 +187,12 @@ class IdentityNormalizerTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Location',
-                            new Location(
-                                new LocationValue(
-                                    Url::fromString('http://example.com/foo/42')
-                                )
-                            )
+                Headers::of(
+                    new Location(
+                        new LocationValue(
+                            Url::fromString('http://example.com/foo/42')
                         )
+                    )
                 )
             );
 

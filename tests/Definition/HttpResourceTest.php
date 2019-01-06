@@ -114,8 +114,8 @@ class HttpResourceTest extends TestCase
             new Identity('uuid'),
             new Map('string', Property::class),
             new Map('scalar', 'variable'),
-            (new Map('string', 'string'))
-                ->put('rel', 'res'),
+            Map::of('string', 'string')
+                ('rel', 'res'),
             true
         );
 

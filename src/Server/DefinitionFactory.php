@@ -38,7 +38,7 @@ final class DefinitionFactory
             throw new DomainException;
         }
 
-        $data = json_decode((string) $response->body(), true);
+        $data = \json_decode((string) $response->body(), true);
         $data['url'] = (string) $url;
 
         return $this->denormalizer->denormalize(

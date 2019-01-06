@@ -34,8 +34,8 @@ function bootstrap(
     Formats $contentTypes = null
 ): Client {
     $contentTypes = $contentTypes ?? new Formats(
-        (new Map('string', Format::class))
-            ->put('json', new Format(
+        Map::of('string', Format::class)
+            ('json', new Format(
                 'json',
                 Set::of(MediaType::class, new MediaType('application/json', 0)),
                 0

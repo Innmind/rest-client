@@ -16,8 +16,10 @@ class FormatTest extends TestCase
     {
         $format = new Format(
             'json',
-            $types = (new Set(MediaType::class))
-                ->add(new MediaType('application/json', 42)),
+            $types = Set::of(
+                MediaType::class,
+                new MediaType('application/json', 42)
+            ),
             24
         );
 
@@ -31,9 +33,11 @@ class FormatTest extends TestCase
     {
         $format = new Format(
             'json',
-            (new Set(MediaType::class))
-                ->add(new MediaType('application/json', 42))
-                ->add(new MediaType('text/json', 0)),
+            Set::of(
+                MediaType::class,
+                new MediaType('application/json', 42),
+                new MediaType('text/json', 0)
+            ),
             24
         );
 

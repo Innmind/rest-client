@@ -18,17 +18,11 @@ final class CapabilitiesNamesNormalizer implements DenormalizerInterface
             throw new LogicException;
         }
 
-        $set = new Set('string');
-
-        foreach ($data as $value) {
-            $set = $set->add($value);
-        }
-
-        return $set;
+        return Set::of('string', ...\array_values($data));
     }
 
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return is_array($data) && $type === 'capabilities_names';
+        return \is_array($data) && $type === 'capabilities_names';
     }
 }

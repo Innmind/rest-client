@@ -66,9 +66,7 @@ class DefinitionFactoryTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    new Map('string', Header::class)
-                )
+                new Headers
             );
 
         $this->factory->make('foo', Url::fromString('/'), $response);
@@ -88,17 +86,13 @@ class DefinitionFactoryTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'content-type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'text',
-                                    'plain'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'text',
+                            'plain'
                         )
+                    )
                 )
             );
 
@@ -116,17 +110,13 @@ class DefinitionFactoryTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'content-type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'application',
-                                    'json'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'application',
+                            'json'
                         )
+                    )
                 )
             );
         $response
