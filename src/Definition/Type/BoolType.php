@@ -6,12 +6,12 @@ namespace Innmind\Rest\Client\Definition\Type;
 use Innmind\Rest\Client\{
     Definition\Types,
     Definition\Type,
-    Exception\DomainException
+    Exception\DomainException,
 };
 
 final class BoolType implements Type
 {
-    public static function fromString(string $type, Types $types): Type
+    public static function fromString(string $type, Types $build): Type
     {
         if ($type !== 'bool') {
             throw new DomainException;

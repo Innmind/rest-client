@@ -11,42 +11,50 @@ use Innmind\Rest\Client\{
     Translator\SpecificationTranslator,
     Formats,
     Format\Format,
-    Format\MediaType
+    Format\MediaType,
+    Response\ExtractIdentity,
+    Response\ExtractIdentities,
+    Visitor\ResolveIdentity,
+    Serializer\Denormalizer\DenormalizeResource,
+    Serializer\Normalizer\NormalizeResource,
+    Serializer\Encode,
+    Serializer\Decode,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Immutable\{
     Map,
-    Set
+    Set,
 };
-use Symfony\Component\Serializer\Serializer;
 use PHPUnit\Framework\TestCase;
 
 class ServerFactoryTest extends TestCase
 {
-    private $factory;
+    private $make;
     private $capabilities;
 
     public function setUp()
     {
-        $this->factory = new ServerFactory(
+        $this->make = new ServerFactory(
             $this->createMock(Transport::class),
-            $this->createMock(ResolverInterface::class),
-            $this->createMock(Serializer::class),
+            $resolver = $this->createMock(ResolverInterface::class),
+            new ExtractIdentity(new ResolveIdentity($resolver)),
+            new ExtractIdentities(new ResolveIdentity($resolver)),
+            new DenormalizeResource,
+            new NormalizeResource,
+            new Encode\Json,
+            new Decode\Json,
             $this->createMock(SpecificationTranslator::class),
-            new Formats(
-                (new Map('string', Format::class))
-                    ->put(
-                        'json',
-                        new Format(
-                            'json',
-                            (new Set(MediaType::class))->add(
-                                new MediaType('application/json', 0)
-                            ),
-                            1
-                        )
-                    )
+            Formats::of(
+                new Format(
+                    'json',
+                    Set::of(
+                        MediaType::class,
+                        new MediaType('application/json', 0)
+                    ),
+                    1
+                )
             ),
             $this->capabilities = $this->createMock(CapabilitiesFactoryInterface::class)
         );
@@ -56,7 +64,7 @@ class ServerFactoryTest extends TestCase
     {
         $this->assertInstanceOf(
             Factory::class,
-            $this->factory
+            $this->make
         );
     }
 
@@ -66,12 +74,12 @@ class ServerFactoryTest extends TestCase
         $this
             ->capabilities
             ->expects($this->once())
-            ->method('make')
+            ->method('__invoke')
             ->with($url);
 
         $this->assertInstanceOf(
             Server::class,
-            $this->factory->make($url)
+            ($this->make)($url)
         );
     }
 }

@@ -3,33 +3,55 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Server\Capabilities;
 
-use Innmind\Rest\Client\Server\Capabilities as CapabilitiesInterface;
+use Innmind\Rest\Client\{
+    Server\Capabilities as CapabilitiesInterface,
+    Serializer\Decode,
+    Serializer\Encode,
+    Serializer\Denormalizer\DenormalizeCapabilitiesNames,
+    Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Normalizer\NormalizeDefinition,
+};
 use Innmind\Url\UrlInterface;
 use Innmind\Filesystem\Adapter;
-use Symfony\Component\Serializer\SerializerInterface;
 
 final class CacheFactory implements Factory
 {
     private $filesystem;
-    private $serializer;
-    private $factory;
+    private $decode;
+    private $encode;
+    private $denormalizeNames;
+    private $denormalizeDefinition;
+    private $normalizeDefinition;
+    private $make;
 
     public function __construct(
         Adapter $filesystem,
-        SerializerInterface $serializer,
-        Factory $factory
+        Decode $decode,
+        Encode $encode,
+        DenormalizeCapabilitiesNames $denormalizeNames,
+        DenormalizeDefinition $denormalizeDefinition,
+        NormalizeDefinition $normalizeDefinition,
+        Factory $make
     ) {
         $this->filesystem = $filesystem;
-        $this->serializer = $serializer;
-        $this->factory = $factory;
+        $this->decode = $decode;
+        $this->encode = $encode;
+        $this->denormalizeNames = $denormalizeNames;
+        $this->denormalizeDefinition = $denormalizeDefinition;
+        $this->normalizeDefinition = $normalizeDefinition;
+        $this->make = $make;
     }
 
-    public function make(UrlInterface $url): CapabilitiesInterface
+    public function __invoke(UrlInterface $url): CapabilitiesInterface
     {
         return new CacheCapabilities(
-            $this->factory->make($url),
+            ($this->make)($url),
             $this->filesystem,
-            $this->serializer,
+            $this->decode,
+            $this->encode,
+            $this->denormalizeNames,
+            $this->denormalizeDefinition,
+            $this->normalizeDefinition,
             $url
         );
     }

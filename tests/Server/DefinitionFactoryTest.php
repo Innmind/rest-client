@@ -7,7 +7,8 @@ use Innmind\Rest\Client\{
     Server\DefinitionFactory,
     Definition\Types,
     Definition\HttpResource,
-    Serializer\Normalizer\DefinitionNormalizer
+    Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Decode\Json,
 };
 use Innmind\Http\{
     Message\Response,
@@ -15,7 +16,7 @@ use Innmind\Http\{
     Headers\Headers,
     Header,
     Header\ContentType,
-    Header\ContentTypeValue
+    Header\ContentTypeValue,
 };
 use Innmind\Filesystem\Stream\StringStream;
 use Innmind\Url\Url;
@@ -24,17 +25,13 @@ use PHPUnit\Framework\TestCase;
 
 class DefinitionFactoryTest extends TestCase
 {
-    private $factory;
+    private $make;
 
     public function setUp()
     {
-        $types = new Types;
-        Types::defaults()->foreach(function(string $class) use ($types) {
-            $types->register($class);
-        });
-
-        $this->factory = new DefinitionFactory(
-            new DefinitionNormalizer($types)
+        $this->make = new DefinitionFactory(
+            new DenormalizeDefinition(new Types),
+            new Json
         );
     }
 
@@ -49,7 +46,7 @@ class DefinitionFactoryTest extends TestCase
             ->method('statusCode')
             ->willReturn(new StatusCode(404));
 
-        $this->factory->make('foo', Url::fromString('/'), $response);
+        ($this->make)('foo', Url::fromString('/'), $response);
     }
 
     /**
@@ -66,12 +63,10 @@ class DefinitionFactoryTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    new Map('string', Header::class)
-                )
+                new Headers
             );
 
-        $this->factory->make('foo', Url::fromString('/'), $response);
+        ($this->make)('foo', Url::fromString('/'), $response);
     }
 
     /**
@@ -88,21 +83,17 @@ class DefinitionFactoryTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'content-type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'text',
-                                    'plain'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'text',
+                            'plain'
                         )
+                    )
                 )
             );
 
-        $this->factory->make('foo', Url::fromString('/'), $response);
+        ($this->make)('foo', Url::fromString('/'), $response);
     }
 
     public function testMake()
@@ -116,17 +107,13 @@ class DefinitionFactoryTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'content-type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'application',
-                                    'json'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'application',
+                            'json'
                         )
+                    )
                 )
             );
         $response
@@ -134,7 +121,7 @@ class DefinitionFactoryTest extends TestCase
             ->method('body')
             ->willReturn(new StringStream('{"identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"linkable_to":[],"rangeable":true}'));
 
-        $definition = $this->factory->make(
+        $definition = ($this->make)(
             'foo',
             Url::fromString('http://example.com/foo'),
             $response

@@ -8,12 +8,12 @@ use Innmind\Rest\Client\{
     Definition\Type,
     Exception\DomainException,
     Exception\NormalizationException,
-    Exception\DenormalizationException
+    Exception\DenormalizationException,
 };
 use Innmind\Immutable\{
     Str,
+    SetInterface,
     Set,
-    SetInterface
 };
 
 final class SetType implements Type
@@ -32,7 +32,7 @@ final class SetType implements Type
         );
     }
 
-    public static function fromString(string $type, Types $types): Type
+    public static function fromString(string $type, Types $build): Type
     {
         $type = new Str($type);
 
@@ -41,7 +41,7 @@ final class SetType implements Type
         }
 
         return new self(
-            $types->build(
+            $build(
                 (string) $type
                     ->capture(self::PATTERN)
                     ->get('inner')
@@ -75,7 +75,7 @@ final class SetType implements Type
      */
     public function denormalize($data)
     {
-        if (!is_array($data)) {
+        if (!\is_array($data)) {
             throw new DenormalizationException('The value must be an array');
         }
 

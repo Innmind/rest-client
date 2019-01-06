@@ -12,10 +12,18 @@ use Innmind\Rest\Client\{
     Server\Capabilities\CacheFactory,
     Server\Capabilities\Factory\Factory,
     Server\DefinitionFactory,
-    Serializer\Normalizer,
+    Serializer\Decode,
+    Serializer\Encode,
+    Serializer\Denormalizer\DenormalizeCapabilitiesNames,
+    Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Denormalizer\DenormalizeResource,
+    Serializer\Normalizer\NormalizeDefinition,
+    Serializer\Normalizer\NormalizeResource,
     Definition\Types,
     Visitor\ResolveIdentity,
     Translator\Specification\SpecificationTranslator,
+    Response\ExtractIdentity,
+    Response\ExtractIdentities,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\ResolverInterface;
@@ -31,43 +39,49 @@ function bootstrap(
     ResolverInterface $urlResolver,
     Adapter $cache,
     SetInterface $types = null,
-    Formats $contentTypes = null
+    Formats $contentTypes = null,
+    Decode $decode = null
 ): Client {
-    $contentTypes = $contentTypes ?? new Formats(
-        (new Map('string', Format::class))
-            ->put('json', new Format(
-                'json',
-                Set::of(MediaType::class, new MediaType('application/json', 0)),
-                0
-            ))
+    $decode = $decode ?? new Decode\Json;
+    $contentTypes = $contentTypes ?? Formats::of(
+        new Format(
+            'json',
+            Set::of(MediaType::class, new MediaType('application/json', 0)),
+            0
+        )
     );
     $types = new Types(...($types ?? []));
     $resolveIdentity = new ResolveIdentity($urlResolver);
 
-    $serializer = Serializer::build(
-        new Normalizer\CapabilitiesNamesNormalizer,
-        $definitionNormalizer = new Normalizer\DefinitionNormalizer($types),
-        new Normalizer\IdentitiesNormalizer($resolveIdentity),
-        new Normalizer\IdentityNormalizer($resolveIdentity),
-        new Normalizer\ResourceNormalizer
-    );
+    $denormalizeDefinition = new DenormalizeDefinition($types);
+
+    $encode = new Encode\Json;
 
     return new Client\Client(
         new RetryServerFactory(
             new ServerFactory(
                 $transport,
                 $urlResolver,
-                $serializer,
+                new ExtractIdentity($resolveIdentity),
+                new ExtractIdentities($resolveIdentity),
+                new DenormalizeResource,
+                new NormalizeResource,
+                $encode,
+                $decode,
                 new SpecificationTranslator,
                 $contentTypes,
                 new RefreshLimitedFactory(
                     new CacheFactory(
                         $cache,
-                        $serializer,
+                        $decode,
+                        $encode,
+                        new DenormalizeCapabilitiesNames,
+                        $denormalizeDefinition,
+                        new NormalizeDefinition,
                         new Factory(
                             $transport,
                             $urlResolver,
-                            new DefinitionFactory($definitionNormalizer),
+                            new DefinitionFactory($denormalizeDefinition, $decode),
                             $contentTypes
                         )
                     )

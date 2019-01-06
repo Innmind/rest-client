@@ -7,8 +7,11 @@ use Innmind\Rest\Client\{
     Server\Server,
     Server as ServerInterface,
     Server\Capabilities,
-    Serializer\Normalizer\DefinitionNormalizer,
-    Serializer\Normalizer\ResourceNormalizer,
+    Serializer\Normalizer\NormalizeResource,
+    Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Denormalizer\DenormalizeResource,
+    Serializer\Encode,
+    Serializer\Decode,
     Definition\HttpResource as HttpResourceDefinition,
     Definition\Identity as IdentityDefinition,
     Definition\Property as PropertyDefinition,
@@ -22,13 +25,16 @@ use Innmind\Rest\Client\{
     HttpResource\Property,
     Translator\Specification\SpecificationTranslator,
     Link,
-    Link\Parameter
+    Link\Parameter,
+    Response\ExtractIdentity,
+    Response\ExtractIdentities,
+    Visitor\ResolveIdentity,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\UrlResolver;
 use Innmind\Url\{
     Url,
-    UrlInterface
+    UrlInterface,
 };
 use Innmind\Http\{
     Message\Request,
@@ -38,19 +44,19 @@ use Innmind\Http\{
     Header\ContentType,
     Header\ContentTypeValue,
     Header\Location,
-    Header\LocationValue
+    Header\LocationValue,
+    Header\Link as LinkHeader,
+    Header\LinkValue,
 };
 use Innmind\Filesystem\Stream\StringStream;
 use Innmind\Immutable\{
     Map,
+    SetInterface,
     Set,
-    SetInterface
 };
-use Innmind\Specification\ComparatorInterface;
-use Symfony\Component\Serializer\{
-    Serializer,
-    Encoder\JsonEncoder,
-    Normalizer\DenormalizerInterface
+use Innmind\Specification\{
+    Comparator,
+    Sign,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -60,8 +66,6 @@ class ServerTest extends TestCase
     private $url;
     private $transport;
     private $capabilities;
-    private $identitiesNormalizer;
-    private $identityNormalizer;
     private $definition;
 
     public function setUp()
@@ -70,46 +74,35 @@ class ServerTest extends TestCase
             $this->url = Url::fromString('http://example.com/'),
             $this->transport = $this->createMock(Transport::class),
             $this->capabilities = $this->createMock(Capabilities::class),
-            new UrlResolver,
-            new Serializer(
-                [
-                    $this->identitiesNormalizer = $this->createMock(DenormalizerInterface::class),
-                    $this->identityNormalizer = $this->createMock(DenormalizerInterface::class),
-                    new ResourceNormalizer,
-                ],
-                [new JsonEncoder]
-            ),
+            $resolver = new UrlResolver,
+            new ExtractIdentity(new ResolveIdentity($resolver)),
+            new ExtractIdentities(new ResolveIdentity($resolver)),
+            new DenormalizeResource,
+            new NormalizeResource,
+            new Encode\Json,
+            new Decode\Json,
             new SpecificationTranslator,
-            new Formats(
-                (new Map('string', Format::class))
-                    ->put(
-                        'json',
-                        new Format(
-                            'json',
-                            (new Set(MediaType::class))->add(
-                                new MediaType('application/json', 0)
-                            ),
-                            1
-                        )
-                    )
-                    ->put(
-                        'xml',
-                        new Format(
-                            'xml',
-                            (new Set(MediaType::class))->add(
-                                new MediaType('text/xml', 0)
-                            ),
-                            0
-                        )
-                    )
+            Formats::of(
+                new Format(
+                    'json',
+                    Set::of(
+                        MediaType::class,
+                        new MediaType('application/json', 0)
+                    ),
+                    1
+                ),
+                new Format(
+                    'xml',
+                    Set::of(
+                        MediaType::class,
+                        new MediaType('text/xml', 0)
+                    ),
+                    0
+                )
             )
         );
 
-        $types = new Types;
-        Types::defaults()->foreach(function(string $class) use ($types) {
-            $types->register($class);
-        });
-        $this->definition = (new DefinitionNormalizer($types))->denormalize(
+        $this->definition = (new DenormalizeDefinition(new Types))(
             [
                 'url' => 'http://example.com/foo',
                 'identity' => 'uuid',
@@ -135,9 +128,7 @@ class ServerTest extends TestCase
                 ],
                 'rangeable' => true,
             ],
-            HttpResourceDefinition::class,
-            null,
-            ['name' => 'foo']
+            'foo'
         );
     }
 
@@ -207,7 +198,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'GET' &&
@@ -217,28 +208,30 @@ class ServerTest extends TestCase
             ->willReturn(
                 $response = $this->createMock(Response::class)
             );
-        $this
-            ->identitiesNormalizer
+        $response
             ->expects($this->once())
-            ->method('supportsDenormalization')
-            ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof Response && $format === 'rest_identities';
-            }));
-        $this
-            ->identitiesNormalizer
-            ->expects($this->once())
-            ->method('denormalize')
-            ->with(
-                $response,
-                'rest_identities',
-                null,
-                ['definition' => $definition]
-            )
-            ->willReturn($expected = new Set(Identity::class));
+            ->method('headers')
+            ->willReturn(Headers::of(
+                new LinkHeader(
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-uuid'),
+                        'resource'
+                    ),
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-other-uuid'),
+                        'resource'
+                    )
+                )
+            ));
 
         $all = $this->server->all('foo');
 
-        $this->assertSame($expected, $all);
+        $this->assertInstanceOf(SetInterface::class, $all);
+        $this->assertSame(Identity::class, (string) $all->type());
+        $this->assertCount(2, $all);
+        $this->assertSame('some-uuid', (string) $all->current());
+        $all->next();
+        $this->assertSame('some-other-uuid', (string) $all->current());
     }
 
     public function testAllWithRange()
@@ -262,40 +255,42 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 1 &&
                     $request->headers()->has('range') &&
-                    (string) $request->headers()->get('range') === 'Range : resource=10-20' &&
+                    (string) $request->headers()->get('range') === 'Range: resource=10-20' &&
                     (string) $request->body() === '';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
             );
-        $this
-            ->identitiesNormalizer
+        $response
             ->expects($this->once())
-            ->method('supportsDenormalization')
-            ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof Response && $format === 'rest_identities';
-            }));
-        $this
-            ->identitiesNormalizer
-            ->expects($this->once())
-            ->method('denormalize')
-            ->with(
-                $response,
-                'rest_identities',
-                null,
-                ['definition' => $definition]
-            )
-            ->willReturn($expected = new Set(Identity::class));
+            ->method('headers')
+            ->willReturn(Headers::of(
+                new LinkHeader(
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-uuid'),
+                        'resource'
+                    ),
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-other-uuid'),
+                        'resource'
+                    )
+                )
+            ));
 
         $all = $this->server->all('foo', null, new Range(10, 20));
 
-        $this->assertSame($expected, $all);
+        $this->assertInstanceOf(SetInterface::class, $all);
+        $this->assertSame(Identity::class, (string) $all->type());
+        $this->assertCount(2, $all);
+        $this->assertSame('some-uuid', (string) $all->current());
+        $all->next();
+        $this->assertSame('some-other-uuid', (string) $all->current());
     }
 
     public function testAllWithQuery()
@@ -319,7 +314,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo?bar=baz' &&
                     (string) $request->method() === 'GET' &&
@@ -329,7 +324,7 @@ class ServerTest extends TestCase
             ->willReturn(
                 $response = $this->createMock(Response::class)
             );
-        $specification = $this->createMock(ComparatorInterface::class);
+        $specification = $this->createMock(Comparator::class);
         $specification
             ->expects($this->once())
             ->method('property')
@@ -337,33 +332,35 @@ class ServerTest extends TestCase
         $specification
             ->expects($this->once())
             ->method('sign')
-            ->willReturn('==');
+            ->willReturn(Sign::equality());
         $specification
             ->expects($this->once())
             ->method('value')
             ->willReturn('baz');
-        $this
-            ->identitiesNormalizer
+        $response
             ->expects($this->once())
-            ->method('supportsDenormalization')
-            ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof Response && $format === 'rest_identities';
-            }));
-        $this
-            ->identitiesNormalizer
-            ->expects($this->once())
-            ->method('denormalize')
-            ->with(
-                $response,
-                'rest_identities',
-                null,
-                ['definition' => $definition]
-            )
-            ->willReturn($expected = new Set(Identity::class));
+            ->method('headers')
+            ->willReturn(Headers::of(
+                new LinkHeader(
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-uuid'),
+                        'resource'
+                    ),
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-other-uuid'),
+                        'resource'
+                    )
+                )
+            ));
 
         $all = $this->server->all('foo', $specification);
 
-        $this->assertSame($expected, $all);
+        $this->assertInstanceOf(SetInterface::class, $all);
+        $this->assertSame(Identity::class, (string) $all->type());
+        $this->assertCount(2, $all);
+        $this->assertSame('some-uuid', (string) $all->current());
+        $all->next();
+        $this->assertSame('some-other-uuid', (string) $all->current());
     }
 
     public function testAllWithQueryAndRange()
@@ -387,19 +384,19 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo?bar=baz' &&
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 1 &&
                     $request->headers()->has('range') &&
-                    (string) $request->headers()->get('range') === 'Range : resource=10-20' &&
+                    (string) $request->headers()->get('range') === 'Range: resource=10-20' &&
                     (string) $request->body() === '';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
             );
-        $specification = $this->createMock(ComparatorInterface::class);
+        $specification = $this->createMock(Comparator::class);
         $specification
             ->expects($this->once())
             ->method('property')
@@ -407,33 +404,35 @@ class ServerTest extends TestCase
         $specification
             ->expects($this->once())
             ->method('sign')
-            ->willReturn('==');
+            ->willReturn(Sign::equality());
         $specification
             ->expects($this->once())
             ->method('value')
             ->willReturn('baz');
-        $this
-            ->identitiesNormalizer
+        $response
             ->expects($this->once())
-            ->method('supportsDenormalization')
-            ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof Response && $format === 'rest_identities';
-            }));
-        $this
-            ->identitiesNormalizer
-            ->expects($this->once())
-            ->method('denormalize')
-            ->with(
-                $response,
-                'rest_identities',
-                null,
-                ['definition' => $definition]
-            )
-            ->willReturn($expected = new Set(Identity::class));
+            ->method('headers')
+            ->willReturn(Headers::of(
+                new LinkHeader(
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-uuid'),
+                        'resource'
+                    ),
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-other-uuid'),
+                        'resource'
+                    )
+                )
+            ));
 
         $all = $this->server->all('foo', $specification, new Range(10, 20));
 
-        $this->assertSame($expected, $all);
+        $this->assertInstanceOf(SetInterface::class, $all);
+        $this->assertSame(Identity::class, (string) $all->type());
+        $this->assertCount(2, $all);
+        $this->assertSame('some-uuid', (string) $all->current());
+        $all->next();
+        $this->assertSame('some-other-uuid', (string) $all->current());
     }
 
     /**
@@ -450,7 +449,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->willReturn(
                 $response = $this->createMock(Response::class)
             );
@@ -458,9 +457,7 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    new Map('string', Header::class)
-                )
+                new Headers
             );
 
         $this->server->read('foo', new Identity\Identity('uuid'));
@@ -480,7 +477,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->willReturn(
                 $response = $this->createMock(Response::class)
             );
@@ -488,17 +485,13 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Content-Type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'text',
-                                    'plain'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'text',
+                            'plain'
                         )
+                    )
                 )
             );
 
@@ -516,12 +509,12 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/bar' &&
                     (string) $request->method() === 'GET' &&
                     $request->headers()->count() === 1 &&
-                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
+                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml' &&
                     (string) $request->body() === '';
             }))
             ->willReturn(
@@ -531,17 +524,13 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Content-Type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'application',
-                                    'json'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'application',
+                            'json'
                         )
+                    )
                 )
             );
         $response
@@ -577,52 +566,37 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'POST' &&
                     $request->headers()->count() === 2 &&
-                    (string) $request->headers()->get('Content-Type') === 'Content-Type : application/json' &&
-                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
+                    (string) $request->headers()->get('Content-Type') === 'Content-Type: application/json' &&
+                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml' &&
                     (string) $request->body() === '{"resource":{"url":"foobar"}}';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
             );
-        $this
-            ->identityNormalizer
+        $response
             ->expects($this->once())
-            ->method('supportsDenormalization')
-            ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof Response && $format === 'rest_identity';
-            }));
-        $this
-            ->identityNormalizer
-            ->expects($this->once())
-            ->method('denormalize')
-            ->with(
-                $response,
-                'rest_identity',
-                null,
-                ['definition' => $this->definition]
-            )
-            ->willReturn($expected = new Identity\Identity('some-uuid'));
+            ->method('headers')
+            ->willReturn(Headers::of(
+                new Location(
+                    new LocationValue(
+                        Url::fromString('http://example.com/foo/some-uuid')
+                    )
+                )
+            ));
 
         $identity = $this->server->create(
-            new HttpResource(
+            HttpResource::of(
                 'foo',
-                (new Map('string', Property::class))
-                    ->put(
-                        'url',
-                        new Property(
-                            'url',
-                            'foobar'
-                        )
-                    )
+                new Property('url', 'foobar')
             )
         );
 
-        $this->assertSame($expected, $identity);
+        $this->assertSame('some-uuid', (string) $identity);
     }
 
     public function testUpdate()
@@ -636,13 +610,13 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'PUT' &&
                     $request->headers()->count() === 2 &&
-                    (string) $request->headers()->get('Content-Type') === 'Content-Type : application/json' &&
-                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
+                    (string) $request->headers()->get('Content-Type') === 'Content-Type: application/json' &&
+                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml' &&
                     (string) $request->body() === '{"resource":{"url":"foobar"}}';
             }))
             ->willReturn(
@@ -651,16 +625,9 @@ class ServerTest extends TestCase
 
         $return = $this->server->update(
             new Identity\Identity('some-uuid'),
-            new HttpResource(
+            HttpResource::of(
                 'foo',
-                (new Map('string', Property::class))
-                    ->put(
-                        'url',
-                        new Property(
-                            'url',
-                            'foobar'
-                        )
-                    )
+                new Property('url', 'foobar')
             )
         );
 
@@ -678,7 +645,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'DELETE' &&
@@ -736,19 +703,20 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->never())
-            ->method('fulfill');
+            ->method('__invoke');
 
         $this->server->link(
             'foo',
             new Identity\Identity('some-uuid'),
-            (new Set(Link::class))
-                ->add(new Link(
+            Set::of(
+                Link::class,
+                Link::of(
                     'baz',
                     new Identity\Identity('cano'),
                     'canonical',
-                    (new Map('string', Parameter::class))
-                        ->put('attr', new Parameter\Parameter('attr', 'val'))
-                ))
+                    new Parameter\Parameter('attr', 'val')
+                )
+            )
         );
     }
 
@@ -769,12 +737,12 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'LINK' &&
-                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
-                    (string) $request->headers()->get('Link') === 'Link : </foo/cano>; rel="canonical";attr=val' &&
+                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml' &&
+                    (string) $request->headers()->get('Link') === 'Link: </foo/cano>; rel="canonical";attr=val' &&
                     (string) $request->body() === '';
             }));
 
@@ -783,14 +751,15 @@ class ServerTest extends TestCase
             $this->server->link(
                 'foo',
                 new Identity\Identity('some-uuid'),
-                (new Set(Link::class))
-                    ->add(new Link(
+                Set::of(
+                    Link::class,
+                    Link::of(
                         'bar',
                         new Identity\Identity('cano'),
                         'canonical',
-                        (new Map('string', Parameter::class))
-                            ->put('attr', new Parameter\Parameter('attr', 'val'))
-                    ))
+                        new Parameter\Parameter('attr', 'val')
+                    )
+                )
             )
         );
     }
@@ -834,19 +803,20 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->never())
-            ->method('fulfill');
+            ->method('__invoke');
 
         $this->server->unlink(
             'foo',
             new Identity\Identity('some-uuid'),
-            (new Set(Link::class))
-                ->add(new Link(
+            Set::of(
+                Link::class,
+                Link::of(
                     'baz',
                     new Identity\Identity('cano'),
                     'canonical',
-                    (new Map('string', Parameter::class))
-                        ->put('attr', new Parameter\Parameter('attr', 'val'))
-                ))
+                    new Parameter\Parameter('attr', 'val')
+                )
+            )
         );
     }
 
@@ -867,12 +837,12 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'UNLINK' &&
-                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml' &&
-                    (string) $request->headers()->get('Link') === 'Link : </foo/cano>; rel="canonical";attr=val' &&
+                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml' &&
+                    (string) $request->headers()->get('Link') === 'Link: </foo/cano>; rel="canonical";attr=val' &&
                     (string) $request->body() === '';
             }));
 
@@ -881,14 +851,15 @@ class ServerTest extends TestCase
             $this->server->unlink(
                 'foo',
                 new Identity\Identity('some-uuid'),
-                (new Set(Link::class))
-                    ->add(new Link(
+                Set::of(
+                    Link::class,
+                    Link::of(
                         'bar',
                         new Identity\Identity('cano'),
                         'canonical',
-                        (new Map('string', Parameter::class))
-                            ->put('attr', new Parameter\Parameter('attr', 'val'))
-                    ))
+                        new Parameter\Parameter('attr', 'val')
+                    )
+                )
             )
         );
     }

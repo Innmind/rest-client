@@ -9,13 +9,13 @@ use Innmind\Rest\Client\{
     HttpResource,
     Request\Range,
     Exception\NormalizationException,
-    Exception\DenormalizationException
+    Exception\DenormalizationException,
 };
 use Innmind\HttpTransport\Exception\ClientError;
 use Innmind\Http\Message\StatusCode\StatusCode;
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\SetInterface;
-use Innmind\Specification\SpecificationInterface;
+use Innmind\Specification\Specification;
 
 /**
  * This implementation will retry a failed request once after it has refreshed
@@ -36,7 +36,7 @@ final class RetryServer implements ServerInterface
      */
     public function all(
         string $name,
-        SpecificationInterface $specification = null,
+        Specification $specification = null,
         Range $range = null
     ): SetInterface {
         try {

@@ -8,17 +8,17 @@ use Innmind\Url\UrlInterface;
 
 final class RefreshLimitedFactory implements Factory
 {
-    private $factory;
+    private $make;
 
-    public function __construct(Factory $factory)
+    public function __construct(Factory $make)
     {
-        $this->factory = $factory;
+        $this->make = $make;
     }
 
-    public function make(UrlInterface $url): CapabilitiesInterface
+    public function __invoke(UrlInterface $url): CapabilitiesInterface
     {
         return new RefreshLimitedCapabilities(
-            $this->factory->make($url)
+            ($this->make)($url)
         );
     }
 }

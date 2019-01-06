@@ -8,7 +8,7 @@ use Innmind\Rest\Client\{
     Definition\Type,
     Exception\DomainException,
     Exception\NormalizationException,
-    Exception\DenormalizationException
+    Exception\DenormalizationException,
 };
 use Innmind\Immutable\Str;
 
@@ -20,14 +20,14 @@ final class DateType implements Type
 
     public function __construct(string $format)
     {
-        if (empty($format)) {
+        if (Str::of($format)->empty()) {
             throw new DomainException;
         }
 
         $this->format = $format;
     }
 
-    public static function fromString(string $type, Types $types): Type
+    public static function fromString(string $type, Types $build): Type
     {
         $type = new Str($type);
 
@@ -47,7 +47,7 @@ final class DateType implements Type
      */
     public function normalize($data)
     {
-        if (is_string($data)) {
+        if (\is_string($data)) {
             try {
                 $data = new \DateTimeImmutable($data);
             } catch (\Exception $e) {
@@ -69,7 +69,7 @@ final class DateType implements Type
      */
     public function denormalize($data)
     {
-        if (!is_string($data)) {
+        if (!\is_string($data)) {
             throw new DenormalizationException('The value must be a string');
         }
 

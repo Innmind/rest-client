@@ -9,12 +9,12 @@ use Innmind\Rest\Client\{
     Definition\HttpResource,
     Exception\InvalidArgumentException,
     Format\Format,
-    Formats
+    Formats,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\Url\{
     UrlInterface,
-    Url
+    Url,
 };
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Http\{
@@ -22,26 +22,24 @@ use Innmind\Http\{
     Message\Method\Method,
     Headers\Headers,
     ProtocolVersion\ProtocolVersion,
-    Header,
     Header\Value,
     Header\LinkValue,
     Header\Accept,
-    Header\AcceptValue
+    Header\AcceptValue,
 };
-use Innmind\Filesystem\Stream\NullStream;
 use Innmind\Immutable\{
     MapInterface,
     SetInterface,
     Map,
-    Set
+    Set,
 };
 
 final class Capabilities implements CapabilitiesInterface
 {
-    private $transport;
+    private $fulfill;
     private $host;
     private $resolver;
-    private $factory;
+    private $make;
     private $formats;
     private $optionsUrl;
     private $names;
@@ -49,16 +47,16 @@ final class Capabilities implements CapabilitiesInterface
     private $definitions;
 
     public function __construct(
-        Transport $transport,
+        Transport $fulfill,
         UrlInterface $host,
         ResolverInterface $resolver,
-        DefinitionFactory $factory,
+        DefinitionFactory $make,
         Formats $formats
     ) {
-        $this->transport = $transport;
+        $this->fulfill = $fulfill;
         $this->host = $host;
         $this->resolver = $resolver;
-        $this->factory = $factory;
+        $this->make = $make;
         $this->formats = $formats;
         $optionsUrl = $resolver->resolve((string) $host, '/*');
         $this->optionsUrl = Url::fromString($optionsUrl);
@@ -75,15 +73,12 @@ final class Capabilities implements CapabilitiesInterface
             return $this->names;
         }
 
-        $headers = $this
-            ->transport
-            ->fulfill(
+        $headers = ($this->fulfill)
+            (
                 new Request(
                     $this->optionsUrl,
-                    new Method(Method::OPTIONS),
-                    new ProtocolVersion(1, 1),
-                    new Headers,
-                    new NullStream
+                    Method::options(),
+                    new ProtocolVersion(1, 1)
                 )
             )
             ->headers();
@@ -126,39 +121,34 @@ final class Capabilities implements CapabilitiesInterface
             (string) $this->paths->get($name)
         );
         $url = Url::fromString($url);
-        $response = $this->transport->fulfill(
+        $response = ($this->fulfill)(
             new Request(
                 $url,
-                new Method(Method::OPTIONS),
+                Method::options(),
                 new ProtocolVersion(1, 1),
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Accept',
-                            new Accept(
-                                ...$this
-                                    ->formats
-                                    ->all()
-                                    ->values()
-                                    ->sort(function(Format $a, Format $b): bool {
-                                        return $a->priority() < $b->priority();
-                                    })
-                                    ->reduce(
-                                        new Set(Value::class),
-                                        function(Set $values, Format $format): Set {
-                                            return $values->add(new AcceptValue(
-                                                $format->preferredMediaType()->topLevel(),
-                                                $format->preferredMediaType()->subType()
-                                            ));
-                                        }
-                                    )
+                Headers::of(
+                    new Accept(
+                        ...$this
+                            ->formats
+                            ->all()
+                            ->values()
+                            ->sort(function(Format $a, Format $b): bool {
+                                return $a->priority() < $b->priority();
+                            })
+                            ->reduce(
+                                new Set(Value::class),
+                                function(Set $values, Format $format): Set {
+                                    return $values->add(new AcceptValue(
+                                        $format->preferredMediaType()->topLevel(),
+                                        $format->preferredMediaType()->subType()
+                                    ));
+                                }
                             )
-                        )
-                ),
-                new NullStream
+                    )
+                )
             )
         );
-        $definition = $this->factory->make(
+        $definition = ($this->make)(
             $name,
             $url,
             $response

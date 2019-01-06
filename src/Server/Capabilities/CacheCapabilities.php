@@ -5,29 +5,36 @@ namespace Innmind\Rest\Client\Server\Capabilities;
 
 use Innmind\Rest\Client\{
     Server\Capabilities as CapabilitiesInterface,
-    Definition\HttpResource
+    Definition\HttpResource,
+    Serializer\Decode,
+    Serializer\Encode,
+    Serializer\Denormalizer\DenormalizeCapabilitiesNames,
+    Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Normalizer\NormalizeDefinition,
 };
 use Innmind\Filesystem\{
     Adapter,
     File,
     Directory,
-    Stream\StringStream,
-    Exception\FileNotFound
+    Exception\FileNotFound,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\{
     SetInterface,
     Set,
     MapInterface,
-    Map
+    Map,
 };
-use Symfony\Component\Serializer\SerializerInterface;
 
 final class CacheCapabilities implements CapabilitiesInterface
 {
     private $capabilities;
     private $filesystem;
-    private $serializer;
+    private $decode;
+    private $encode;
+    private $denormalizeNames;
+    private $denormalizeDefinition;
+    private $normalizeDefinition;
     private $directory;
     private $names;
     private $definitions;
@@ -35,13 +42,21 @@ final class CacheCapabilities implements CapabilitiesInterface
     public function __construct(
         CapabilitiesInterface $capabilities,
         Adapter $filesystem,
-        SerializerInterface $serializer,
+        Decode $decode,
+        Encode $encode,
+        DenormalizeCapabilitiesNames $denormalizeNames,
+        DenormalizeDefinition $denormalizeDefinition,
+        NormalizeDefinition $normalizeDefinition,
         UrlInterface $host
     ) {
         $this->capabilities = $capabilities;
         $this->filesystem = $filesystem;
-        $this->serializer = $serializer;
-        $this->directory = md5((string) $host);
+        $this->decode = $decode;
+        $this->encode = $encode;
+        $this->denormalizeNames = $denormalizeNames;
+        $this->denormalizeDefinition = $denormalizeDefinition;
+        $this->normalizeDefinition = $normalizeDefinition;
+        $this->directory = \md5((string) $host);
         $this->definitions = new Map('string', HttpResource::class);
     }
 
@@ -56,10 +71,8 @@ final class CacheCapabilities implements CapabilitiesInterface
 
         try {
             $file = $this->load('.names');
-            return $this->names = $this->serializer->deserialize(
-                (string) $file->content(),
-                'capabilities_names',
-                'json'
+            return $this->names = ($this->denormalizeNames)(
+                ($this->decode)('json', $file->content())
             );
         } catch (FileNotFound $e) {
             $this->names = $this->capabilities->names();
@@ -77,21 +90,17 @@ final class CacheCapabilities implements CapabilitiesInterface
 
         try {
             $file = $this->load($name);
-            $definition = $this->serializer->deserialize(
-                (string) $file->content(),
-                HttpResource::class,
-                'json',
-                ['name' => $name]
+            $definition = ($this->denormalizeDefinition)(
+                ($this->decode)('json', $file->content()),
+                $name
             );
-            $this->definitions = $this->definitions->put(
-                $name,
-                $definition
-            );
-
-            return $definition;
         } catch (FileNotFound $e) {
             $definition = $this->capabilities->get($name);
-            $this->persist($name, $definition);
+            $this->persist(
+                $name,
+                ($this->normalizeDefinition)($definition)
+            );
+        } finally {
             $this->definitions = $this->definitions->put(
                 $name,
                 $definition
@@ -147,7 +156,7 @@ final class CacheCapabilities implements CapabilitiesInterface
         return $directory->get($file);
     }
 
-    private function persist(string $name, $data): self
+    private function persist(string $name, array $data): self
     {
         if ($this->filesystem->has($this->directory)) {
             $directory = $this->filesystem->get($this->directory);
@@ -158,12 +167,7 @@ final class CacheCapabilities implements CapabilitiesInterface
         $directory = $directory->add(
             new File\File(
                 $name.'.json',
-                new StringStream(
-                    $this->serializer->serialize(
-                        $data,
-                        'json'
-                    )
-                )
+                ($this->encode)($data)
             )
         );
         $this->filesystem->add($directory);

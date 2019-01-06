@@ -8,12 +8,12 @@ use Innmind\Rest\Client\{
     Definition\Type,
     Exception\DomainException,
     Exception\NormalizationException,
-    Exception\DenormalizationException
+    Exception\DenormalizationException,
 };
 use Innmind\Immutable\{
     Str,
+    MapInterface,
     Map,
-    MapInterface
 };
 
 final class MapType implements Type
@@ -36,7 +36,7 @@ final class MapType implements Type
         );
     }
 
-    public static function fromString(string $type, Types $types): Type
+    public static function fromString(string $type, Types $build): Type
     {
         $type = new Str($type);
 
@@ -47,12 +47,8 @@ final class MapType implements Type
         $matches = $type->capture(self::PATTERN);
 
         return new self(
-            $types->build(
-                (string) $matches->get('key')
-            ),
-            $types->build(
-                (string) $matches->get('value')
-            )
+            $build((string) $matches->get('key')),
+            $build((string) $matches->get('value'))
         );
     }
 
@@ -83,7 +79,7 @@ final class MapType implements Type
      */
     public function denormalize($data)
     {
-        if (!is_array($data) && !$data instanceof \Traversable) {
+        if (!\is_array($data) && !$data instanceof \Traversable) {
             throw new DenormalizationException('The value must be an array');
         }
 

@@ -9,10 +9,11 @@ use Innmind\Rest\Client\{
     Server\DefinitionFactory,
     Definition\Types,
     Definition\HttpResource,
-    Serializer\Normalizer\DefinitionNormalizer,
+    Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Decode\Json,
     Formats,
     Format\Format,
-    Format\MediaType
+    Format\MediaType,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\Url\Url;
@@ -27,14 +28,14 @@ use Innmind\Http\{
     Header\Link,
     Header\LinkValue,
     Header\ContentType,
-    Header\ContentTypeValue
+    Header\ContentTypeValue,
 };
 use Innmind\Filesystem\Stream\StringStream;
 use Innmind\Immutable\{
+    MapInterface,
     Map,
     SetInterface,
     Set,
-    MapInterface
 };
 use PHPUnit\Framework\TestCase;
 
@@ -45,40 +46,29 @@ class CapabilitiesTest extends TestCase
 
     public function setUp()
     {
-        $types = new Types;
-        Types::defaults()->foreach(function(string $class) use ($types) {
-            $types->register($class);
-        });
-
         $this->capabilities = new Capabilities(
             $this->transport = $this->createMock(Transport::class),
             Url::fromString('http://example.com/'),
             new UrlResolver,
             new DefinitionFactory(
-                new DefinitionNormalizer($types)
+                new DenormalizeDefinition(new Types),
+                new Json
             ),
-            new Formats(
-                (new Map('string', Format::class))
-                    ->put(
-                        'json',
-                        new Format(
-                            'json',
-                            (new Set(MediaType::class))->add(
-                                new MediaType('application/json', 0)
-                            ),
-                            1
-                        )
-                    )
-                    ->put(
-                        'xml',
-                        new Format(
-                            'xml',
-                            (new Set(MediaType::class))->add(
-                                new MediaType('text/xml', 0)
-                            ),
-                            0
-                        )
-                    )
+            Formats::of(
+                new Format(
+                    'json',
+                    (new Set(MediaType::class))->add(
+                        new MediaType('application/json', 0)
+                    ),
+                    1
+                ),
+                new Format(
+                    'xml',
+                    (new Set(MediaType::class))->add(
+                        new MediaType('text/xml', 0)
+                    ),
+                    0
+                )
             )
         );
     }
@@ -96,7 +86,7 @@ class CapabilitiesTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/*' &&
                     (string) $request->method() === 'OPTIONS';
@@ -124,7 +114,7 @@ class CapabilitiesTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/*' &&
                     (string) $request->method() === 'OPTIONS';
@@ -136,21 +126,17 @@ class CapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Link',
-                            new Link(
-                                new LinkValue(
-                                    Url::fromString('/foo'),
-                                    'foo'
-                                ),
-                                new LinkValue(
-                                    Url::fromString('/bar'),
-                                    'bar'
-                                )
-                            )
+                Headers::of(
+                    new Link(
+                        new LinkValue(
+                            Url::fromString('/foo'),
+                            'foo'
+                        ),
+                        new LinkValue(
+                            Url::fromString('/bar'),
+                            'bar'
                         )
+                    )
                 )
             );
 
@@ -168,7 +154,7 @@ class CapabilitiesTest extends TestCase
         $this
             ->transport
             ->expects($this->at(0))
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/*' &&
                     (string) $request->method() === 'OPTIONS';
@@ -180,32 +166,28 @@ class CapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Link',
-                            new Link(
-                                new LinkValue(
-                                    Url::fromString('/foo'),
-                                    'foo'
-                                ),
-                                new LinkValue(
-                                    Url::fromString('/bar'),
-                                    'bar'
-                                )
-                            )
+                Headers::of(
+                    new Link(
+                        new LinkValue(
+                            Url::fromString('/foo'),
+                            'foo'
+                        ),
+                        new LinkValue(
+                            Url::fromString('/bar'),
+                            'bar'
                         )
+                    )
                 )
             );
         $this
             ->transport
             ->expects($this->at(1))
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'OPTIONS' &&
                     $request->headers()->has('Accept') &&
-                    (string) $request->headers()->get('Accept') === 'Accept : application/json, text/xml';
+                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
@@ -214,17 +196,13 @@ class CapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Content-Type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'application',
-                                    'json'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'application',
+                            'json'
                         )
+                    )
                 )
             );
         $response
@@ -249,7 +227,7 @@ class CapabilitiesTest extends TestCase
         $this
             ->transport
             ->expects($this->at(0))
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/*' &&
                     (string) $request->method() === 'OPTIONS';
@@ -261,27 +239,23 @@ class CapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Link',
-                            new Link(
-                                new LinkValue(
-                                    Url::fromString('/foo'),
-                                    'foo'
-                                ),
-                                new LinkValue(
-                                    Url::fromString('/bar'),
-                                    'bar'
-                                )
-                            )
+                Headers::of(
+                    new Link(
+                        new LinkValue(
+                            Url::fromString('/foo'),
+                            'foo'
+                        ),
+                        new LinkValue(
+                            Url::fromString('/bar'),
+                            'bar'
                         )
+                    )
                 )
             );
         $this
             ->transport
             ->expects($this->at(1))
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'OPTIONS';
@@ -293,17 +267,13 @@ class CapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Content-Type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'application',
-                                    'json'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'application',
+                            'json'
                         )
+                    )
                 )
             );
         $response
@@ -317,7 +287,7 @@ class CapabilitiesTest extends TestCase
         $this
             ->transport
             ->expects($this->at(2))
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/bar' &&
                     (string) $request->method() === 'OPTIONS';
@@ -329,17 +299,13 @@ class CapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Content-Type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'application',
-                                    'json'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'application',
+                            'json'
                         )
+                    )
                 )
             );
         $response
@@ -369,7 +335,7 @@ class CapabilitiesTest extends TestCase
         $this
             ->transport
             ->expects($this->exactly(2))
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/*' &&
                     (string) $request->method() === 'OPTIONS';

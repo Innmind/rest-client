@@ -8,45 +8,44 @@ use Innmind\Rest\Client\{
     Server\Capabilities\Factory as FactoryInterface,
     Server\Capabilities,
     Server\DefinitionFactory,
-    Serializer\Normalizer\DefinitionNormalizer,
+    Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Decode\Json,
     Definition\Types,
     Formats,
     Format\Format,
-    Format\MediaType
+    Format\MediaType,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\{
     Map,
-    Set
+    Set,
 };
 use PHPUnit\Framework\TestCase;
 
 class FactoryTest extends TestCase
 {
-    private $factory;
+    private $make;
 
     public function setUp()
     {
-        $this->factory = new Factory(
+        $this->make = new Factory(
             $this->createMock(Transport::class),
             $this->createMock(ResolverInterface::class),
             new DefinitionFactory(
-                new DefinitionNormalizer(new Types)
+                new DenormalizeDefinition(new Types),
+                new Json
             ),
-            new Formats(
-                (new Map('string', Format::class))
-                    ->put(
-                        'json',
-                        new Format(
-                            'json',
-                            (new Set(MediaType::class))->add(
-                                new MediaType('application/json', 0)
-                            ),
-                            1
-                        )
-                    )
+            Formats::of(
+                new Format(
+                    'json',
+                    Set::of(
+                        MediaType::class,
+                        new MediaType('application/json', 0)
+                    ),
+                    1
+                )
             )
         );
     }
@@ -55,7 +54,7 @@ class FactoryTest extends TestCase
     {
         $this->assertInstanceOf(
             FactoryInterface::class,
-            $this->factory
+            $this->make
         );
     }
 
@@ -63,7 +62,7 @@ class FactoryTest extends TestCase
     {
         $this->assertInstanceOf(
             Capabilities::class,
-            $this->factory->make(
+            ($this->make)(
                 $this->createMock(UrlInterface::class)
             )
         );

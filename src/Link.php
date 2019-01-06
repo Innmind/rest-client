@@ -5,11 +5,12 @@ namespace Innmind\Rest\Client;
 
 use Innmind\Rest\Client\{
     Link\Parameter,
-    Exception\DomainException
+    Exception\DomainException,
 };
 use Innmind\Immutable\{
     MapInterface,
-    Map
+    Map,
+    Str,
 };
 
 final class Link
@@ -28,8 +29,8 @@ final class Link
         $parameters = $parameters ?? new Map('string', Parameter::class);
 
         if (
-            empty($definition) ||
-            empty($relationship)
+            Str::of($definition)->empty() ||
+            Str::of($relationship)->empty()
         ) {
             throw new DomainException;
         }
@@ -48,6 +49,21 @@ final class Link
         $this->identity = $identity;
         $this->relationship = $relationship;
         $this->parameters = $parameters;
+    }
+
+    public static function of(
+        string $definition,
+        Identity $identity,
+        string $relationship,
+        Parameter ...$parameters
+    ): self {
+        $map = Map::of('string', Parameter::class);
+
+        foreach ($parameters as $parameter) {
+            $map = $map->put($parameter->key(), $parameter);
+        }
+
+        return new self($definition, $identity, $relationship, $map);
     }
 
     public function definition(): string

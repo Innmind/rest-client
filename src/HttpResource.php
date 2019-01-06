@@ -5,9 +5,13 @@ namespace Innmind\Rest\Client;
 
 use Innmind\Rest\Client\{
     HttpResource\Property,
-    Exception\DomainException
+    Exception\DomainException,
 };
-use Innmind\Immutable\MapInterface;
+use Innmind\Immutable\{
+    MapInterface,
+    Map,
+    Str,
+};
 
 final class HttpResource
 {
@@ -16,7 +20,7 @@ final class HttpResource
 
     public function __construct(string $name, MapInterface $properties)
     {
-        if (empty($name)) {
+        if (Str::of($name)->empty()) {
             throw new DomainException;
         }
 
@@ -32,6 +36,17 @@ final class HttpResource
 
         $this->name = $name;
         $this->properties = $properties;
+    }
+
+    public static function of(string $name, Property ...$properties)
+    {
+        $map = Map::of('string', Property::class);
+
+        foreach ($properties as $property) {
+            $map = $map->put($property->name(), $property);
+        }
+
+        return new self($name, $map);
     }
 
     public function name(): string

@@ -5,14 +5,15 @@ namespace Tests\Innmind\Rest\Client\Translator\Specification;
 
 use Innmind\Rest\Client\Translator\{
     Specification\SpecificationTranslator,
-    SpecificationTranslator as SpecificationTranslatorInterface
+    SpecificationTranslator as SpecificationTranslatorInterface,
 };
 use Innmind\Specification\{
-    ComparatorInterface,
-    CompositeInterface,
+    Comparator,
+    Composite,
     Operator,
-    NotInterface,
-    SpecificationInterface
+    Not,
+    Specification,
+    Sign,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -28,7 +29,7 @@ class SpecificationTranslatorTest extends TestCase
 
     public function testTranslateComparator()
     {
-        $spec = $this->createMock(ComparatorInterface::class);
+        $spec = $this->createMock(Comparator::class);
         $spec
             ->expects($this->once())
             ->method('property')
@@ -36,13 +37,13 @@ class SpecificationTranslatorTest extends TestCase
         $spec
             ->expects($this->once())
             ->method('sign')
-            ->willReturn('==');
+            ->willReturn(Sign::equality());
         $spec
             ->expects($this->once())
             ->method('value')
             ->willReturn('baz');
 
-        $query = (new SpecificationTranslator)->translate($spec);
+        $query = (new SpecificationTranslator)($spec);
 
         $this->assertSame('bar=baz', $query);
     }
@@ -52,24 +53,24 @@ class SpecificationTranslatorTest extends TestCase
      */
     public function testThrowWhenUnsupportedComparison()
     {
-        $spec = $this->createMock(ComparatorInterface::class);
+        $spec = $this->createMock(Comparator::class);
         $spec
             ->expects($this->never())
             ->method('property');
         $spec
             ->expects($this->once())
             ->method('sign')
-            ->willReturn('>');
+            ->willReturn(Sign::moreThan());
         $spec
             ->expects($this->never())
             ->method('value');
 
-        (new SpecificationTranslator)->translate($spec);
+        (new SpecificationTranslator)($spec);
     }
 
     public function testTranslateComposite()
     {
-        $left = $this->createMock(ComparatorInterface::class);
+        $left = $this->createMock(Comparator::class);
         $left
             ->expects($this->once())
             ->method('property')
@@ -77,12 +78,12 @@ class SpecificationTranslatorTest extends TestCase
         $left
             ->expects($this->once())
             ->method('sign')
-            ->willReturn('==');
+            ->willReturn(Sign::equality());
         $left
             ->expects($this->once())
             ->method('value')
             ->willReturn('baz');
-        $right = $this->createMock(ComparatorInterface::class);
+        $right = $this->createMock(Comparator::class);
         $right
             ->expects($this->once())
             ->method('property')
@@ -90,12 +91,12 @@ class SpecificationTranslatorTest extends TestCase
         $right
             ->expects($this->once())
             ->method('sign')
-            ->willReturn('==');
+            ->willReturn(Sign::equality());
         $right
             ->expects($this->once())
             ->method('value')
             ->willReturn('foobar');
-        $spec = $this->createMock(CompositeInterface::class);
+        $spec = $this->createMock(Composite::class);
         $spec
             ->expects($this->once())
             ->method('left')
@@ -107,9 +108,9 @@ class SpecificationTranslatorTest extends TestCase
         $spec
             ->expects($this->once())
             ->method('operator')
-            ->willReturn(new Operator(Operator::AND));
+            ->willReturn(Operator::and());
 
-        $query = (new SpecificationTranslator)->translate($spec);
+        $query = (new SpecificationTranslator)($spec);
 
         $this->assertSame('bar=baz&foo=foobar', $query);
     }
@@ -119,7 +120,7 @@ class SpecificationTranslatorTest extends TestCase
      */
     public function testThrowWhenUnsupportedComposite()
     {
-        $spec = $this->createMock(CompositeInterface::class);
+        $spec = $this->createMock(Composite::class);
         $spec
             ->expects($this->never())
             ->method('left');
@@ -129,9 +130,9 @@ class SpecificationTranslatorTest extends TestCase
         $spec
             ->expects($this->once())
             ->method('operator')
-            ->willReturn(new Operator(Operator::OR));
+            ->willReturn(Operator::or());
 
-        (new SpecificationTranslator)->translate($spec);
+        (new SpecificationTranslator)($spec);
     }
 
     /**
@@ -139,8 +140,8 @@ class SpecificationTranslatorTest extends TestCase
      */
     public function testThrowWhenTranslatingNegativeSpecification()
     {
-        (new SpecificationTranslator)->translate(
-            $this->createMock(NotInterface::class)
+        (new SpecificationTranslator)(
+            $this->createMock(Not::class)
         );
     }
 
@@ -149,8 +150,8 @@ class SpecificationTranslatorTest extends TestCase
      */
     public function testThrowWhenTranslatingUnknownSpecification()
     {
-        (new SpecificationTranslator)->translate(
-            $this->createMock(SpecificationInterface::class)
+        (new SpecificationTranslator)(
+            $this->createMock(Specification::class)
         );
     }
 }

@@ -9,7 +9,7 @@ use Innmind\Rest\Client\{
     Definition\Property,
     Link,
     Link\Parameter,
-    Identity as IdentityInterface
+    Identity as IdentityInterface,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\Map;
@@ -114,22 +114,20 @@ class HttpResourceTest extends TestCase
             new Identity('uuid'),
             new Map('string', Property::class),
             new Map('scalar', 'variable'),
-            (new Map('string', 'string'))
-                ->put('rel', 'res'),
+            Map::of('string', 'string')
+                ('rel', 'res'),
             true
         );
 
-        $notAllowed = new Link(
+        $notAllowed = Link::of(
             'foo',
             $this->createMock(IdentityInterface::class),
-            'baz',
-            new Map('string', Parameter::class)
+            'baz'
         );
-        $allowed = new Link(
+        $allowed = Link::of(
             'res',
             $this->createMock(IdentityInterface::class),
-            'rel',
-            new Map('string', Parameter::class)
+            'rel'
         );
 
         $this->assertFalse($resource->allowsLink($notAllowed));

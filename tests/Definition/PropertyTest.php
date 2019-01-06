@@ -6,7 +6,7 @@ namespace Tests\Innmind\Rest\Client\Definition;
 use Innmind\Rest\Client\Definition\{
     Property,
     Type,
-    Access
+    Access,
 };
 use Innmind\Immutable\Set;
 use PHPUnit\Framework\TestCase;

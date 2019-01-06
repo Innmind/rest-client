@@ -5,7 +5,7 @@ namespace Tests\Innmind\Rest\Client\Link\Parameter;
 
 use Innmind\Rest\Client\Link\{
     Parameter\Parameter,
-    Parameter as ParameterInterface
+    Parameter as ParameterInterface,
 };
 use PHPUnit\Framework\TestCase;
 

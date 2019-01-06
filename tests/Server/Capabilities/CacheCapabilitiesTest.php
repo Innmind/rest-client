@@ -8,24 +8,23 @@ use Innmind\Rest\Client\{
     Server\Capabilities,
     Definition\Types,
     Definition\HttpResource,
-    Serializer\Normalizer\DefinitionNormalizer,
-    Serializer\Normalizer\CapabilitiesNamesNormalizer
+    Serializer\Decode,
+    Serializer\Encode,
+    Serializer\Denormalizer\DenormalizeCapabilitiesNames,
+    Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Normalizer\NormalizeDefinition,
 };
 use Innmind\Filesystem\{
     Adapter\MemoryAdapter,
     Directory\Directory,
     File\File,
-    Stream\StringStream
+    Stream\StringStream,
 };
 use Innmind\Url\Url;
 use Innmind\Immutable\{
-    Set,
     SetInterface,
-    MapInterface
-};
-use Symfony\Component\Serializer\{
-    Serializer,
-    Encoder\JsonEncoder
+    Set,
+    MapInterface,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -34,28 +33,23 @@ class CacheCapabilitiesTest extends TestCase
     private $capabilities;
     private $inner;
     private $filesystem;
-    private $serializer;
+    private $normalizeDefinition;
     private $directory;
     private $definition;
     private $raw;
 
     public function setUp()
     {
-        $types = new Types;
-        Types::defaults()->foreach(function(string $class) use ($types) {
-            $types->register($class);
-        });
+        $denormalizeDefinition = new DenormalizeDefinition(new Types);
 
         $this->capabilities = new CacheCapabilities(
             $this->inner = $this->createMock(Capabilities::class),
             $this->filesystem = new MemoryAdapter,
-            $this->serializer = new Serializer(
-                [
-                    new DefinitionNormalizer($types),
-                    new CapabilitiesNamesNormalizer,
-                ],
-                [new JsonEncoder]
-            ),
+            new Decode\Json,
+            new Encode\Json,
+            new DenormalizeCapabilitiesNames,
+            $denormalizeDefinition,
+            $this->normalizeDefinition = new NormalizeDefinition,
             Url::fromString('http://example.com/')
         );
         $this->directory = md5('http://example.com/');
@@ -82,12 +76,7 @@ class CacheCapabilitiesTest extends TestCase
             'linkable_to' => [],
             'rangeable' => true,
         ];
-        $this->definition = $this->serializer->denormalize(
-            $this->raw,
-            HttpResource::class,
-            null,
-            ['name' => 'foo']
-        );
+        $this->definition = $denormalizeDefinition($this->raw, 'foo');
     }
 
     public function testInterface()
@@ -105,9 +94,7 @@ class CacheCapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('names')
             ->willReturn(
-                (new Set('string'))
-                    ->add('foo')
-                    ->add('bar')
+                Set::of('string', 'foo', 'bar')
             );
         $names = $this->capabilities->names();
 
@@ -194,7 +181,7 @@ class CacheCapabilitiesTest extends TestCase
                 (new Directory($this->directory))->add(
                     new File(
                         'foo.json',
-                        new StringStream(json_encode($this->raw))
+                        new StringStream(\json_encode($this->raw))
                     )
                 )
             );
@@ -204,7 +191,7 @@ class CacheCapabilitiesTest extends TestCase
         $this->assertInstanceOf(HttpResource::class, $definition);
         $this->assertSame(
             $this->raw,
-            $this->serializer->normalize($definition)
+            ($this->normalizeDefinition)($definition)
         );
         $this->assertSame($definition, $this->capabilities->get('foo'));
     }
@@ -216,7 +203,7 @@ class CacheCapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('names')
             ->willReturn(
-                (new Set('string'))->add('foo')->add('bar')
+                Set::of('string', 'foo', 'bar')
             );
         $this
             ->inner
@@ -256,9 +243,7 @@ class CacheCapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('names')
             ->willReturn(
-                (new Set('string'))
-                    ->add('foo')
-                    ->add('bar')
+                Set::of('string', 'foo', 'bar')
             );
         $this
             ->filesystem

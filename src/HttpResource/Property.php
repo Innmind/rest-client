@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\HttpResource;
 
 use Innmind\Rest\Client\Exception\DomainException;
+use Innmind\Immutable\Str;
 
 final class Property
 {
@@ -12,7 +13,7 @@ final class Property
 
     public function __construct(string $name, $value)
     {
-        if (empty($name)) {
+        if (Str::of($name)->empty()) {
             throw new DomainException;
         }
 

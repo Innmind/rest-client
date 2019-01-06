@@ -8,7 +8,7 @@ use Innmind\Rest\Client\{
     Server\Capabilities\Capabilities,
     Server\Capabilities\Factory as FactoryInterface,
     Server\DefinitionFactory,
-    Formats
+    Formats,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\UrlResolver\ResolverInterface;
@@ -33,7 +33,7 @@ final class Factory implements FactoryInterface
         $this->formats = $formats;
     }
 
-    public function make(UrlInterface $url): CapabilitiesInterface
+    public function __invoke(UrlInterface $url): CapabilitiesInterface
     {
         return new Capabilities(
             $this->transport,

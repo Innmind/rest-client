@@ -6,7 +6,7 @@ namespace Tests\Innmind\Rest\Client\Server;
 use Innmind\Rest\Client\Server\{
     RetryServerFactory,
     Factory,
-    RetryServer
+    RetryServer,
 };
 use Innmind\Url\UrlInterface;
 use PHPUnit\Framework\TestCase;
@@ -25,18 +25,18 @@ class RetryServerFactoryTest extends TestCase
 
     public function testMake()
     {
-        $factory = new RetryServerFactory(
+        $make = new RetryServerFactory(
             $inner = $this->createMock(Factory::class)
         );
         $url = $this->createMock(UrlInterface::class);
         $inner
             ->expects($this->once())
-            ->method('make')
+            ->method('__invoke')
             ->with($url);
 
         $this->assertInstanceOf(
             RetryServer::class,
-            $factory->make($url)
+            $make($url)
         );
     }
 }

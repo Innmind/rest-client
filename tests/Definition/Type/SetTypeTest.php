@@ -7,11 +7,11 @@ use Innmind\Rest\Client\Definition\{
     Type\SetType,
     Type\DateType,
     Types,
-    Type
+    Type,
 };
 use Innmind\Immutable\{
+    SetInterface,
     Set,
-    SetInterface
 };
 use PHPUnit\Framework\TestCase;
 
@@ -29,7 +29,7 @@ class SetTypeTest extends TestCase
     {
         $type = SetType::fromString(
             'set<date<c>>',
-            (new Types)->register(DateType::class)
+            new Types(DateType::class)
         );
 
         $this->assertInstanceOf(SetType::class, $type);
@@ -50,23 +50,19 @@ class SetTypeTest extends TestCase
         $this->assertSame(
             ['30/01/2016'],
             $date->normalize(
-                (new Set('string'))->add('2016-01-30')
+                Set::of('string', '2016-01-30')
             )
         );
         $this->assertSame(
             ['30/01/2016'],
             $date->normalize(
-                (new Set(\DateTimeInterface::class))->add(
-                    new \DateTime('2016-01-30')
-                )
+                Set::of(\DateTimeInterface::class, new \DateTime('2016-01-30'))
             )
         );
         $this->assertSame(
             ['30/01/2016'],
             $date->normalize(
-                (new Set(\DateTimeInterface::class))->add(
-                    new \DateTimeImmutable('2016-01-30')
-                )
+                Set::of(\DateTimeInterface::class, new \DateTimeImmutable('2016-01-30'))
             )
         );
     }

@@ -7,7 +7,7 @@ use Innmind\Rest\Client\Server\{
     Capabilities\RefreshLimitedFactory,
     Capabilities\Factory,
     Capabilities,
-    Capabilities\RefreshLimitedCapabilities
+    Capabilities\RefreshLimitedCapabilities,
 };
 use Innmind\Url\UrlInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -15,12 +15,12 @@ use PHPUnit\Framework\TestCase;
 
 class RefreshLimitedFactoryTest extends TestCase
 {
-    private $factory;
+    private $make;
     private $inner;
 
     public function setUp()
     {
-        $this->factory = new RefreshLimitedFactory(
+        $this->make = new RefreshLimitedFactory(
             $this->inner = $this->createMock(Factory::class)
         );
     }
@@ -29,7 +29,7 @@ class RefreshLimitedFactoryTest extends TestCase
     {
         $this->assertInstanceOf(
             Factory::class,
-            $this->factory
+            $this->make
         );
     }
 
@@ -39,13 +39,13 @@ class RefreshLimitedFactoryTest extends TestCase
         $this
             ->inner
             ->expects($this->once())
-            ->method('make')
+            ->method('__invoke')
             ->with($url)
             ->willReturn($this->createMock(Capabilities::class));
 
         $this->assertInstanceOf(
             RefreshLimitedCapabilities::class,
-            $this->factory->make($url)
+            ($this->make)($url)
         );
     }
 }

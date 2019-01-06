@@ -7,13 +7,14 @@ use Innmind\Rest\Client\{
     Translator\SpecificationTranslator as SpecificationTranslatorInterface,
     Exception\OnlyEqualityCanBeTranslated,
     Exception\OnlyAndCompositionCanBeTranslated,
-    Exception\SpecificationCantBeTranslated
+    Exception\SpecificationCantBeTranslated,
 };
 use Innmind\Specification\{
-    SpecificationInterface,
-    ComparatorInterface,
-    CompositeInterface,
-    Operator
+    Specification,
+    Comparator,
+    Composite,
+    Operator,
+    Sign,
 };
 
 /**
@@ -21,29 +22,29 @@ use Innmind\Specification\{
  */
 final class SpecificationTranslator implements SpecificationTranslatorInterface
 {
-    public function translate(SpecificationInterface $specification): string
+    public function __invoke(Specification $specification): string
     {
         switch (true) {
-            case $specification instanceof ComparatorInterface:
-                if ($specification->sign() !== '==') {
+            case $specification instanceof Comparator:
+                if (!$specification->sign()->equals(Sign::equality())) {
                     throw new OnlyEqualityCanBeTranslated;
                 }
 
-                return sprintf(
+                return \sprintf(
                     '%s=%s',
                     $specification->property(),
                     $specification->value()
                 );
 
-            case $specification instanceof CompositeInterface:
-                if ((string) $specification->operator() === Operator::OR) {
+            case $specification instanceof Composite:
+                if ($specification->operator()->equals(Operator::or())) {
                     throw new OnlyAndCompositionCanBeTranslated;
                 }
 
-                return sprintf(
+                return \sprintf(
                     '%s&%s',
-                    $this->translate($specification->left()),
-                    $this->translate($specification->right())
+                    $this($specification->left()),
+                    $this($specification->right())
                 );
 
             default:

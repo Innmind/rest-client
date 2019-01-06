@@ -5,25 +5,30 @@ namespace Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\{
     Definition\HttpResource,
-    Serializer\Normalizer\DefinitionNormalizer,
-    Exception\DomainException
+    Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Decode,
+    Exception\DomainException,
 };
 use Innmind\Http\Message\{
     Response,
-    StatusCode\StatusCode
+    StatusCode\StatusCode,
 };
 use Innmind\Url\UrlInterface;
 
 final class DefinitionFactory
 {
-    private $denormalizer;
+    private $denormalize;
+    private $decode;
 
-    public function __construct(DefinitionNormalizer $denormalizer)
-    {
-        $this->denormalizer = $denormalizer;
+    public function __construct(
+        DenormalizeDefinition $denormalize,
+        Decode $decode
+    ) {
+        $this->denormalize = $denormalize;
+        $this->decode = $decode;
     }
 
-    public function make(
+    public function __invoke(
         string $name,
         UrlInterface $url,
         Response $response
@@ -38,14 +43,9 @@ final class DefinitionFactory
             throw new DomainException;
         }
 
-        $data = json_decode((string) $response->body(), true);
+        $data = ($this->decode)('json', $response->body());
         $data['url'] = (string) $url;
 
-        return $this->denormalizer->denormalize(
-            $data,
-            HttpResource::class,
-            null,
-            ['name' => $name]
-        );
+        return ($this->denormalize)($data, $name);
     }
 }

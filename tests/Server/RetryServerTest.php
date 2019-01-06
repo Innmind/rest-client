@@ -13,20 +13,20 @@ use Innmind\Rest\Client\{
     Request\Range,
     Link,
     Exception\NormalizationException,
-    Exception\DenormalizationException
+    Exception\DenormalizationException,
 };
 use Innmind\HttpTransport\Exception\ClientError;
 use Innmind\Http\Message\{
     Request,
     Response,
-    StatusCode\StatusCode
+    StatusCode\StatusCode,
 };
 use Innmind\Url\UrlInterface;
-use Innmind\Specification\SpecificationInterface;
+use Innmind\Specification\Specification;
 use Innmind\Immutable\{
     SetInterface,
     Map,
-    Set
+    Set,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -52,7 +52,7 @@ class RetryServerTest extends TestCase
 
     public function testAll()
     {
-        $specification = $this->createMock(SpecificationInterface::class);
+        $specification = $this->createMock(Specification::class);
         $range = new Range(0, 42);
         $this
             ->inner
@@ -71,7 +71,7 @@ class RetryServerTest extends TestCase
      */
     public function testRetryAll(\Throwable $e)
     {
-        $specification = $this->createMock(SpecificationInterface::class);
+        $specification = $this->createMock(Specification::class);
         $range = new Range(0, 42);
         $this
             ->inner
@@ -108,7 +108,7 @@ class RetryServerTest extends TestCase
      */
     public function testDoesntRetryAll()
     {
-        $specification = $this->createMock(SpecificationInterface::class);
+        $specification = $this->createMock(Specification::class);
         $range = new Range(0, 42);
         $this
             ->inner
@@ -135,10 +135,7 @@ class RetryServerTest extends TestCase
             ->method('read')
             ->with('foo', $identity)
             ->willReturn(
-                $expected = new HttpResource(
-                    'foo',
-                    new Map('string', Property::class)
-                )
+                $expected = HttpResource::of('foo')
             );
 
         $resource = $this->server->read('foo', $identity);
@@ -176,10 +173,7 @@ class RetryServerTest extends TestCase
             ->method('read')
             ->with('foo', $identity)
             ->willReturn(
-                $expected = new HttpResource(
-                    'foo',
-                    new Map('string', Property::class)
-                )
+                $expected = HttpResource::of('foo')
             );
 
         $resource = $this->server->read('foo', $identity);
@@ -211,10 +205,7 @@ class RetryServerTest extends TestCase
 
     public function testCreate()
     {
-        $resource = new HttpResource(
-            'foo',
-            new Map('string', Property::class)
-        );
+        $resource = HttpResource::of('foo');
         $this
             ->inner
             ->expects($this->once())
@@ -234,10 +225,7 @@ class RetryServerTest extends TestCase
      */
     public function testRetryCreate(\Throwable $e)
     {
-        $resource = new HttpResource(
-            'foo',
-            new Map('string', Property::class)
-        );
+        $resource = HttpResource::of('foo');
         $this
             ->inner
             ->expects($this->at(0))
@@ -275,10 +263,7 @@ class RetryServerTest extends TestCase
      */
     public function testDoesntRetryCreate()
     {
-        $resource = new HttpResource(
-            'foo',
-            new Map('string', Property::class)
-        );
+        $resource = HttpResource::of('foo');
         $this
             ->inner
             ->expects($this->once())
@@ -298,10 +283,7 @@ class RetryServerTest extends TestCase
     public function testUpdate()
     {
         $identity = $this->createMock(Identity::class);
-        $resource = new HttpResource(
-            'foo',
-            new Map('string', Property::class)
-        );
+        $resource = HttpResource::of('foo');
         $this
             ->inner
             ->expects($this->once())
@@ -320,10 +302,7 @@ class RetryServerTest extends TestCase
     public function testRetryUpdate(\Throwable $e)
     {
         $identity = $this->createMock(Identity::class);
-        $resource = new HttpResource(
-            'foo',
-            new Map('string', Property::class)
-        );
+        $resource = HttpResource::of('foo');
         $this
             ->inner
             ->expects($this->at(0))
@@ -360,10 +339,7 @@ class RetryServerTest extends TestCase
     public function testDoesntRetryUpdate()
     {
         $identity = $this->createMock(Identity::class);
-        $resource = new HttpResource(
-            'foo',
-            new Map('string', Property::class)
-        );
+        $resource = HttpResource::of('foo');
         $this
             ->inner
             ->expects($this->once())

@@ -35,3 +35,7 @@ $client
 This example would return all the resource available through the api of `http://example.com/`.
 
 Then you can access the following method on any server: `all`, `read`, `create`, `update` and `remove`. Check the [interface](src/Server.php) to understand how to use these methods.
+
+## Structure
+
+![](graph.svg)

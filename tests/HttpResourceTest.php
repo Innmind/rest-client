@@ -5,7 +5,7 @@ namespace Tests\Innmind\Rest\Client;
 
 use Innmind\Rest\Client\{
     HttpResource,
-    HttpResource\Property
+    HttpResource\Property,
 };
 use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;
@@ -21,6 +21,16 @@ class HttpResourceTest extends TestCase
 
         $this->assertSame('foo', $resource->name());
         $this->assertSame($properties, $resource->properties());
+    }
+
+    public function testOf()
+    {
+        $resource = HttpResource::of('foo', new Property('bar', 42));
+
+        $this->assertInstanceOf(HttpResource::class, $resource);
+        $this->assertSame('foo', $resource->name());
+        $this->assertCount(1, $resource->properties());
+        $this->assertSame(42, $resource->properties()->get('bar')->value());
     }
 
     /**

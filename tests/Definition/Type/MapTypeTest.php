@@ -8,11 +8,11 @@ use Innmind\Rest\Client\Definition\{
     Type\DateType,
     Type\IntType,
     Types,
-    Type
+    Type,
 };
 use Innmind\Immutable\{
+    MapInterface,
     Map,
-    MapInterface
 };
 use PHPUnit\Framework\TestCase;
 
@@ -31,9 +31,7 @@ class MapTypeTest extends TestCase
 
     public function testFromString()
     {
-        $types = (new Types)
-            ->register(DateType::class)
-            ->register(IntType::class);
+        $types = new Types(DateType::class, IntType::class);
         $type = MapType::fromString(
             'map<int,date<c>>',
             $types
@@ -67,25 +65,22 @@ class MapTypeTest extends TestCase
         $this->assertSame(
             [2 => '30/01/2016'],
             $date->normalize(
-                (new Map('string', 'string'))->put('2', '2016-01-30')
+                Map::of('string', 'string')
+                    ('2', '2016-01-30')
             )
         );
         $this->assertSame(
             [2 => '30/01/2016'],
             $date->normalize(
-                (new Map('string', \DateTimeInterface::class))->put(
-                    '2',
-                    new \DateTime('2016-01-30')
-                )
+                Map::of('string', \DateTimeInterface::class)
+                    ('2', new \DateTime('2016-01-30'))
             )
         );
         $this->assertSame(
             [2 => '30/01/2016'],
             $date->normalize(
-                (new Map('string', \DateTimeInterface::class))->put(
-                    '2',
-                    new \DateTimeImmutable('2016-01-30')
-                )
+                Map::of('string', \DateTimeInterface::class)
+                    ('2', new \DateTimeImmutable('2016-01-30'))
             )
         );
     }

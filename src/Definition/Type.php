@@ -5,7 +5,7 @@ namespace Innmind\Rest\Client\Definition;
 
 interface Type
 {
-    public static function fromString(string $type, Types $types): self;
+    public static function fromString(string $type, Types $build): self;
 
     /**
      * Transform the data received via http to a data understandable for php

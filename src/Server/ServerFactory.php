@@ -6,18 +6,28 @@ namespace Innmind\Rest\Client\Server;
 use Innmind\Rest\Client\{
     Server as ServerInterface,
     Translator\SpecificationTranslator,
-    Formats
+    Formats,
+    Response\ExtractIdentity,
+    Response\ExtractIdentities,
+    Serializer\Denormalizer\DenormalizeResource,
+    Serializer\Normalizer\NormalizeResource,
+    Serializer\Encode,
+    Serializer\Decode,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\ResolverInterface;
-use Symfony\Component\Serializer\Serializer;
 
 final class ServerFactory implements Factory
 {
     private $transport;
     private $resolver;
-    private $serializer;
+    private $extractIdentity;
+    private $extractIdentities;
+    private $denormalizeResource;
+    private $normalizeResource;
+    private $encode;
+    private $decode;
     private $translator;
     private $formats;
     private $capabilities;
@@ -25,27 +35,42 @@ final class ServerFactory implements Factory
     public function __construct(
         Transport $transport,
         ResolverInterface $resolver,
-        Serializer $serializer,
+        ExtractIdentity $extractIdentity,
+        ExtractIdentities $extractIdentities,
+        DenormalizeResource $denormalizeResource,
+        NormalizeResource $normalizeResource,
+        Encode $encode,
+        Decode $decode,
         SpecificationTranslator $translator,
         Formats $formats,
         Capabilities\Factory $capabilities
     ) {
         $this->transport = $transport;
         $this->resolver = $resolver;
-        $this->serializer = $serializer;
+        $this->extractIdentity = $extractIdentity;
+        $this->extractIdentities = $extractIdentities;
+        $this->denormalizeResource = $denormalizeResource;
+        $this->normalizeResource = $normalizeResource;
+        $this->encode = $encode;
+        $this->decode = $decode;
         $this->translator = $translator;
         $this->formats = $formats;
         $this->capabilities = $capabilities;
     }
 
-    public function make(UrlInterface $url): ServerInterface
+    public function __invoke(UrlInterface $url): ServerInterface
     {
         return new Server(
             $url,
             $this->transport,
-            $this->capabilities->make($url),
+            ($this->capabilities)($url),
             $this->resolver,
-            $this->serializer,
+            $this->extractIdentity,
+            $this->extractIdentities,
+            $this->denormalizeResource,
+            $this->normalizeResource,
+            $this->encode,
+            $this->decode,
             $this->translator,
             $this->formats
         );

@@ -7,7 +7,7 @@ use Innmind\Rest\Client\{
     Client\Client,
     Client as ClientInterface,
     Server\Factory,
-    Server
+    Server,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -36,14 +36,14 @@ class ClientTest extends TestCase
         $this
             ->factory
             ->expects($this->at(0))
-            ->method('make')
+            ->method('__invoke')
             ->with($this->callback(function($url): bool {
                 return (string) $url === 'http://example.com/';
             }));
         $this
             ->factory
             ->expects($this->at(1))
-            ->method('make')
+            ->method('__invoke')
             ->with($this->callback(function($url): bool {
                 return (string) $url === 'http://example.com/api/';
             }));

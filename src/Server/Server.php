@@ -18,12 +18,18 @@ use Innmind\Rest\Client\{
     Format\Format,
     Link,
     Link\Parameter,
-    Definition\HttpResource as Definition
+    Definition\HttpResource as Definition,
+    Response\ExtractIdentity,
+    Response\ExtractIdentities,
+    Serializer\Denormalizer\DenormalizeResource,
+    Serializer\Normalizer\NormalizeResource,
+    Serializer\Encode,
+    Serializer\Decode,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\Url\{
     UrlInterface,
-    Url
+    Url,
 };
 use Innmind\UrlResolver\ResolverInterface;
 use Innmind\Http\{
@@ -41,42 +47,55 @@ use Innmind\Http\{
     Header\ContentTypeValue,
     Header\Parameter as HeaderParameter,
     Header\Link as LinkHeader,
-    Header\LinkValue
+    Header\LinkValue,
 };
-use Innmind\Filesystem\Stream\StringStream;
 use Innmind\Immutable\{
     SetInterface,
     Map,
-    Set
+    Set,
 };
-use Innmind\Specification\SpecificationInterface;
-use Symfony\Component\Serializer\Serializer;
+use Innmind\Specification\Specification;
 
 final class Server implements ServerInterface
 {
     private $url;
-    private $transport;
+    private $fulfill;
     private $capabilities;
     private $resolver;
-    private $serializer;
-    private $specificationTranslator;
+    private $extractIdentity;
+    private $extractIdentities;
+    private $denormalizeResource;
+    private $normalizeResource;
+    private $encode;
+    private $decode;
+    private $translate;
     private $formats;
 
     public function __construct(
         UrlInterface $url,
-        Transport $transport,
+        Transport $fulfill,
         Capabilities $capabilities,
         ResolverInterface $resolver,
-        Serializer $serializer,
-        SpecificationTranslator $specificationTranslator,
+        ExtractIdentity $extractIdentity,
+        ExtractIdentities $extractIdentities,
+        DenormalizeResource $denormalizeResource,
+        NormalizeResource $normalizeResource,
+        Encode $encode,
+        Decode $decode,
+        SpecificationTranslator $translate,
         Formats $formats
     ) {
         $this->url = $url;
-        $this->transport = $transport;
+        $this->fulfill = $fulfill;
         $this->capabilities = $capabilities;
         $this->resolver = $resolver;
-        $this->serializer = $serializer;
-        $this->specificationTranslator = $specificationTranslator;
+        $this->extractIdentity = $extractIdentity;
+        $this->extractIdentities = $extractIdentities;
+        $this->denormalizeResource = $denormalizeResource;
+        $this->normalizeResource = $normalizeResource;
+        $this->encode = $encode;
+        $this->decode = $decode;
+        $this->translate = $translate;
         $this->formats = $formats;
     }
 
@@ -85,7 +104,7 @@ final class Server implements ServerInterface
      */
     public function all(
         string $name,
-        SpecificationInterface $specification = null,
+        Specification $specification = null,
         Range $range = null
     ): SetInterface {
         $definition = $this->capabilities->get($name);
@@ -95,7 +114,7 @@ final class Server implements ServerInterface
         }
 
         if ($specification !== null) {
-            $query = '?'.$this->specificationTranslator->translate($specification);
+            $query = '?'.($this->translate)($specification);
         }
 
         $url = $this->resolver->resolve(
@@ -103,11 +122,10 @@ final class Server implements ServerInterface
             $query ?? (string) $definition->url()
         );
         $url = Url::fromString($url);
-        $headers = new Map('string', Header::class);
+        $headers = Headers::of();
 
         if ($range !== null) {
-            $headers = $headers->put(
-                'Range',
+            $headers = Headers::of(
                 new RangeHeader(
                     new RangeValue(
                         'resource',
@@ -118,40 +136,31 @@ final class Server implements ServerInterface
             );
         }
 
-        $response = $this->transport->fulfill(
+        $response = ($this->fulfill)(
             new Request(
                 $url,
-                new Method(Method::GET),
+                Method::get(),
                 new ProtocolVersion(1, 1),
-                new Headers($headers)
+                $headers
             )
         );
 
-        return $this->serializer->denormalize(
-            $response,
-            'rest_identities',
-            null,
-            ['definition' => $definition]
-        );
+        return ($this->extractIdentities)($response, $definition);
     }
 
     public function read(string $name, Identity $identity): HttpResource
     {
         $definition = $this->capabilities->get($name);
-        $response = $this->transport->fulfill(
+        $response = ($this->fulfill)(
             new Request(
                 $this->resolveUrl(
                     $definition->url(),
                     $identity
                 ),
-                new Method(Method::GET),
+                Method::get(),
                 new ProtocolVersion(1, 1),
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Accept',
-                            $this->generateAcceptHeader()
-                        )
+                Headers::of(
+                    $this->generateAcceptHeader()
                 )
             )
         );
@@ -168,61 +177,46 @@ final class Server implements ServerInterface
             throw new UnsupportedResponse('', 0, $e);
         }
 
-        return $this->serializer->deserialize(
-            (string) $response->body(),
-            HttpResource::class,
+        $data = ($this->decode)(
             $format->name(),
-            [
-                'definition' => $definition,
-                'response' => $response,
-                'access' => new Access(Access::READ),
-            ]
+            $response->body()
+        );
+
+        return ($this->denormalizeResource)(
+            $data,
+            $definition,
+            new Access(Access::READ)
         );
     }
 
     public function create(HttpResource $resource): Identity
     {
         $definition = $this->capabilities->get($resource->name());
-        $response = $this->transport->fulfill(
+        $response = ($this->fulfill)(
             new Request(
                 $definition->url(),
-                new Method(Method::POST),
+                Method::post(),
                 new ProtocolVersion(1, 1),
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Content-Type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'application',
-                                    'json'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'application',
+                            'json'
                         )
-                        ->put(
-                            'Accept',
-                            $this->generateAcceptHeader()
-                        )
+                    ),
+                    $this->generateAcceptHeader()
                 ),
-                new StringStream(
-                    $this->serializer->serialize(
+                ($this->encode)(
+                    ($this->normalizeResource)(
                         $resource,
-                        'json',
-                        [
-                            'definition' => $definition,
-                            'access' => new Access(Access::CREATE),
-                        ]
+                        $definition,
+                        new Access(Access::CREATE)
                     )
                 )
             )
         );
 
-        return $this->serializer->denormalize(
-            $response,
-            'rest_identity',
-            null,
-            ['definition' => $definition]
-        );
+        return ($this->extractIdentity)($response, $definition);
     }
 
     public function update(
@@ -230,38 +224,28 @@ final class Server implements ServerInterface
         HttpResource $resource
     ): ServerInterface {
         $definition = $this->capabilities->get($resource->name());
-        $this->transport->fulfill(
+        ($this->fulfill)(
             new Request(
                 $this->resolveUrl(
                     $definition->url(),
                     $identity
                 ),
-                new Method(Method::PUT),
+                Method::put(),
                 new ProtocolVersion(1, 1),
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put(
-                            'Content-Type',
-                            new ContentType(
-                                new ContentTypeValue(
-                                    'application',
-                                    'json'
-                                )
-                            )
+                Headers::of(
+                    new ContentType(
+                        new ContentTypeValue(
+                            'application',
+                            'json'
                         )
-                        ->put(
-                            'Accept',
-                            $this->generateAcceptHeader()
-                        )
+                    ),
+                    $this->generateAcceptHeader()
                 ),
-                new StringStream(
-                    $this->serializer->serialize(
+                ($this->encode)(
+                    ($this->normalizeResource)(
                         $resource,
-                        'json',
-                        [
-                            'definition' => $definition,
-                            'access' => new Access(Access::UPDATE),
-                        ]
+                        $definition,
+                        new Access(Access::UPDATE)
                     )
                 )
             )
@@ -273,13 +257,13 @@ final class Server implements ServerInterface
     public function remove(string $name, Identity $identity): ServerInterface
     {
         $definition = $this->capabilities->get($name);
-        $this->transport->fulfill(
+        ($this->fulfill)(
             new Request(
                 $this->resolveUrl(
                     $definition->url(),
                     $identity
                 ),
-                new Method(Method::DELETE),
+                Method::delete(),
                 new ProtocolVersion(1, 1)
             )
         );
@@ -308,18 +292,17 @@ final class Server implements ServerInterface
 
         $definition = $this->capabilities->get($name);
         $this->validateLinks($definition, $links);
-        $this->transport->fulfill(
+        ($this->fulfill)(
             new Request(
                 $this->resolveUrl(
                     $definition->url(),
                     $identity
                 ),
-                new Method(Method::LINK),
+                Method::link(),
                 new ProtocolVersion(1, 1),
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put('Accept', $this->generateAcceptHeader())
-                        ->put('Link', $this->generateLinkHeader($links))
+                Headers::of(
+                    $this->generateAcceptHeader(),
+                    $this->generateLinkHeader($links)
                 )
             )
         );
@@ -348,18 +331,17 @@ final class Server implements ServerInterface
 
         $definition = $this->capabilities->get($name);
         $this->validateLinks($definition, $links);
-        $this->transport->fulfill(
+        ($this->fulfill)(
             new Request(
                 $this->resolveUrl(
                     $definition->url(),
                     $identity
                 ),
-                new Method(Method::UNLINK),
+                Method::unlink(),
                 new ProtocolVersion(1, 1),
-                new Headers(
-                    (new Map('string', Header::class))
-                        ->put('Accept', $this->generateAcceptHeader())
-                        ->put('Link', $this->generateLinkHeader($links))
+                Headers::of(
+                    $this->generateAcceptHeader(),
+                    $this->generateLinkHeader($links)
                 )
             )
         );
@@ -382,7 +364,7 @@ final class Server implements ServerInterface
         Identity $identity
     ): UrlInterface {
         $url = (string) $url;
-        $url = rtrim($url, '/').'/'.$identity;
+        $url = \rtrim($url, '/').'/'.$identity;
 
         return Url::fromString($url);
     }

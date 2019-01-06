@@ -5,7 +5,7 @@ namespace Tests\Innmind\Rest\Client\Identity;
 
 use Innmind\Rest\Client\{
     Identity\Identity,
-    Identity as IdentityInterface
+    Identity as IdentityInterface,
 };
 use PHPUnit\Framework\TestCase;
 

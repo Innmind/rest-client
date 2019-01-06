@@ -3,27 +3,38 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\Server\Capabilities;
 
-use Innmind\Rest\Client\Server\{
-    Capabilities\CacheFactory,
-    Capabilities\Factory,
-    Capabilities,
-    Capabilities\CacheCapabilities
+use Innmind\Rest\Client\{
+    Server\Capabilities\CacheFactory,
+    Server\Capabilities\Factory,
+    Server\Capabilities,
+    Server\Capabilities\CacheCapabilities,
+    Serializer\Decode,
+    Serializer\Encode,
+    Serializer\Denormalizer\DenormalizeCapabilitiesNames,
+    Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Normalizer\NormalizeDefinition,
+    Definition\Types,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Filesystem\Adapter;
-use Symfony\Component\Serializer\SerializerInterface;
 use PHPUnit\Framework\TestCase;
 
 class CacheFactoryTest extends TestCase
 {
-    private $factory;
+    private $make;
     private $inner;
 
     public function setUp()
     {
-        $this->factory = new CacheFactory(
+        $types = new Types(...Types::defaults());
+
+        $this->make = new CacheFactory(
             $this->createMock(Adapter::class),
-            $this->createMock(SerializerInterface::class),
+            $this->createMock(Decode::class),
+            $this->createMock(Encode::class),
+            new DenormalizeCapabilitiesNames,
+            new DenormalizeDefinition($types),
+            new NormalizeDefinition,
             $this->inner = $this->createMock(Factory::class)
         );
     }
@@ -32,7 +43,7 @@ class CacheFactoryTest extends TestCase
     {
         $this->assertInstanceOf(
             Factory::class,
-            $this->factory
+            $this->make
         );
     }
 
@@ -42,13 +53,13 @@ class CacheFactoryTest extends TestCase
         $this
             ->inner
             ->expects($this->once())
-            ->method('make')
+            ->method('__invoke')
             ->with($url)
             ->willReturn($this->createMock(Capabilities::class));
 
         $this->assertInstanceOf(
             CacheCapabilities::class,
-            $this->factory->make($url)
+            ($this->make)($url)
         );
     }
 }

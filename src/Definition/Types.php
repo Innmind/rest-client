@@ -12,11 +12,11 @@ use Innmind\Rest\Client\{
     Definition\Type\SetType,
     Definition\Type\StringType,
     Exception\DomainException,
-    Exception\UnknownType
+    Exception\UnknownType,
 };
 use Innmind\Immutable\{
+    SetInterface,
     Set,
-    SetInterface
 };
 
 final class Types
@@ -26,7 +26,7 @@ final class Types
 
     public function __construct(string ...$types)
     {
-        if (empty($types)) {
+        if (\count($types) === 0) {
             $types = self::defaults()->toPrimitive();
         }
 
@@ -41,18 +41,7 @@ final class Types
         $this->types = $types;
     }
 
-    public function register(string $class): self
-    {
-        @trigger_error('Register types via the constructor', E_USER_DEPRECATED);
-
-        $types = $this->types;
-        $types[] = $class;
-        $this->types = (new self(...$types))->types;
-
-        return $this;
-    }
-
-    public function build(string $type): Type
+    public function __invoke(string $type): Type
     {
         foreach ($this->types as $builder) {
             try {
@@ -74,17 +63,15 @@ final class Types
      */
     public static function defaults(): SetInterface
     {
-        if (self::$defaults === null) {
-            self::$defaults = (new Set('string'))
-                ->add(BoolType::class)
-                ->add(DateType::class)
-                ->add(FloatType::class)
-                ->add(IntType::class)
-                ->add(MapType::class)
-                ->add(SetType::class)
-                ->add(StringType::class);
-        }
-
-        return self::$defaults;
+        return self::$defaults ?? self::$defaults = Set::of(
+            'string',
+            BoolType::class,
+            DateType::class,
+            FloatType::class,
+            IntType::class,
+            MapType::class,
+            SetType::class,
+            StringType::class
+        );
     }
 }
