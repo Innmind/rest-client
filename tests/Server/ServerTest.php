@@ -24,6 +24,7 @@ use Innmind\Rest\Client\{
     Link,
     Link\Parameter,
     Response\ExtractIdentity,
+    Response\ExtractIdentities,
     Visitor\ResolveIdentity,
 };
 use Innmind\HttpTransport\Transport;
@@ -41,6 +42,8 @@ use Innmind\Http\{
     Header\ContentTypeValue,
     Header\Location,
     Header\LocationValue,
+    Header\Link as LinkHeader,
+    Header\LinkValue,
 };
 use Innmind\Filesystem\Stream\StringStream;
 use Innmind\Immutable\{
@@ -65,7 +68,6 @@ class ServerTest extends TestCase
     private $url;
     private $transport;
     private $capabilities;
-    private $identitiesNormalizer;
     private $definition;
 
     public function setUp()
@@ -76,9 +78,9 @@ class ServerTest extends TestCase
             $this->capabilities = $this->createMock(Capabilities::class),
             $resolver = new UrlResolver,
             new ExtractIdentity(new ResolveIdentity($resolver)),
+            new ExtractIdentities(new ResolveIdentity($resolver)),
             new Serializer(
                 [
-                    $this->identitiesNormalizer = $this->createMock(DenormalizerInterface::class),
                     new ResourceNormalizer,
                 ],
                 [new JsonEncoder]
@@ -216,28 +218,30 @@ class ServerTest extends TestCase
             ->willReturn(
                 $response = $this->createMock(Response::class)
             );
-        $this
-            ->identitiesNormalizer
+        $response
             ->expects($this->once())
-            ->method('supportsDenormalization')
-            ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof Response && $format === 'rest_identities';
-            }));
-        $this
-            ->identitiesNormalizer
-            ->expects($this->once())
-            ->method('denormalize')
-            ->with(
-                $response,
-                'rest_identities',
-                null,
-                ['definition' => $definition]
-            )
-            ->willReturn($expected = new Set(Identity::class));
+            ->method('headers')
+            ->willReturn(Headers::of(
+                new LinkHeader(
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-uuid'),
+                        'resource'
+                    ),
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-other-uuid'),
+                        'resource'
+                    )
+                )
+            ));
 
         $all = $this->server->all('foo');
 
-        $this->assertSame($expected, $all);
+        $this->assertInstanceOf(SetInterface::class, $all);
+        $this->assertSame(Identity::class, (string) $all->type());
+        $this->assertCount(2, $all);
+        $this->assertSame('some-uuid', (string) $all->current());
+        $all->next();
+        $this->assertSame('some-other-uuid', (string) $all->current());
     }
 
     public function testAllWithRange()
@@ -273,28 +277,30 @@ class ServerTest extends TestCase
             ->willReturn(
                 $response = $this->createMock(Response::class)
             );
-        $this
-            ->identitiesNormalizer
+        $response
             ->expects($this->once())
-            ->method('supportsDenormalization')
-            ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof Response && $format === 'rest_identities';
-            }));
-        $this
-            ->identitiesNormalizer
-            ->expects($this->once())
-            ->method('denormalize')
-            ->with(
-                $response,
-                'rest_identities',
-                null,
-                ['definition' => $definition]
-            )
-            ->willReturn($expected = new Set(Identity::class));
+            ->method('headers')
+            ->willReturn(Headers::of(
+                new LinkHeader(
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-uuid'),
+                        'resource'
+                    ),
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-other-uuid'),
+                        'resource'
+                    )
+                )
+            ));
 
         $all = $this->server->all('foo', null, new Range(10, 20));
 
-        $this->assertSame($expected, $all);
+        $this->assertInstanceOf(SetInterface::class, $all);
+        $this->assertSame(Identity::class, (string) $all->type());
+        $this->assertCount(2, $all);
+        $this->assertSame('some-uuid', (string) $all->current());
+        $all->next();
+        $this->assertSame('some-other-uuid', (string) $all->current());
     }
 
     public function testAllWithQuery()
@@ -341,28 +347,30 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('value')
             ->willReturn('baz');
-        $this
-            ->identitiesNormalizer
+        $response
             ->expects($this->once())
-            ->method('supportsDenormalization')
-            ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof Response && $format === 'rest_identities';
-            }));
-        $this
-            ->identitiesNormalizer
-            ->expects($this->once())
-            ->method('denormalize')
-            ->with(
-                $response,
-                'rest_identities',
-                null,
-                ['definition' => $definition]
-            )
-            ->willReturn($expected = new Set(Identity::class));
+            ->method('headers')
+            ->willReturn(Headers::of(
+                new LinkHeader(
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-uuid'),
+                        'resource'
+                    ),
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-other-uuid'),
+                        'resource'
+                    )
+                )
+            ));
 
         $all = $this->server->all('foo', $specification);
 
-        $this->assertSame($expected, $all);
+        $this->assertInstanceOf(SetInterface::class, $all);
+        $this->assertSame(Identity::class, (string) $all->type());
+        $this->assertCount(2, $all);
+        $this->assertSame('some-uuid', (string) $all->current());
+        $all->next();
+        $this->assertSame('some-other-uuid', (string) $all->current());
     }
 
     public function testAllWithQueryAndRange()
@@ -411,28 +419,30 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('value')
             ->willReturn('baz');
-        $this
-            ->identitiesNormalizer
+        $response
             ->expects($this->once())
-            ->method('supportsDenormalization')
-            ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof Response && $format === 'rest_identities';
-            }));
-        $this
-            ->identitiesNormalizer
-            ->expects($this->once())
-            ->method('denormalize')
-            ->with(
-                $response,
-                'rest_identities',
-                null,
-                ['definition' => $definition]
-            )
-            ->willReturn($expected = new Set(Identity::class));
+            ->method('headers')
+            ->willReturn(Headers::of(
+                new LinkHeader(
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-uuid'),
+                        'resource'
+                    ),
+                    new LinkValue(
+                        Url::fromString('http://example.com/foo/some-other-uuid'),
+                        'resource'
+                    )
+                )
+            ));
 
         $all = $this->server->all('foo', $specification, new Range(10, 20));
 
-        $this->assertSame($expected, $all);
+        $this->assertInstanceOf(SetInterface::class, $all);
+        $this->assertSame(Identity::class, (string) $all->type());
+        $this->assertCount(2, $all);
+        $this->assertSame('some-uuid', (string) $all->current());
+        $all->next();
+        $this->assertSame('some-other-uuid', (string) $all->current());
     }
 
     /**

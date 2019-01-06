@@ -13,6 +13,7 @@ use Innmind\Rest\Client\{
     Format\Format,
     Format\MediaType,
     Response\ExtractIdentity,
+    Response\ExtractIdentities,
     Visitor\ResolveIdentity,
 };
 use Innmind\Url\UrlInterface;
@@ -36,6 +37,7 @@ class ServerFactoryTest extends TestCase
             $this->createMock(Transport::class),
             $resolver = $this->createMock(ResolverInterface::class),
             new ExtractIdentity(new ResolveIdentity($resolver)),
+            new ExtractIdentities(new ResolveIdentity($resolver)),
             $this->createMock(Serializer::class),
             $this->createMock(SpecificationTranslator::class),
             Formats::of(

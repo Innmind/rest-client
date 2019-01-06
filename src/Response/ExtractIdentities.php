@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Innmind\Rest\Client\Serializer\Normalizer;
+namespace Innmind\Rest\Client\Response;
 
 use Innmind\Rest\Client\{
     Identity,
@@ -18,9 +18,8 @@ use Innmind\Immutable\{
     SetInterface,
     Set,
 };
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-final class IdentitiesNormalizer implements DenormalizerInterface
+final class ExtractIdentities
 {
     private $resolveIdentity;
 
@@ -29,18 +28,9 @@ final class IdentitiesNormalizer implements DenormalizerInterface
         $this->resolveIdentity = $resolveIdentity;
     }
 
-    public function denormalize($data, $type, $format = null, array $context = []): SetInterface
+    public function __invoke(Response $response, HttpResource $definition): SetInterface
     {
-        if (
-            !$this->supportsDenormalization($data, $type, $format) ||
-            !isset($context['definition']) ||
-            !$context['definition'] instanceof HttpResource
-        ) {
-            throw new LogicException;
-        }
-
-        $definition = $context['definition'];
-        $headers = $data->headers();
+        $headers = $response->headers();
 
         if (!$headers->has('Link')) {
             return new Set(Identity::class);
@@ -68,10 +58,5 @@ final class IdentitiesNormalizer implements DenormalizerInterface
                     );
                 }
             );
-    }
-
-    public function supportsDenormalization($data, $type, $format = null): bool
-    {
-        return $data instanceof Response && $type === 'rest_identities';
     }
 }

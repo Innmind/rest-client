@@ -20,6 +20,7 @@ use Innmind\Rest\Client\{
     Link\Parameter,
     Definition\HttpResource as Definition,
     Response\ExtractIdentity,
+    Response\ExtractIdentities,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\Url\{
@@ -60,6 +61,7 @@ final class Server implements ServerInterface
     private $capabilities;
     private $resolver;
     private $extractIdentity;
+    private $extractIdentities;
     private $serializer;
     private $translate;
     private $formats;
@@ -70,6 +72,7 @@ final class Server implements ServerInterface
         Capabilities $capabilities,
         ResolverInterface $resolver,
         ExtractIdentity $extractIdentity,
+        ExtractIdentities $extractIdentities,
         Serializer $serializer,
         SpecificationTranslator $translate,
         Formats $formats
@@ -79,6 +82,7 @@ final class Server implements ServerInterface
         $this->capabilities = $capabilities;
         $this->resolver = $resolver;
         $this->extractIdentity = $extractIdentity;
+        $this->extractIdentities = $extractIdentities;
         $this->serializer = $serializer;
         $this->translate = $translate;
         $this->formats = $formats;
@@ -130,12 +134,7 @@ final class Server implements ServerInterface
             )
         );
 
-        return $this->serializer->denormalize(
-            $response,
-            'rest_identities',
-            null,
-            ['definition' => $definition]
-        );
+        return ($this->extractIdentities)($response, $definition);
     }
 
     public function read(string $name, Identity $identity): HttpResource
