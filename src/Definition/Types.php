@@ -26,7 +26,7 @@ final class Types
 
     public function __construct(string ...$types)
     {
-        if (count($types) === 0) {
+        if (\count($types) === 0) {
             $types = self::defaults()->toPrimitive();
         }
 
@@ -63,17 +63,15 @@ final class Types
      */
     public static function defaults(): SetInterface
     {
-        if (self::$defaults === null) {
-            self::$defaults = (new Set('string'))
-                ->add(BoolType::class)
-                ->add(DateType::class)
-                ->add(FloatType::class)
-                ->add(IntType::class)
-                ->add(MapType::class)
-                ->add(SetType::class)
-                ->add(StringType::class);
-        }
-
-        return self::$defaults;
+        return self::$defaults ?? self::$defaults = Set::of(
+            'string',
+            BoolType::class,
+            DateType::class,
+            FloatType::class,
+            IntType::class,
+            MapType::class,
+            SetType::class,
+            StringType::class
+        );
     }
 }
