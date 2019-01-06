@@ -23,6 +23,8 @@ use Innmind\Rest\Client\{
     Translator\Specification\SpecificationTranslator,
     Link,
     Link\Parameter,
+    Response\ExtractIdentity,
+    Visitor\ResolveIdentity,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\UrlResolver;
@@ -64,7 +66,6 @@ class ServerTest extends TestCase
     private $transport;
     private $capabilities;
     private $identitiesNormalizer;
-    private $identityNormalizer;
     private $definition;
 
     public function setUp()
@@ -73,11 +74,11 @@ class ServerTest extends TestCase
             $this->url = Url::fromString('http://example.com/'),
             $this->transport = $this->createMock(Transport::class),
             $this->capabilities = $this->createMock(Capabilities::class),
-            new UrlResolver,
+            $resolver = new UrlResolver,
+            new ExtractIdentity(new ResolveIdentity($resolver)),
             new Serializer(
                 [
                     $this->identitiesNormalizer = $this->createMock(DenormalizerInterface::class),
-                    $this->identityNormalizer = $this->createMock(DenormalizerInterface::class),
                     new ResourceNormalizer,
                 ],
                 [new JsonEncoder]
@@ -577,24 +578,16 @@ class ServerTest extends TestCase
             ->willReturn(
                 $response = $this->createMock(Response::class)
             );
-        $this
-            ->identityNormalizer
+        $response
             ->expects($this->once())
-            ->method('supportsDenormalization')
-            ->will($this->returnCallback(function($data, $format) {
-                return $data instanceof Response && $format === 'rest_identity';
-            }));
-        $this
-            ->identityNormalizer
-            ->expects($this->once())
-            ->method('denormalize')
-            ->with(
-                $response,
-                'rest_identity',
-                null,
-                ['definition' => $this->definition]
-            )
-            ->willReturn($expected = new Identity\Identity('some-uuid'));
+            ->method('headers')
+            ->willReturn(Headers::of(
+                new Location(
+                    new LocationValue(
+                        Url::fromString('http://example.com/foo/some-uuid')
+                    )
+                )
+            ));
 
         $identity = $this->server->create(
             HttpResource::of(
@@ -603,7 +596,7 @@ class ServerTest extends TestCase
             )
         );
 
-        $this->assertSame($expected, $identity);
+        $this->assertSame('some-uuid', (string) $identity);
     }
 
     public function testUpdate()

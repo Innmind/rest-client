@@ -18,6 +18,7 @@ use Innmind\Rest\Client\{
     Definition\Types,
     Visitor\ResolveIdentity,
     Translator\Specification\SpecificationTranslator,
+    Response\ExtractIdentity,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\ResolverInterface;
@@ -48,7 +49,6 @@ function bootstrap(
     $serializer = Serializer::build(
         $definitionNormalizer = new Normalizer\DefinitionNormalizer($types),
         new Normalizer\IdentitiesNormalizer($resolveIdentity),
-        new Normalizer\IdentityNormalizer($resolveIdentity),
         new Normalizer\ResourceNormalizer
     );
 
@@ -59,6 +59,7 @@ function bootstrap(
             new ServerFactory(
                 $transport,
                 $urlResolver,
+                new ExtractIdentity($resolveIdentity),
                 $serializer,
                 new SpecificationTranslator,
                 $contentTypes,

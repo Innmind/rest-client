@@ -19,6 +19,7 @@ use Innmind\Rest\Client\{
     Link,
     Link\Parameter,
     Definition\HttpResource as Definition,
+    Response\ExtractIdentity,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\Url\{
@@ -58,6 +59,7 @@ final class Server implements ServerInterface
     private $fulfill;
     private $capabilities;
     private $resolver;
+    private $extractIdentity;
     private $serializer;
     private $translate;
     private $formats;
@@ -67,6 +69,7 @@ final class Server implements ServerInterface
         Transport $fulfill,
         Capabilities $capabilities,
         ResolverInterface $resolver,
+        ExtractIdentity $extractIdentity,
         Serializer $serializer,
         SpecificationTranslator $translate,
         Formats $formats
@@ -75,6 +78,7 @@ final class Server implements ServerInterface
         $this->fulfill = $fulfill;
         $this->capabilities = $capabilities;
         $this->resolver = $resolver;
+        $this->extractIdentity = $extractIdentity;
         $this->serializer = $serializer;
         $this->translate = $translate;
         $this->formats = $formats;
@@ -205,12 +209,7 @@ final class Server implements ServerInterface
             )
         );
 
-        return $this->serializer->denormalize(
-            $response,
-            'rest_identity',
-            null,
-            ['definition' => $definition]
-        );
+        return ($this->extractIdentity)($response, $definition);
     }
 
     public function update(

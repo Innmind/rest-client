@@ -1,11 +1,10 @@
 <?php
 declare(strict_types = 1);
 
-namespace Innmind\Rest\Client\Serializer\Normalizer;
+namespace Innmind\Rest\Client\Response;
 
 use Innmind\Rest\Client\{
     Identity,
-    Exception\LogicException,
     Exception\IdentityNotFound,
     Visitor\ResolveIdentity,
     Definition\HttpResource,
@@ -15,9 +14,8 @@ use Innmind\Http\{
     Header\Location,
 };
 use Innmind\Url\Url;
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-final class IdentityNormalizer implements DenormalizerInterface
+final class ExtractIdentity
 {
     private $resolveIdentity;
 
@@ -26,18 +24,9 @@ final class IdentityNormalizer implements DenormalizerInterface
         $this->resolveIdentity = $resolveIdentity;
     }
 
-    public function denormalize($data, $type, $format = null, array $context = []): Identity
+    public function __invoke(Response $response, HttpResource $definition): Identity
     {
-        if (
-            !$this->supportsDenormalization($data, $type, $format) ||
-            !isset($context['definition']) ||
-            !$context['definition'] instanceof HttpResource
-        ) {
-            throw new LogicException;
-        }
-
-        $definition = $context['definition'];
-        $headers = $data->headers();
+        $headers = $response->headers();
 
         if (
             !$headers->has('Location') ||
@@ -58,10 +47,5 @@ final class IdentityNormalizer implements DenormalizerInterface
                 $header
             )
         );
-    }
-
-    public function supportsDenormalization($data, $type, $format = null): bool
-    {
-        return $data instanceof Response && $type === 'rest_identity';
     }
 }

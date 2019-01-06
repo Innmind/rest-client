@@ -7,6 +7,7 @@ use Innmind\Rest\Client\{
     Server as ServerInterface,
     Translator\SpecificationTranslator,
     Formats,
+    Response\ExtractIdentity,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\HttpTransport\Transport;
@@ -17,6 +18,7 @@ final class ServerFactory implements Factory
 {
     private $transport;
     private $resolver;
+    private $extractIdentity;
     private $serializer;
     private $translator;
     private $formats;
@@ -25,6 +27,7 @@ final class ServerFactory implements Factory
     public function __construct(
         Transport $transport,
         ResolverInterface $resolver,
+        ExtractIdentity $extractIdentity,
         Serializer $serializer,
         SpecificationTranslator $translator,
         Formats $formats,
@@ -32,6 +35,7 @@ final class ServerFactory implements Factory
     ) {
         $this->transport = $transport;
         $this->resolver = $resolver;
+        $this->extractIdentity = $extractIdentity;
         $this->serializer = $serializer;
         $this->translator = $translator;
         $this->formats = $formats;
@@ -45,6 +49,7 @@ final class ServerFactory implements Factory
             $this->transport,
             ($this->capabilities)($url),
             $this->resolver,
+            $this->extractIdentity,
             $this->serializer,
             $this->translator,
             $this->formats

@@ -12,6 +12,8 @@ use Innmind\Rest\Client\{
     Formats,
     Format\Format,
     Format\MediaType,
+    Response\ExtractIdentity,
+    Visitor\ResolveIdentity,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\HttpTransport\Transport;
@@ -32,7 +34,8 @@ class ServerFactoryTest extends TestCase
     {
         $this->make = new ServerFactory(
             $this->createMock(Transport::class),
-            $this->createMock(ResolverInterface::class),
+            $resolver = $this->createMock(ResolverInterface::class),
+            new ExtractIdentity(new ResolveIdentity($resolver)),
             $this->createMock(Serializer::class),
             $this->createMock(SpecificationTranslator::class),
             Formats::of(
