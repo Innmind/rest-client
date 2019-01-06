@@ -717,12 +717,11 @@ class ServerTest extends TestCase
             new Identity\Identity('some-uuid'),
             Set::of(
                 Link::class,
-                new Link(
+                Link::of(
                     'baz',
                     new Identity\Identity('cano'),
                     'canonical',
-                    (new Map('string', Parameter::class))
-                        ->put('attr', new Parameter\Parameter('attr', 'val'))
+                    new Parameter\Parameter('attr', 'val')
                 )
             )
         );
@@ -761,12 +760,11 @@ class ServerTest extends TestCase
                 new Identity\Identity('some-uuid'),
                 Set::of(
                     Link::class,
-                    new Link(
+                    Link::of(
                         'bar',
                         new Identity\Identity('cano'),
                         'canonical',
-                        (new Map('string', Parameter::class))
-                            ->put('attr', new Parameter\Parameter('attr', 'val'))
+                        new Parameter\Parameter('attr', 'val')
                     )
                 )
             )
@@ -819,12 +817,11 @@ class ServerTest extends TestCase
             new Identity\Identity('some-uuid'),
             Set::of(
                 Link::class,
-                new Link(
+                Link::of(
                     'baz',
                     new Identity\Identity('cano'),
                     'canonical',
-                    (new Map('string', Parameter::class))
-                        ->put('attr', new Parameter\Parameter('attr', 'val'))
+                    new Parameter\Parameter('attr', 'val')
                 )
             )
         );
@@ -863,12 +860,11 @@ class ServerTest extends TestCase
                 new Identity\Identity('some-uuid'),
                 Set::of(
                     Link::class,
-                    new Link(
+                    Link::of(
                         'bar',
                         new Identity\Identity('cano'),
                         'canonical',
-                        (new Map('string', Parameter::class))
-                            ->put('attr', new Parameter\Parameter('attr', 'val'))
+                        new Parameter\Parameter('attr', 'val')
                     )
                 )
             )

@@ -119,17 +119,15 @@ class HttpResourceTest extends TestCase
             true
         );
 
-        $notAllowed = new Link(
+        $notAllowed = Link::of(
             'foo',
             $this->createMock(IdentityInterface::class),
-            'baz',
-            new Map('string', Parameter::class)
+            'baz'
         );
-        $allowed = new Link(
+        $allowed = Link::of(
             'res',
             $this->createMock(IdentityInterface::class),
-            'rel',
-            new Map('string', Parameter::class)
+            'rel'
         );
 
         $this->assertFalse($resource->allowsLink($notAllowed));

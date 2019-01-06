@@ -31,6 +31,22 @@ class LinkTest extends TestCase
         $this->assertSame($parameters, $link->parameters());
     }
 
+    public function testOf()
+    {
+        $link = Link::of(
+            'foo',
+            $identity = $this->createMock(Identity::class),
+            'baz',
+            new Parameter\Parameter('bar', '42')
+        );
+
+        $this->assertInstanceOf(Link::class, $link);
+        $this->assertSame('foo', $link->definition());
+        $this->assertSame($identity, $link->identity());
+        $this->assertSame('baz', $link->relationship());
+        $this->assertSame('42', $link->parameters()->get('bar')->value());
+    }
+
     public function testNoParametersGiven()
     {
         $link = new Link(

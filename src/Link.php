@@ -51,6 +51,21 @@ final class Link
         $this->parameters = $parameters;
     }
 
+    public static function of(
+        string $definition,
+        Identity $identity,
+        string $relationship,
+        Parameter ...$parameters
+    ): self {
+        $map = Map::of('string', Parameter::class);
+
+        foreach ($parameters as $parameter) {
+            $map = $map->put($parameter->key(), $parameter);
+        }
+
+        return new self($definition, $identity, $relationship, $map);
+    }
+
     public function definition(): string
     {
         return $this->definition;
