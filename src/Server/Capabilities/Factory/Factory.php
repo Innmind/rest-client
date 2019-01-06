@@ -33,7 +33,7 @@ final class Factory implements FactoryInterface
         $this->formats = $formats;
     }
 
-    public function make(UrlInterface $url): CapabilitiesInterface
+    public function __invoke(UrlInterface $url): CapabilitiesInterface
     {
         return new Capabilities(
             $this->transport,

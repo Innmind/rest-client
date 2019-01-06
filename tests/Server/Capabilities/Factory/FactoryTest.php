@@ -25,11 +25,11 @@ use PHPUnit\Framework\TestCase;
 
 class FactoryTest extends TestCase
 {
-    private $factory;
+    private $make;
 
     public function setUp()
     {
-        $this->factory = new Factory(
+        $this->make = new Factory(
             $this->createMock(Transport::class),
             $this->createMock(ResolverInterface::class),
             new DefinitionFactory(
@@ -52,7 +52,7 @@ class FactoryTest extends TestCase
     {
         $this->assertInstanceOf(
             FactoryInterface::class,
-            $this->factory
+            $this->make
         );
     }
 
@@ -60,7 +60,7 @@ class FactoryTest extends TestCase
     {
         $this->assertInstanceOf(
             Capabilities::class,
-            $this->factory->make(
+            ($this->make)(
                 $this->createMock(UrlInterface::class)
             )
         );

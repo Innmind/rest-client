@@ -8,17 +8,17 @@ use Innmind\Url\UrlInterface;
 
 final class RetryServerFactory implements Factory
 {
-    private $factory;
+    private $make;
 
-    public function __construct(Factory $factory)
+    public function __construct(Factory $make)
     {
-        $this->factory = $factory;
+        $this->make = $make;
     }
 
-    public function make(UrlInterface $url): ServerInterface
+    public function __invoke(UrlInterface $url): ServerInterface
     {
         return new RetryServer(
-            $this->factory->make($url)
+            ($this->make)($url)
         );
     }
 }

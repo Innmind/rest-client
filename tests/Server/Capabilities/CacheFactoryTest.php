@@ -16,12 +16,12 @@ use PHPUnit\Framework\TestCase;
 
 class CacheFactoryTest extends TestCase
 {
-    private $factory;
+    private $make;
     private $inner;
 
     public function setUp()
     {
-        $this->factory = new CacheFactory(
+        $this->make = new CacheFactory(
             $this->createMock(Adapter::class),
             $this->createMock(SerializerInterface::class),
             $this->inner = $this->createMock(Factory::class)
@@ -32,7 +32,7 @@ class CacheFactoryTest extends TestCase
     {
         $this->assertInstanceOf(
             Factory::class,
-            $this->factory
+            $this->make
         );
     }
 
@@ -42,13 +42,13 @@ class CacheFactoryTest extends TestCase
         $this
             ->inner
             ->expects($this->once())
-            ->method('make')
+            ->method('__invoke')
             ->with($url)
             ->willReturn($this->createMock(Capabilities::class));
 
         $this->assertInstanceOf(
             CacheCapabilities::class,
-            $this->factory->make($url)
+            ($this->make)($url)
         );
     }
 }

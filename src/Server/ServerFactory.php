@@ -38,12 +38,12 @@ final class ServerFactory implements Factory
         $this->capabilities = $capabilities;
     }
 
-    public function make(UrlInterface $url): ServerInterface
+    public function __invoke(UrlInterface $url): ServerInterface
     {
         return new Server(
             $url,
             $this->transport,
-            $this->capabilities->make($url),
+            ($this->capabilities)($url),
             $this->resolver,
             $this->serializer,
             $this->translator,

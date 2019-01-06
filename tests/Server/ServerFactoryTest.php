@@ -25,12 +25,12 @@ use PHPUnit\Framework\TestCase;
 
 class ServerFactoryTest extends TestCase
 {
-    private $factory;
+    private $make;
     private $capabilities;
 
     public function setUp()
     {
-        $this->factory = new ServerFactory(
+        $this->make = new ServerFactory(
             $this->createMock(Transport::class),
             $this->createMock(ResolverInterface::class),
             $this->createMock(Serializer::class),
@@ -53,7 +53,7 @@ class ServerFactoryTest extends TestCase
     {
         $this->assertInstanceOf(
             Factory::class,
-            $this->factory
+            $this->make
         );
     }
 
@@ -63,12 +63,12 @@ class ServerFactoryTest extends TestCase
         $this
             ->capabilities
             ->expects($this->once())
-            ->method('make')
+            ->method('__invoke')
             ->with($url);
 
         $this->assertInstanceOf(
             Server::class,
-            $this->factory->make($url)
+            ($this->make)($url)
         );
     }
 }

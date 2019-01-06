@@ -12,22 +12,22 @@ final class CacheFactory implements Factory
 {
     private $filesystem;
     private $serializer;
-    private $factory;
+    private $make;
 
     public function __construct(
         Adapter $filesystem,
         SerializerInterface $serializer,
-        Factory $factory
+        Factory $make
     ) {
         $this->filesystem = $filesystem;
         $this->serializer = $serializer;
-        $this->factory = $factory;
+        $this->make = $make;
     }
 
-    public function make(UrlInterface $url): CapabilitiesInterface
+    public function __invoke(UrlInterface $url): CapabilitiesInterface
     {
         return new CacheCapabilities(
-            $this->factory->make($url),
+            ($this->make)($url),
             $this->filesystem,
             $this->serializer,
             $url

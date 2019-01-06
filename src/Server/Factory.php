@@ -8,5 +8,5 @@ use Innmind\Url\UrlInterface;
 
 interface Factory
 {
-    public function make(UrlInterface $url): ServerInterface;
+    public function __invoke(UrlInterface $url): ServerInterface;
 }
