@@ -73,7 +73,7 @@ final class CacheCapabilities implements CapabilitiesInterface
         try {
             $file = $this->load('.names');
             return $this->names = ($this->denormalizeNames)(
-                ($this->decode)($file->content())
+                ($this->decode)('json', $file->content())
             );
         } catch (FileNotFound $e) {
             $this->names = $this->capabilities->names();
@@ -92,7 +92,7 @@ final class CacheCapabilities implements CapabilitiesInterface
         try {
             $file = $this->load($name);
             $definition = ($this->denormalizeDefinition)(
-                ($this->decode)($file->content()),
+                ($this->decode)('json', $file->content()),
                 $name
             );
             $this->definitions = $this->definitions->put(
