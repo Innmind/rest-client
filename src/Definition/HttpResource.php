@@ -8,7 +8,10 @@ use Innmind\Rest\Client\{
     Exception\DomainException,
 };
 use Innmind\Url\UrlInterface;
-use Innmind\Immutable\MapInterface;
+use Innmind\Immutable\{
+    MapInterface,
+    Str,
+};
 
 final class HttpResource
 {
@@ -29,7 +32,7 @@ final class HttpResource
         MapInterface $links,
         bool $rangeable
     ) {
-        if (empty($name)) {
+        if (Str::of($name)->empty()) {
             throw new DomainException;
         }
 

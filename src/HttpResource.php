@@ -7,7 +7,10 @@ use Innmind\Rest\Client\{
     HttpResource\Property,
     Exception\DomainException,
 };
-use Innmind\Immutable\MapInterface;
+use Innmind\Immutable\{
+    MapInterface,
+    Str,
+};
 
 final class HttpResource
 {
@@ -16,7 +19,7 @@ final class HttpResource
 
     public function __construct(string $name, MapInterface $properties)
     {
-        if (empty($name)) {
+        if (Str::of($name)->empty()) {
             throw new DomainException;
         }
 

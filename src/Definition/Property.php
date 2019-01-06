@@ -4,7 +4,10 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Definition;
 
 use Innmind\Rest\Client\Exception\DomainException;
-use Innmind\Immutable\SetInterface;
+use Innmind\Immutable\{
+    SetInterface,
+    Str,
+};
 
 final class Property
 {
@@ -21,7 +24,7 @@ final class Property
         SetInterface $variants,
         bool $optional
     ) {
-        if (empty($name)) {
+        if (Str::of($name)->empty()) {
             throw new DomainException;
         }
 

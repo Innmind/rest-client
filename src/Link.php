@@ -10,6 +10,7 @@ use Innmind\Rest\Client\{
 use Innmind\Immutable\{
     MapInterface,
     Map,
+    Str,
 };
 
 final class Link
@@ -28,8 +29,8 @@ final class Link
         $parameters = $parameters ?? new Map('string', Parameter::class);
 
         if (
-            empty($definition) ||
-            empty($relationship)
+            Str::of($definition)->empty() ||
+            Str::of($relationship)->empty()
         ) {
             throw new DomainException;
         }

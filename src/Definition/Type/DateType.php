@@ -20,7 +20,7 @@ final class DateType implements Type
 
     public function __construct(string $format)
     {
-        if (empty($format)) {
+        if (Str::of($format)->empty()) {
             throw new DomainException;
         }
 

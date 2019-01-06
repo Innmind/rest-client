@@ -7,6 +7,7 @@ use Innmind\Rest\Client\{
     Identity as IdentityInterface,
     Exception\DomainException,
 };
+use Innmind\Immutable\Str;
 
 class Identity implements IdentityInterface
 {
@@ -14,7 +15,7 @@ class Identity implements IdentityInterface
 
     public function __construct(string $value)
     {
-        if (empty($value)) {
+        if (Str::of($value)->empty()) {
             throw new DomainException;
         }
 

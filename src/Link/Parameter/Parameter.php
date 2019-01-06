@@ -7,6 +7,7 @@ use Innmind\Rest\Client\{
     Link\Parameter as ParameterInterface,
     Exception\DomainException,
 };
+use Innmind\Immutable\Str;
 
 final class Parameter implements ParameterInterface
 {
@@ -15,7 +16,7 @@ final class Parameter implements ParameterInterface
 
     public function __construct(string $key, string $value)
     {
-        if (empty($key)) {
+        if (Str::of($key)->empty()) {
             throw new DomainException;
         }
 

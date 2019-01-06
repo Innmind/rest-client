@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Definition;
 
 use Innmind\Rest\Client\Exception\DomainException;
+use Innmind\Immutable\Str;
 
 final class Identity
 {
@@ -11,7 +12,7 @@ final class Identity
 
     public function __construct(string $name)
     {
-        if (empty($name)) {
+        if (Str::of($name)->empty()) {
             throw new DomainException;
         }
 
