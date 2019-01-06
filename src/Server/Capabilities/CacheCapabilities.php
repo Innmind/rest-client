@@ -7,6 +7,7 @@ use Innmind\Rest\Client\{
     Server\Capabilities as CapabilitiesInterface,
     Definition\HttpResource,
     Serializer\Decode,
+    Serializer\Encode,
     Serializer\Denormalizer\DenormalizeCapabilitiesNames,
     Serializer\Denormalizer\DenormalizeDefinition,
     Serializer\Normalizer\NormalizeDefinition,
@@ -15,7 +16,6 @@ use Innmind\Filesystem\{
     Adapter,
     File,
     Directory,
-    Stream\StringStream,
     Exception\FileNotFound,
 };
 use Innmind\Url\UrlInterface;
@@ -25,17 +25,16 @@ use Innmind\Immutable\{
     MapInterface,
     Map,
 };
-use Symfony\Component\Serializer\SerializerInterface;
 
 final class CacheCapabilities implements CapabilitiesInterface
 {
     private $capabilities;
     private $filesystem;
     private $decode;
+    private $encode;
     private $denormalizeNames;
     private $denormalizeDefinition;
     private $normalizeDefinition;
-    private $serializer;
     private $directory;
     private $names;
     private $definitions;
@@ -44,19 +43,19 @@ final class CacheCapabilities implements CapabilitiesInterface
         CapabilitiesInterface $capabilities,
         Adapter $filesystem,
         Decode $decode,
+        Encode $encode,
         DenormalizeCapabilitiesNames $denormalizeNames,
         DenormalizeDefinition $denormalizeDefinition,
         NormalizeDefinition $normalizeDefinition,
-        SerializerInterface $serializer,
         UrlInterface $host
     ) {
         $this->capabilities = $capabilities;
         $this->filesystem = $filesystem;
         $this->decode = $decode;
+        $this->encode = $encode;
         $this->denormalizeNames = $denormalizeNames;
         $this->denormalizeDefinition = $denormalizeDefinition;
         $this->normalizeDefinition = $normalizeDefinition;
-        $this->serializer = $serializer;
         $this->directory = \md5((string) $host);
         $this->definitions = new Map('string', HttpResource::class);
     }
@@ -173,12 +172,7 @@ final class CacheCapabilities implements CapabilitiesInterface
         $directory = $directory->add(
             new File\File(
                 $name.'.json',
-                new StringStream(
-                    $this->serializer->encode(
-                        $data,
-                        'json'
-                    )
-                )
+                ($this->encode)($data)
             )
         );
         $this->filesystem->add($directory);

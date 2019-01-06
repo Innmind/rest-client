@@ -9,6 +9,7 @@ use Innmind\Rest\Client\{
     Definition\Types,
     Definition\HttpResource,
     Serializer\Decode,
+    Serializer\Encode,
     Serializer\Denormalizer\DenormalizeCapabilitiesNames,
     Serializer\Denormalizer\DenormalizeDefinition,
     Serializer\Normalizer\NormalizeDefinition,
@@ -25,11 +26,6 @@ use Innmind\Immutable\{
     Set,
     MapInterface,
 };
-use Symfony\Component\Serializer\{
-    Serializer,
-    Encoder\JsonEncoder,
-    Normalizer\GetSetMethodNormalizer,
-};
 use PHPUnit\Framework\TestCase;
 
 class CacheCapabilitiesTest extends TestCase
@@ -38,7 +34,6 @@ class CacheCapabilitiesTest extends TestCase
     private $inner;
     private $filesystem;
     private $normalizeDefinition;
-    private $serializer;
     private $directory;
     private $definition;
     private $raw;
@@ -56,13 +51,10 @@ class CacheCapabilitiesTest extends TestCase
             $this->inner = $this->createMock(Capabilities::class),
             $this->filesystem = new MemoryAdapter,
             new Decode\Json,
+            new Encode\Json,
             new DenormalizeCapabilitiesNames,
             $denormalizeDefinition,
             $this->normalizeDefinition = new NormalizeDefinition,
-            $this->serializer = new Serializer(
-                [new GetSetMethodNormalizer],
-                [new JsonEncoder]
-            ),
             Url::fromString('http://example.com/')
         );
         $this->directory = md5('http://example.com/');

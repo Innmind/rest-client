@@ -56,6 +56,7 @@ function bootstrap(
     $denormalizeDefinition = new DenormalizeDefinition($types);
 
     $decode = new Decode\Json;
+    $encode = new Encode\Json;
 
     return new Client\Client(
         new RetryServerFactory(
@@ -66,7 +67,7 @@ function bootstrap(
                 new ExtractIdentities($resolveIdentity),
                 new DenormalizeResource,
                 new NormalizeResource,
-                new Encode\Json,
+                $encode,
                 $decode,
                 new SpecificationTranslator,
                 $contentTypes,
@@ -74,10 +75,10 @@ function bootstrap(
                     new CacheFactory(
                         $cache,
                         $decode,
+                        $encode,
                         new DenormalizeCapabilitiesNames,
                         $denormalizeDefinition,
                         new NormalizeDefinition,
-                        $serializer,
                         new Factory(
                             $transport,
                             $urlResolver,

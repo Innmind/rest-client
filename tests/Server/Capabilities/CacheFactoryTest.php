@@ -9,6 +9,7 @@ use Innmind\Rest\Client\{
     Server\Capabilities,
     Server\Capabilities\CacheCapabilities,
     Serializer\Decode,
+    Serializer\Encode,
     Serializer\Denormalizer\DenormalizeCapabilitiesNames,
     Serializer\Denormalizer\DenormalizeDefinition,
     Serializer\Normalizer\NormalizeDefinition,
@@ -16,7 +17,6 @@ use Innmind\Rest\Client\{
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Filesystem\Adapter;
-use Symfony\Component\Serializer\SerializerInterface;
 use PHPUnit\Framework\TestCase;
 
 class CacheFactoryTest extends TestCase
@@ -31,10 +31,10 @@ class CacheFactoryTest extends TestCase
         $this->make = new CacheFactory(
             $this->createMock(Adapter::class),
             $this->createMock(Decode::class),
+            $this->createMock(Encode::class),
             new DenormalizeCapabilitiesNames,
             new DenormalizeDefinition($types),
             new NormalizeDefinition,
-            $this->createMock(SerializerInterface::class),
             $this->inner = $this->createMock(Factory::class)
         );
     }
