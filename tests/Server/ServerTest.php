@@ -10,6 +10,7 @@ use Innmind\Rest\Client\{
     Serializer\Normalizer\DefinitionNormalizer,
     Serializer\Normalizer\ResourceNormalizer,
     Serializer\Denormalizer\DenormalizeDefinition,
+    Serializer\Denormalizer\DenormalizeResource,
     Definition\HttpResource as HttpResourceDefinition,
     Definition\Identity as IdentityDefinition,
     Definition\Property as PropertyDefinition,
@@ -80,6 +81,7 @@ class ServerTest extends TestCase
             $resolver = new UrlResolver,
             new ExtractIdentity(new ResolveIdentity($resolver)),
             new ExtractIdentities(new ResolveIdentity($resolver)),
+            new DenormalizeResource,
             new Serializer(
                 [
                     new ResourceNormalizer,

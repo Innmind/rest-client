@@ -21,6 +21,7 @@ use Innmind\Rest\Client\{
     Definition\HttpResource as Definition,
     Response\ExtractIdentity,
     Response\ExtractIdentities,
+    Serializer\Denormalizer\DenormalizeResource,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\Url\{
@@ -62,6 +63,7 @@ final class Server implements ServerInterface
     private $resolver;
     private $extractIdentity;
     private $extractIdentities;
+    private $denormalizeResource;
     private $serializer;
     private $translate;
     private $formats;
@@ -73,6 +75,7 @@ final class Server implements ServerInterface
         ResolverInterface $resolver,
         ExtractIdentity $extractIdentity,
         ExtractIdentities $extractIdentities,
+        DenormalizeResource $denormalizeResource,
         Serializer $serializer,
         SpecificationTranslator $translate,
         Formats $formats
@@ -83,6 +86,7 @@ final class Server implements ServerInterface
         $this->resolver = $resolver;
         $this->extractIdentity = $extractIdentity;
         $this->extractIdentities = $extractIdentities;
+        $this->denormalizeResource = $denormalizeResource;
         $this->serializer = $serializer;
         $this->translate = $translate;
         $this->formats = $formats;
@@ -166,15 +170,15 @@ final class Server implements ServerInterface
             throw new UnsupportedResponse('', 0, $e);
         }
 
-        return $this->serializer->deserialize(
+        $data = $this->serializer->decode(
             (string) $response->body(),
-            HttpResource::class,
-            $format->name(),
-            [
-                'definition' => $definition,
-                'response' => $response,
-                'access' => new Access(Access::READ),
-            ]
+            $format->name()
+        );
+
+        return ($this->denormalizeResource)(
+            $data,
+            $definition,
+            new Access(Access::READ)
         );
     }
 

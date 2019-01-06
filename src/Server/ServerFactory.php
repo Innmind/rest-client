@@ -9,6 +9,7 @@ use Innmind\Rest\Client\{
     Formats,
     Response\ExtractIdentity,
     Response\ExtractIdentities,
+    Serializer\Denormalizer\DenormalizeResource,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\HttpTransport\Transport;
@@ -21,6 +22,7 @@ final class ServerFactory implements Factory
     private $resolver;
     private $extractIdentity;
     private $extractIdentities;
+    private $denormalizeResource;
     private $serializer;
     private $translator;
     private $formats;
@@ -31,6 +33,7 @@ final class ServerFactory implements Factory
         ResolverInterface $resolver,
         ExtractIdentity $extractIdentity,
         ExtractIdentities $extractIdentities,
+        DenormalizeResource $denormalizeResource,
         Serializer $serializer,
         SpecificationTranslator $translator,
         Formats $formats,
@@ -40,6 +43,7 @@ final class ServerFactory implements Factory
         $this->resolver = $resolver;
         $this->extractIdentity = $extractIdentity;
         $this->extractIdentities = $extractIdentities;
+        $this->denormalizeResource = $denormalizeResource;
         $this->serializer = $serializer;
         $this->translator = $translator;
         $this->formats = $formats;
@@ -55,6 +59,7 @@ final class ServerFactory implements Factory
             $this->resolver,
             $this->extractIdentity,
             $this->extractIdentities,
+            $this->denormalizeResource,
             $this->serializer,
             $this->translator,
             $this->formats
