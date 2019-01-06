@@ -55,7 +55,7 @@ use Symfony\Component\Serializer\Serializer;
 final class Server implements ServerInterface
 {
     private $url;
-    private $transport;
+    private $fulfill;
     private $capabilities;
     private $resolver;
     private $serializer;
@@ -64,7 +64,7 @@ final class Server implements ServerInterface
 
     public function __construct(
         UrlInterface $url,
-        Transport $transport,
+        Transport $fulfill,
         Capabilities $capabilities,
         ResolverInterface $resolver,
         Serializer $serializer,
@@ -72,7 +72,7 @@ final class Server implements ServerInterface
         Formats $formats
     ) {
         $this->url = $url;
-        $this->transport = $transport;
+        $this->fulfill = $fulfill;
         $this->capabilities = $capabilities;
         $this->resolver = $resolver;
         $this->serializer = $serializer;
@@ -118,7 +118,7 @@ final class Server implements ServerInterface
             );
         }
 
-        $response = $this->transport->fulfill(
+        $response = ($this->fulfill)(
             new Request(
                 $url,
                 new Method(Method::GET),
@@ -138,7 +138,7 @@ final class Server implements ServerInterface
     public function read(string $name, Identity $identity): HttpResource
     {
         $definition = $this->capabilities->get($name);
-        $response = $this->transport->fulfill(
+        $response = ($this->fulfill)(
             new Request(
                 $this->resolveUrl(
                     $definition->url(),
@@ -183,7 +183,7 @@ final class Server implements ServerInterface
     public function create(HttpResource $resource): Identity
     {
         $definition = $this->capabilities->get($resource->name());
-        $response = $this->transport->fulfill(
+        $response = ($this->fulfill)(
             new Request(
                 $definition->url(),
                 new Method(Method::POST),
@@ -230,7 +230,7 @@ final class Server implements ServerInterface
         HttpResource $resource
     ): ServerInterface {
         $definition = $this->capabilities->get($resource->name());
-        $this->transport->fulfill(
+        ($this->fulfill)(
             new Request(
                 $this->resolveUrl(
                     $definition->url(),
@@ -273,7 +273,7 @@ final class Server implements ServerInterface
     public function remove(string $name, Identity $identity): ServerInterface
     {
         $definition = $this->capabilities->get($name);
-        $this->transport->fulfill(
+        ($this->fulfill)(
             new Request(
                 $this->resolveUrl(
                     $definition->url(),
@@ -308,7 +308,7 @@ final class Server implements ServerInterface
 
         $definition = $this->capabilities->get($name);
         $this->validateLinks($definition, $links);
-        $this->transport->fulfill(
+        ($this->fulfill)(
             new Request(
                 $this->resolveUrl(
                     $definition->url(),
@@ -348,7 +348,7 @@ final class Server implements ServerInterface
 
         $definition = $this->capabilities->get($name);
         $this->validateLinks($definition, $links);
-        $this->transport->fulfill(
+        ($this->fulfill)(
             new Request(
                 $this->resolveUrl(
                     $definition->url(),

@@ -38,7 +38,7 @@ use Innmind\Immutable\{
 
 final class Capabilities implements CapabilitiesInterface
 {
-    private $transport;
+    private $fulfill;
     private $host;
     private $resolver;
     private $factory;
@@ -49,13 +49,13 @@ final class Capabilities implements CapabilitiesInterface
     private $definitions;
 
     public function __construct(
-        Transport $transport,
+        Transport $fulfill,
         UrlInterface $host,
         ResolverInterface $resolver,
         DefinitionFactory $factory,
         Formats $formats
     ) {
-        $this->transport = $transport;
+        $this->fulfill = $fulfill;
         $this->host = $host;
         $this->resolver = $resolver;
         $this->factory = $factory;
@@ -75,9 +75,8 @@ final class Capabilities implements CapabilitiesInterface
             return $this->names;
         }
 
-        $headers = $this
-            ->transport
-            ->fulfill(
+        $headers = ($this->fulfill)
+            (
                 new Request(
                     $this->optionsUrl,
                     new Method(Method::OPTIONS),
@@ -126,7 +125,7 @@ final class Capabilities implements CapabilitiesInterface
             (string) $this->paths->get($name)
         );
         $url = Url::fromString($url);
-        $response = $this->transport->fulfill(
+        $response = ($this->fulfill)(
             new Request(
                 $url,
                 new Method(Method::OPTIONS),

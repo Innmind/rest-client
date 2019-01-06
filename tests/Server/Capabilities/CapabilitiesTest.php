@@ -96,7 +96,7 @@ class CapabilitiesTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/*' &&
                     (string) $request->method() === 'OPTIONS';
@@ -124,7 +124,7 @@ class CapabilitiesTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/*' &&
                     (string) $request->method() === 'OPTIONS';
@@ -168,7 +168,7 @@ class CapabilitiesTest extends TestCase
         $this
             ->transport
             ->expects($this->at(0))
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/*' &&
                     (string) $request->method() === 'OPTIONS';
@@ -200,7 +200,7 @@ class CapabilitiesTest extends TestCase
         $this
             ->transport
             ->expects($this->at(1))
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'OPTIONS' &&
@@ -249,7 +249,7 @@ class CapabilitiesTest extends TestCase
         $this
             ->transport
             ->expects($this->at(0))
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/*' &&
                     (string) $request->method() === 'OPTIONS';
@@ -281,7 +281,7 @@ class CapabilitiesTest extends TestCase
         $this
             ->transport
             ->expects($this->at(1))
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'OPTIONS';
@@ -317,7 +317,7 @@ class CapabilitiesTest extends TestCase
         $this
             ->transport
             ->expects($this->at(2))
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/bar' &&
                     (string) $request->method() === 'OPTIONS';
@@ -369,7 +369,7 @@ class CapabilitiesTest extends TestCase
         $this
             ->transport
             ->expects($this->exactly(2))
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/*' &&
                     (string) $request->method() === 'OPTIONS';

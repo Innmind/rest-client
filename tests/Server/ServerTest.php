@@ -207,7 +207,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'GET' &&
@@ -262,7 +262,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'GET' &&
@@ -319,7 +319,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo?bar=baz' &&
                     (string) $request->method() === 'GET' &&
@@ -387,7 +387,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo?bar=baz' &&
                     (string) $request->method() === 'GET' &&
@@ -450,7 +450,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->willReturn(
                 $response = $this->createMock(Response::class)
             );
@@ -480,7 +480,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->willReturn(
                 $response = $this->createMock(Response::class)
             );
@@ -516,7 +516,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/bar' &&
                     (string) $request->method() === 'GET' &&
@@ -577,7 +577,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo' &&
                     (string) $request->method() === 'POST' &&
@@ -636,7 +636,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'PUT' &&
@@ -678,7 +678,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'DELETE' &&
@@ -736,7 +736,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->never())
-            ->method('fulfill');
+            ->method('__invoke');
 
         $this->server->link(
             'foo',
@@ -769,7 +769,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'LINK' &&
@@ -834,7 +834,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->never())
-            ->method('fulfill');
+            ->method('__invoke');
 
         $this->server->unlink(
             'foo',
@@ -867,7 +867,7 @@ class ServerTest extends TestCase
         $this
             ->transport
             ->expects($this->once())
-            ->method('fulfill')
+            ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
                 return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
                     (string) $request->method() === 'UNLINK' &&
