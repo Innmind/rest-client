@@ -10,6 +10,7 @@ use Innmind\Rest\Client\{
     Definition\HttpResource,
     Definition\Identity,
     Definition\Property,
+    Definition\AllowedLink,
 };
 use Innmind\Http\{
     Message\Response,
@@ -45,7 +46,7 @@ class ExtractIdentitiesTest extends TestCase
             new Identity('uuid'),
             new Map('string', Property::class),
             new Map('scalar', 'variable'),
-            new Map('string', 'string'),
+            new Set(AllowedLink::class),
             false
         );
     }

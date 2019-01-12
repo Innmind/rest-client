@@ -14,6 +14,12 @@ use Innmind\Server\Control\Server\Command;
 use Innmind\ObjectGraph\{
     Graph,
     Visualize,
+    LocationRewriter,
+};
+use Innmind\Url\{
+    UrlInterface,
+    PathInterface,
+    Path,
 };
 
 new class extends Main {
@@ -28,7 +34,21 @@ new class extends Main {
         );
 
         $graph = new Graph;
-        $visualize = new Visualize;
+        $visualize = new Visualize(new class($env->workingDirectory()) implements LocationRewriter {
+            private $workingDirectory;
+
+            public function __construct(PathInterface $workingDirectory)
+            {
+                $this->workingDirectory = $workingDirectory;
+            }
+
+            public function __invoke(UrlInterface $location): UrlInterface
+            {
+                return $location->withPath(new Path(
+                    \str_replace((string) $this->workingDirectory, '', (string) $location->path())
+                ));
+            }
+        });
 
         $os
             ->control()

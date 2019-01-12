@@ -9,12 +9,14 @@ use Innmind\Rest\Client\{
     Definition\HttpResource,
     Definition\Property,
     Definition\Identity,
+    Definition\AllowedLink,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\{
     MapInterface,
     SetInterface,
     Map,
+    Set,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -61,7 +63,7 @@ class RefreshLimitedCapabilitiesTest extends TestCase
                     new Identity('uuid'),
                     new Map('string', Property::class),
                     new Map('scalar', 'variable'),
-                    new Map('string', 'string'),
+                    new Set(AllowedLink::class),
                     false
                 )
             );

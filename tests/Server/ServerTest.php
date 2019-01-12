@@ -15,6 +15,7 @@ use Innmind\Rest\Client\{
     Definition\HttpResource as HttpResourceDefinition,
     Definition\Identity as IdentityDefinition,
     Definition\Property as PropertyDefinition,
+    Definition\AllowedLink,
     Definition\Types,
     Request\Range,
     Identity,
@@ -124,7 +125,11 @@ class ServerTest extends TestCase
                     'foo' => ['bar' => 'baz'],
                 ],
                 'linkable_to' => [
-                    'canonical' => 'bar',
+                    [
+                        'relationship' => 'canonical',
+                        'resource_path' => 'bar',
+                        'parameters' => [],
+                    ],
                 ],
                 'rangeable' => true,
             ],
@@ -165,7 +170,7 @@ class ServerTest extends TestCase
                     new IdentityDefinition('uuid'),
                     new Map('string', PropertyDefinition::class),
                     new Map('scalar', 'variable'),
-                    new Map('string', 'string'),
+                    new Set(AllowedLink::class),
                     false
                 )
             );
@@ -191,7 +196,7 @@ class ServerTest extends TestCase
                     new IdentityDefinition('uuid'),
                     new Map('string', PropertyDefinition::class),
                     new Map('scalar', 'variable'),
-                    new Map('string', 'string'),
+                    new Set(AllowedLink::class),
                     false
                 )
             );
@@ -248,7 +253,7 @@ class ServerTest extends TestCase
                     new IdentityDefinition('uuid'),
                     new Map('string', PropertyDefinition::class),
                     new Map('scalar', 'variable'),
-                    new Map('string', 'string'),
+                    new Set(AllowedLink::class),
                     true
                 )
             );
@@ -307,7 +312,7 @@ class ServerTest extends TestCase
                     new IdentityDefinition('uuid'),
                     new Map('string', PropertyDefinition::class),
                     new Map('scalar', 'variable'),
-                    new Map('string', 'string'),
+                    new Set(AllowedLink::class),
                     false
                 )
             );
@@ -377,7 +382,7 @@ class ServerTest extends TestCase
                     new IdentityDefinition('uuid'),
                     new Map('string', PropertyDefinition::class),
                     new Map('scalar', 'variable'),
-                    new Map('string', 'string'),
+                    new Set(AllowedLink::class),
                     true
                 )
             );
