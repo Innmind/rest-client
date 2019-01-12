@@ -16,7 +16,7 @@ final class AllowedLink
         string $resourcePath,
         string $relationship,
         SetInterface $parameters
-   ) {
+    ) {
         if ((string) $parameters->type() !== 'string') {
             throw new \TypeError('Argument 3 must be of type SetInterface<string>');
         }
