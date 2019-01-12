@@ -40,7 +40,11 @@ class NormalizeDefinitionTest extends TestCase
                 'foo' => ['bar' => 'baz'],
             ],
             'linkable_to' => [
-                'rel' => 'res',
+                [
+                    'relationship' => 'rel',
+                    'resource_path' => 'res',
+                    'parameters' => [],
+                ],
             ],
             'rangeable' => true,
         ];

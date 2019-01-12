@@ -8,6 +8,7 @@ use Innmind\Rest\Client\{
     Definition\Property,
     Definition\Identity,
     Definition\Access,
+    Definition\AllowedLink,
 };
 use Innmind\Url\Url;
 use Innmind\Immutable\{
@@ -41,10 +42,20 @@ final class NormalizeDefinition
                 $definition->metas()->keys()->toPrimitive(),
                 $definition->metas()->values()->toPrimitive()
             ),
-            'linkable_to' => array_combine(
-                $definition->links()->keys()->toPrimitive(),
-                $definition->links()->values()->toPrimitive()
-            ),
+            'linkable_to' => $definition
+                ->links()
+                ->reduce(
+                    [],
+                    static function(array $links, AllowedLink $link): array {
+                        $links[] = [
+                            'relationship' => $link->relationship(),
+                            'resource_path' => $link->resourcePath(),
+                            'parameters' => $link->parameters()->toPrimitive(),
+                        ];
+
+                        return $links;
+                    }
+                ),
             'rangeable' => $definition->isRangeable(),
         ];
     }

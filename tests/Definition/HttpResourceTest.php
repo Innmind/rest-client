@@ -7,12 +7,16 @@ use Innmind\Rest\Client\{
     Definition\HttpResource,
     Definition\Identity,
     Definition\Property,
+    Definition\AllowedLink,
     Link,
     Link\Parameter,
     Identity as IdentityInterface,
 };
 use Innmind\Url\UrlInterface;
-use Innmind\Immutable\Map;
+use Innmind\Immutable\{
+    Map,
+    Set,
+};
 use PHPUnit\Framework\TestCase;
 
 class HttpResourceTest extends TestCase
@@ -25,7 +29,7 @@ class HttpResourceTest extends TestCase
             $identity = new Identity('uuid'),
             $properties = new Map('string', Property::class),
             $metas = new Map('scalar', 'variable'),
-            $links = new Map('string', 'string'),
+            $links = new Set(AllowedLink::class),
             true
         );
 
@@ -50,7 +54,7 @@ class HttpResourceTest extends TestCase
             new Identity('uuid'),
             new Map('string', Property::class),
             new Map('scalar', 'variable'),
-            new Map('string', 'string'),
+            new Set(AllowedLink::class),
             true
         );
     }
@@ -67,7 +71,7 @@ class HttpResourceTest extends TestCase
             new Identity('uuid'),
             new Map('int', Property::class),
             new Map('scalar', 'variable'),
-            new Map('string', 'string'),
+            new Set(AllowedLink::class),
             true
         );
     }
@@ -84,14 +88,14 @@ class HttpResourceTest extends TestCase
             new Identity('uuid'),
             new Map('string', Property::class),
             new Map('string', 'scalar'),
-            new Map('string', 'string'),
+            new Set(AllowedLink::class),
             true
         );
     }
 
     /**
      * @expectedException TypeError
-     * @expectedExceptionMessage Argument 6 must be of type MapInterface<string, string>
+     * @expectedExceptionMessage Argument 6 must be of type SetInterface<Innmind\Rest\Client\Definition\AllowedLink>
      */
     public function testThrowWhenInvalidLinkMap()
     {
@@ -101,7 +105,7 @@ class HttpResourceTest extends TestCase
             new Identity('uuid'),
             new Map('string', Property::class),
             new Map('scalar', 'variable'),
-            new Map('string', 'scalar'),
+            new Set('string'),
             true
         );
     }
@@ -114,8 +118,14 @@ class HttpResourceTest extends TestCase
             new Identity('uuid'),
             new Map('string', Property::class),
             new Map('scalar', 'variable'),
-            Map::of('string', 'string')
-                ('rel', 'res'),
+            Set::of(
+                AllowedLink::class,
+                new AllowedLink(
+                    'res',
+                    'rel',
+                    Set::of('string')
+                )
+            ),
             true
         );
 

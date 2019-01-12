@@ -9,6 +9,7 @@ use Innmind\Rest\Client\{
     Definition\Property,
     Definition\Identity,
     Definition\Access,
+    Definition\AllowedLink,
 };
 use Innmind\Url\Url;
 use Innmind\Immutable\{
@@ -34,18 +35,17 @@ final class DenormalizeDefinition
             \array_keys($definition['metas']),
             \array_values($definition['metas'])
         );
-        $links = Map::of(
-            'string',
-            'string',
-            \array_keys($definition['linkable_to']),
-            \array_values($definition['linkable_to'])
-        );
+        $links = Set::of(AllowedLink::class);
 
         foreach ($definition['properties'] as $property => $value) {
             $properties = $properties->put(
                 $property,
                 $this->buildProperty($property, $value)
             );
+        }
+
+        foreach ($definition['linkable_to'] as $value) {
+            $links = $links->add($this->buildLink($value));
         }
 
         return new HttpResource(
@@ -69,6 +69,15 @@ final class DenormalizeDefinition
             new Access(...$definition['access']),
             $variants,
             $definition['optional']
+        );
+    }
+
+    private function buildLink(array $link): AllowedLink
+    {
+        return new AllowedLink(
+            $link['resource_path'],
+            $link['relationship'],
+            Set::of('string', ...$link['parameters'])
         );
     }
 }

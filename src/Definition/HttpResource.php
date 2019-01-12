@@ -10,6 +10,7 @@ use Innmind\Rest\Client\{
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\{
     MapInterface,
+    SetInterface,
     Str,
 };
 
@@ -29,7 +30,7 @@ final class HttpResource
         Identity $identity,
         MapInterface $properties,
         MapInterface $metas,
-        MapInterface $links,
+        SetInterface $links,
         bool $rangeable
     ) {
         if (Str::of($name)->empty()) {
@@ -53,11 +54,11 @@ final class HttpResource
             throw new \TypeError('Argument 5 must be of type MapInterface<scalar, variable>');
         }
 
-        if (
-            (string) $links->keyType() !== 'string' ||
-            (string) $links->valueType() !== 'string'
-        ) {
-            throw new \TypeError('Argument 6 must be of type MapInterface<string, string>');
+        if ((string) $links->type() !== AllowedLink::class) {
+            throw new \TypeError(\sprintf(
+                'Argument 6 must be of type SetInterface<%s>',
+                AllowedLink::class
+            ));
         }
 
         $this->name = $name;
@@ -101,20 +102,21 @@ final class HttpResource
     }
 
     /**
-     * @return MapInterface<string, string>
+     * @return SetInterface<AllowedLink>
      */
-    public function links(): MapInterface
+    public function links(): SetInterface
     {
         return $this->links;
     }
 
     public function allowsLink(Link $link): bool
     {
-        if (!$this->links->contains($link->relationship())) {
-            return false;
-        }
-
-        return $this->links->get($link->relationship()) === $link->definition();
+        return $this->links->reduce(
+            false,
+            static function(bool $allows, AllowedLink $allowed) use ($link): bool {
+                return $allows || $allowed->allows($link);
+            }
+        );
     }
 
     public function isRangeable(): bool

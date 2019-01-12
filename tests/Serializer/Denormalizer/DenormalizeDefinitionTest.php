@@ -41,7 +41,11 @@ class DenormalizeDefinitionTest extends TestCase
                 'foo' => ['bar' => 'baz'],
             ],
             'linkable_to' => [
-                'rel' => 'res',
+                [
+                    'relationship' => 'rel',
+                    'resource_path' => 'res',
+                    'parameters' => [],
+                ],
             ],
             'rangeable' => true,
         ];
@@ -98,7 +102,8 @@ class DenormalizeDefinitionTest extends TestCase
             $definition->metas()->get('foo')
         );
         $this->assertCount(1, $definition->links());
-        $this->assertSame('res', $definition->links()->get('rel'));
+        $this->assertSame('res', $definition->links()->current()->resourcePath());
+        $this->assertSame('rel', $definition->links()->current()->relationship());
         $this->assertTrue($definition->isRangeable());
     }
 }
