@@ -196,6 +196,24 @@ class CacheCapabilitiesTest extends TestCase
         $this->assertSame($definition, $this->capabilities->get('foo'));
     }
 
+    public function testRethrowWhenGettingFromRealSource()
+    {
+        $this
+            ->inner
+            ->expects($this->once())
+            ->method('get')
+            ->with('foo')
+            ->will($this->throwException($expected = new \Exception));
+
+        try {
+            $this->capabilities->get('foo');
+
+            $this->fail('it should throw');
+        } catch (\Exception $e) {
+            $this->assertSame($expected, $e);
+        }
+    }
+
     public function testDefinitions()
     {
         $this

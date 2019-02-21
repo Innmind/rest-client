@@ -15,6 +15,8 @@ use Innmind\ObjectGraph\{
     Graph,
     Visualize,
     LocationRewriter,
+    Visitor\FlagDependencies,
+    Visitor\RemoveDependenciesSubGraph,
 };
 use Innmind\Url\{
     UrlInterface,
@@ -26,9 +28,9 @@ new class extends Main {
     protected function main(Environment $env, OperatingSystem $os): void
     {
         $package = bootstrap(
-            $os->remote()->http(),
-            new UrlResolver,
-            $os->filesystem()->mount(
+            $http = $os->remote()->http(),
+            $resolver = new UrlResolver,
+            $filesystem = $os->filesystem()->mount(
                 $os->status()->tmp()
             )
         );
@@ -49,6 +51,12 @@ new class extends Main {
                 ));
             }
         });
+        $flag = new FlagDependencies($http, $resolver, $filesystem);
+        $remove = new RemoveDependenciesSubGraph;
+
+        $node = $graph($package);
+        $flag($node);
+        $remove($node);
 
         $os
             ->control()
@@ -58,7 +66,7 @@ new class extends Main {
                     ->withShortOption('Tsvg')
                     ->withShortOption('o', 'graph.svg')
                     ->withInput(
-                        $visualize($graph($package))
+                        $visualize($node)
                     )
             )
             ->wait();

@@ -100,14 +100,14 @@ final class CacheCapabilities implements CapabilitiesInterface
                 $name,
                 ($this->normalizeDefinition)($definition)
             );
-        } finally {
-            $this->definitions = $this->definitions->put(
-                $name,
-                $definition
-            );
-
-            return $definition;
         }
+
+        $this->definitions = $this->definitions->put(
+            $name,
+            $definition
+        );
+
+        return $definition;
     }
 
     /**
