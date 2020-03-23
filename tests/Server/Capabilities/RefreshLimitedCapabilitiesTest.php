@@ -93,7 +93,7 @@ class RefreshLimitedCapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('refresh');
 
-        $this->assertSame($capabilities, $capabilities->refresh());
-        $this->assertSame($capabilities, $capabilities->refresh());
+        $this->assertNull($capabilities->refresh());
+        $this->assertNull($capabilities->refresh());
     }
 }

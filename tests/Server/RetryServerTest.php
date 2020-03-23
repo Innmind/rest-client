@@ -284,12 +284,11 @@ class RetryServerTest extends TestCase
             ->inner
             ->expects($this->once())
             ->method('update')
-            ->with($identity, $resource)
-            ->willReturn($this->inner);
+            ->with($identity, $resource);
 
         $return = $this->server->update($identity, $resource);
 
-        $this->assertSame($this->server, $return);
+        $this->assertNull($return);
     }
 
     /**
@@ -321,12 +320,11 @@ class RetryServerTest extends TestCase
             ->inner
             ->expects($this->at(2))
             ->method('update')
-            ->with($identity, $resource)
-            ->willReturn($this->inner);
+            ->with($identity, $resource);
 
         $return = $this->server->update($identity, $resource);
 
-        $this->assertSame($this->server, $return);
+        $this->assertNull($return);
     }
 
     public function testDoesntRetryUpdate()
@@ -358,12 +356,11 @@ class RetryServerTest extends TestCase
             ->inner
             ->expects($this->once())
             ->method('remove')
-            ->with('foo', $identity)
-            ->willReturn($this->inner);
+            ->with('foo', $identity);
 
         $return = $this->server->remove('foo', $identity);
 
-        $this->assertSame($this->server, $return);
+        $this->assertNull($return);
     }
 
     /**
@@ -394,12 +391,11 @@ class RetryServerTest extends TestCase
             ->inner
             ->expects($this->at(2))
             ->method('remove')
-            ->with('foo', $identity)
-            ->willReturn($this->inner);
+            ->with('foo', $identity);
 
         $return = $this->server->remove('foo', $identity);
 
-        $this->assertSame($this->server, $return);
+        $this->assertNull($return);
     }
 
     public function testDoesntRetryRemove()
@@ -465,8 +461,7 @@ class RetryServerTest extends TestCase
             ->method('link')
             ->with('foo', $identity, $links);
 
-        $this->assertSame(
-            $this->server,
+        $this->assertNull(
             $this->server->link('foo', $identity, $links)
         );
     }
@@ -500,8 +495,7 @@ class RetryServerTest extends TestCase
             ->method('link')
             ->with('foo', $identity, $links);
 
-        $this->assertSame(
-            $this->server,
+        $this->assertNull(
             $this->server->link('foo', $identity, $links)
         );
     }
@@ -536,8 +530,7 @@ class RetryServerTest extends TestCase
             ->method('unlink')
             ->with('foo', $identity, $links);
 
-        $this->assertSame(
-            $this->server,
+        $this->assertNull(
             $this->server->unlink('foo', $identity, $links)
         );
     }
@@ -571,8 +564,7 @@ class RetryServerTest extends TestCase
             ->method('unlink')
             ->with('foo', $identity, $links);
 
-        $this->assertSame(
-            $this->server,
+        $this->assertNull(
             $this->server->unlink('foo', $identity, $links)
         );
     }

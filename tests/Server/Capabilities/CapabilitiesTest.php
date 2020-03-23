@@ -346,7 +346,7 @@ class CapabilitiesTest extends TestCase
             );
 
         $names = $this->capabilities->names();
-        $this->assertSame($this->capabilities, $this->capabilities->refresh());
+        $this->assertNull($this->capabilities->refresh());
         $names2 = $this->capabilities->names();
         $this->assertNotSame($names, $names2);
         $this->assertInstanceOf(Set::class, $names2);

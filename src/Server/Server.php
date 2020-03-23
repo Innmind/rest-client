@@ -222,10 +222,8 @@ final class Server implements ServerInterface
         return ($this->extractIdentity)($response, $definition);
     }
 
-    public function update(
-        Identity $identity,
-        HttpResource $resource
-    ): ServerInterface {
+    public function update(Identity $identity, HttpResource $resource): void
+    {
         $definition = $this->capabilities->get($resource->name());
         ($this->fulfill)(
             new Request(
@@ -248,11 +246,9 @@ final class Server implements ServerInterface
                 ),
             ),
         );
-
-        return $this;
     }
 
-    public function remove(string $name, Identity $identity): ServerInterface
+    public function remove(string $name, Identity $identity): void
     {
         $definition = $this->capabilities->get($name);
         ($this->fulfill)(
@@ -265,18 +261,13 @@ final class Server implements ServerInterface
                 new ProtocolVersion(1, 1),
             ),
         );
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function link(
-        string $name,
-        Identity $identity,
-        Set $links
-    ): ServerInterface {
+    public function link(string $name, Identity $identity, Set $links): void
+    {
         assertSet(Link::class, $links, 3);
 
         if ($links->empty()) {
@@ -299,18 +290,13 @@ final class Server implements ServerInterface
                 ),
             ),
         );
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unlink(
-        string $name,
-        Identity $identity,
-        Set $links
-    ): ServerInterface {
+    public function unlink(string $name, Identity $identity, Set $links): void
+    {
         assertSet(Link::class, $links, 3);
 
         if ($links->empty()) {
@@ -333,8 +319,6 @@ final class Server implements ServerInterface
                 ),
             ),
         );
-
-        return $this;
     }
 
     public function capabilities(): Capabilities

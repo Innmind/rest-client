@@ -82,10 +82,8 @@ final class RetryServer implements ServerInterface
         }
     }
 
-    public function update(
-        Identity $identity,
-        HttpResource $resource
-    ): ServerInterface {
+    public function update(Identity $identity, HttpResource $resource): void
+    {
         try {
             $this->server->update($identity, $resource);
         } catch (\Throwable $e) {
@@ -96,11 +94,9 @@ final class RetryServer implements ServerInterface
             $this->server->capabilities()->refresh();
             $this->server->update($identity, $resource);
         }
-
-        return $this;
     }
 
-    public function remove(string $name, Identity $identity): ServerInterface
+    public function remove(string $name, Identity $identity): void
     {
         try {
             $this->server->remove($name, $identity);
@@ -112,18 +108,13 @@ final class RetryServer implements ServerInterface
             $this->server->capabilities()->refresh();
             $this->server->remove($name, $identity);
         }
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function link(
-        string $name,
-        Identity $identity,
-        Set $links
-    ): ServerInterface {
+    public function link(string $name, Identity $identity, Set $links): void
+    {
         try {
             $this->server->link($name, $identity, $links);
         } catch (\Throwable $e) {
@@ -134,18 +125,13 @@ final class RetryServer implements ServerInterface
             $this->server->capabilities()->refresh();
             $this->server->link($name, $identity, $links);
         }
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unlink(
-        string $name,
-        Identity $identity,
-        Set $links
-    ): ServerInterface {
+    public function unlink(string $name, Identity $identity, Set $links): void
+    {
         try {
             $this->server->unlink($name, $identity, $links);
         } catch (\Throwable $e) {
@@ -156,8 +142,6 @@ final class RetryServer implements ServerInterface
             $this->server->capabilities()->refresh();
             $this->server->unlink($name, $identity, $links);
         }
-
-        return $this;
     }
 
     public function capabilities(): Capabilities

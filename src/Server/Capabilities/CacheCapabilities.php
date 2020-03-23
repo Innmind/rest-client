@@ -131,14 +131,12 @@ final class CacheCapabilities implements CapabilitiesInterface
     /**
      * {@inheritdoc}
      */
-    public function refresh(): CapabilitiesInterface
+    public function refresh(): void
     {
         $this->names = null;
         $this->definitions = $this->definitions->clear();
         $this->filesystem->remove($this->directory);
         $this->capabilities->refresh();
-
-        return $this;
     }
 
     private function load(string $file): File

@@ -278,7 +278,7 @@ class CacheCapabilitiesTest extends TestCase
             );
 
         $names = $this->capabilities->names();
-        $this->assertSame($this->capabilities, $this->capabilities->refresh());
+        $this->assertNull($this->capabilities->refresh());
         $this->assertFalse($this->filesystem->contains(new Name($this->directory)));
         $this->assertNotSame($names, $this->capabilities->names());
     }

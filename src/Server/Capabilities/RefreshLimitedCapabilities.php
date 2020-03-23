@@ -46,15 +46,13 @@ final class RefreshLimitedCapabilities implements CapabilitiesInterface
     /**
      * {@inheritdoc}
      */
-    public function refresh(): CapabilitiesInterface
+    public function refresh(): void
     {
         if ($this->isFresh) {
-            return $this;
+            return;
         }
 
         $this->capabilities->refresh();
         $this->isFresh = true;
-
-        return $this;
     }
 }

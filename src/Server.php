@@ -23,29 +23,18 @@ interface Server
     ): Set;
     public function read(string $name, Identity $identity): HttpResource;
     public function create(HttpResource $resource): Identity;
-    public function update(
-        Identity $identity,
-        HttpResource $resource
-    ): self;
-    public function remove(string $name, Identity $identity): self;
+    public function update(Identity $identity, HttpResource $resource): void;
+    public function remove(string $name, Identity $identity): void;
 
     /**
      * @param Set<Link> $links
      */
-    public function link(
-        string $name,
-        Identity $identity,
-        Set $links
-    ): self;
+    public function link(string $name, Identity $identity, Set $links): void;
 
     /**
      * @param Set<Link> $links
      */
-    public function unlink(
-        string $name,
-        Identity $identity,
-        Set $links
-    ): self;
+    public function unlink(string $name, Identity $identity, Set $links): void;
     public function capabilities(): Capabilities;
     public function url(): Url;
 }

@@ -638,7 +638,7 @@ class ServerTest extends TestCase
             )
         );
 
-        $this->assertSame($this->server, $return);
+        $this->assertNull($return);
     }
 
     public function testDelete()
@@ -668,7 +668,7 @@ class ServerTest extends TestCase
             new Identity\Identity('some-uuid')
         );
 
-        $this->assertSame($this->server, $return);
+        $this->assertNull($return);
     }
 
     public function testThrowWhenInvalidSetOfLinks()
@@ -750,8 +750,7 @@ class ServerTest extends TestCase
                     $request->body()->toString() === '';
             }));
 
-        $this->assertSame(
-            $this->server,
+        $this->assertNull(
             $this->server->link(
                 'foo',
                 new Identity\Identity('some-uuid'),
@@ -847,8 +846,7 @@ class ServerTest extends TestCase
                     $request->body()->toString() === '';
             }));
 
-        $this->assertSame(
-            $this->server,
+        $this->assertNull(
             $this->server->unlink(
                 'foo',
                 new Identity\Identity('some-uuid'),
