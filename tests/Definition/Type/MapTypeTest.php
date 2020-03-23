@@ -13,10 +13,7 @@ use Innmind\Rest\Client\{
     Exception\NormalizationException,
     Exception\DenormalizationException,
 };
-use Innmind\Immutable\{
-    MapInterface,
-    Map,
-};
+use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;
 
 class MapTypeTest extends TestCase
@@ -90,7 +87,7 @@ class MapTypeTest extends TestCase
     public function testThrowWhenNormalizingInvalidData()
     {
         $this->expectException(NormalizationException::class);
-        $this->expectExceptionMessage('The value must be an instance of Innmind\Immutable\MapInterface');
+        $this->expectExceptionMessage('The value must be an instance of Innmind\Immutable\Map');
 
         (new MapType(new IntType, new DateType('c')))->normalize(new \stdClass);
     }
@@ -100,7 +97,7 @@ class MapTypeTest extends TestCase
         $date = new MapType(new IntType, new DateType('d/m/Y'));
 
         $value = $date->denormalize(['2' => '30/01/2016']);
-        $this->assertInstanceOf(MapInterface::class, $value);
+        $this->assertInstanceOf(Map::class, $value);
         $this->assertSame('int', (string) $value->keyType());
         $this->assertSame(\DateTimeImmutable::class, (string) $value->valueType());
         $this->assertCount(1, $value);

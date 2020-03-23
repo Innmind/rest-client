@@ -3,30 +3,29 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Visitor;
 
-use Innmind\UrlResolver\ResolverInterface;
-use Innmind\Url\UrlInterface;
+use Innmind\UrlResolver\Resolver;
+use Innmind\Url\Url;
 
 final class ResolveIdentity
 {
-    private ResolverInterface $resolver;
+    private Resolver $resolve;
 
-    public function __construct(ResolverInterface $resolver)
+    public function __construct(Resolver $resolver)
     {
-        $this->resolver = $resolver;
+        $this->resolve = $resolver;
     }
 
     public function __invoke(
-        UrlInterface $source,
-        UrlInterface $destination
+        Url $source,
+        Url $destination
     ): string {
-        $source = (string) $source;
-        $source = \rtrim($source, '/').'/';
+        $source = Url::of(\rtrim($source->toString(), '/').'/');
 
-        $trueDestination = $this->resolver->resolve(
+        $trueDestination = ($this->resolve)(
             $source,
-            (string) $destination
+            $destination,
         );
 
-        return \str_replace($source, '', $trueDestination);
+        return \str_replace($source->toString(), '', $trueDestination->toString());
     }
 }

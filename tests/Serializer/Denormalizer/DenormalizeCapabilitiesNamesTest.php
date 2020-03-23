@@ -4,7 +4,8 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Rest\Client\Serializer\Denormalizer;
 
 use Innmind\Rest\Client\Serializer\Denormalizer\DenormalizeCapabilitiesNames;
-use Innmind\Immutable\SetInterface;
+use Innmind\Immutable\Set;
+use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
 
 class DenormalizeCapabilitiesNamesTest extends TestCase
@@ -13,8 +14,8 @@ class DenormalizeCapabilitiesNamesTest extends TestCase
     {
         $names = (new DenormalizeCapabilitiesNames)(['foo', 'bar']);
 
-        $this->assertInstanceOf(SetInterface::class, $names);
+        $this->assertInstanceOf(Set::class, $names);
         $this->assertSame('string', (string) $names->type());
-        $this->assertSame(['foo', 'bar'], $names->toPrimitive());
+        $this->assertSame(['foo', 'bar'], unwrap($names));
     }
 }

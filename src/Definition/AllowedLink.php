@@ -4,21 +4,21 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Definition;
 
 use Innmind\Rest\Client\Link;
-use Innmind\Immutable\SetInterface;
+use Innmind\Immutable\Set;
 
 final class AllowedLink
 {
     private string $resourcePath;
     private string $relationship;
-    private SetInterface $parameters;
+    private Set $parameters;
 
     public function __construct(
         string $resourcePath,
         string $relationship,
-        SetInterface $parameters
+        Set $parameters
     ) {
         if ((string) $parameters->type() !== 'string') {
-            throw new \TypeError('Argument 3 must be of type SetInterface<string>');
+            throw new \TypeError('Argument 3 must be of type Set<string>');
         }
 
         $this->resourcePath = $resourcePath;
@@ -37,9 +37,9 @@ final class AllowedLink
     }
 
     /**
-     * @return SetInterface<string>
+     * @return Set<string>
      */
-    public function parameters(): SetInterface
+    public function parameters(): Set
     {
         return $this->parameters;
     }

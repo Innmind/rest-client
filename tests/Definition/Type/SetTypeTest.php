@@ -12,10 +12,8 @@ use Innmind\Rest\Client\{
     Exception\NormalizationException,
     Exception\DenormalizationException,
 };
-use Innmind\Immutable\{
-    SetInterface,
-    Set,
-};
+use Innmind\Immutable\Set;
+use function Innmind\Immutable\first;
 use PHPUnit\Framework\TestCase;
 
 class SetTypeTest extends TestCase
@@ -72,7 +70,7 @@ class SetTypeTest extends TestCase
     public function testThrowWhenNormalizingInvalidData()
     {
         $this->expectException(NormalizationException::class);
-        $this->expectExceptionMessage('The value must be an instance of Innmind\Immutable\SetInterface');
+        $this->expectExceptionMessage('The value must be an instance of Innmind\Immutable\Set');
 
         (new SetType(new DateType('c')))->normalize(new \stdClass);
     }
@@ -82,9 +80,9 @@ class SetTypeTest extends TestCase
         $date = new SetType(new DateType('d/m/Y'));
 
         $value = $date->denormalize(['30/01/2016']);
-        $this->assertInstanceOf(SetInterface::class, $value);
+        $this->assertInstanceOf(Set::class, $value);
         $this->assertSame(\DateTimeImmutable::class, (string) $value->type());
-        $this->assertSame('2016-01-30', $value->current()->format('Y-m-d'));
+        $this->assertSame('2016-01-30', first($value)->format('Y-m-d'));
     }
 
     public function testThrowWhenDenormalizingInvalidData()

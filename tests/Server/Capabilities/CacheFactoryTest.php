@@ -15,8 +15,9 @@ use Innmind\Rest\Client\{
     Serializer\Normalizer\NormalizeDefinition,
     Definition\Types,
 };
-use Innmind\Url\UrlInterface;
+use Innmind\Url\Url;
 use Innmind\Filesystem\Adapter;
+use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
 
 class CacheFactoryTest extends TestCase
@@ -26,7 +27,7 @@ class CacheFactoryTest extends TestCase
 
     public function setUp(): void
     {
-        $types = new Types(...Types::defaults());
+        $types = new Types(...unwrap(Types::defaults()));
 
         $this->make = new CacheFactory(
             $this->createMock(Adapter::class),
@@ -49,7 +50,7 @@ class CacheFactoryTest extends TestCase
 
     public function testMake()
     {
-        $url = $this->createMock(UrlInterface::class);
+        $url = Url::of('http://example.com');
         $this
             ->inner
             ->expects($this->once())

@@ -14,14 +14,14 @@ use Innmind\Rest\Client\{
     Serializer\Encode,
     Serializer\Decode,
 };
-use Innmind\Url\UrlInterface;
+use Innmind\Url\Url;
 use Innmind\HttpTransport\Transport;
-use Innmind\UrlResolver\ResolverInterface;
+use Innmind\UrlResolver\Resolver;
 
 final class ServerFactory implements Factory
 {
     private Transport $transport;
-    private ResolverInterface $resolver;
+    private Resolver $resolver;
     private ExtractIdentity $extractIdentity;
     private ExtractIdentities $extractIdentities;
     private DenormalizeResource $denormalizeResource;
@@ -34,7 +34,7 @@ final class ServerFactory implements Factory
 
     public function __construct(
         Transport $transport,
-        ResolverInterface $resolver,
+        Resolver $resolver,
         ExtractIdentity $extractIdentity,
         ExtractIdentities $extractIdentities,
         DenormalizeResource $denormalizeResource,
@@ -58,7 +58,7 @@ final class ServerFactory implements Factory
         $this->capabilities = $capabilities;
     }
 
-    public function __invoke(UrlInterface $url): ServerInterface
+    public function __invoke(Url $url): ServerInterface
     {
         return new Server(
             $url,

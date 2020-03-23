@@ -19,13 +19,13 @@ final class Client implements ClientInterface
     public function __construct(Factory $make)
     {
         $this->make = $make;
-        $this->servers = new Map('string', Server::class);
+        $this->servers = Map::of('string', Server::class);
     }
 
     public function server(string $url): Server
     {
-        $url = Url::fromString($url);
-        $hash = \md5((string) $url);
+        $url = Url::of($url);
+        $hash = \md5($url->toString());
 
         if ($this->servers->contains($hash)) {
             return $this->servers->get($hash);

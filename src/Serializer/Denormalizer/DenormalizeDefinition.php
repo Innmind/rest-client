@@ -28,14 +28,14 @@ final class DenormalizeDefinition
 
     public function __invoke(array $definition, string $name): HttpResource
     {
-        $properties = new Map('string', Property::class);
-        $metas = Map::of(
-            'scalar',
-            'variable',
-            \array_keys($definition['metas']),
-            \array_values($definition['metas'])
-        );
+        $properties = Map::of('string', Property::class);
+        $metas = Map::of('scalar', 'variable');
         $links = Set::of(AllowedLink::class);
+
+        foreach ($definition['metas'] as $key => $value) {
+            $metas = ($metas)($key, $value);
+        }
+
 
         foreach ($definition['properties'] as $property => $value) {
             $properties = $properties->put(
@@ -50,7 +50,7 @@ final class DenormalizeDefinition
 
         return new HttpResource(
             $name,
-            Url::fromString($definition['url']),
+            Url::of($definition['url']),
             new Identity($definition['identity']),
             $properties,
             $metas,

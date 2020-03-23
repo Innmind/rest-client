@@ -10,7 +10,6 @@ use Innmind\Rest\Client\{
     HttpResource,
     Exception\MissingProperty,
 };
-use Innmind\Immutable\Map;
 
 final class NormalizeResource
 {
@@ -32,31 +31,33 @@ final class NormalizeResource
                 $name = $this->resolveName($property, $resource);
 
                 return $resource->properties()->contains($name);
-            })
-            ->foreach(function(string $name, Property $property) use ($resource) {
-                $name = $this->resolveName($property, $resource);
+            });
 
-                if (!$resource->properties()->contains($name)) {
-                    throw new MissingProperty($name);
-                }
-            })
-            ->reduce(
-                [],
-                function(array $properties, string $name, Property $property) use ($resource): array {
-                    $usedName = $this->resolveName($property, $resource);
+        $properties->foreach(function(string $name, Property $property) use ($resource) {
+            $name = $this->resolveName($property, $resource);
 
-                    $properties[$name] = $property
-                        ->type()
-                        ->normalize(
-                            $resource
-                                ->properties()
-                                ->get($usedName)
-                                ->value()
-                        );
+            if (!$resource->properties()->contains($name)) {
+                throw new MissingProperty($name);
+            }
+        });
 
-                    return $properties;
-                }
-            );
+        $properties = $properties->reduce(
+            [],
+            function(array $properties, string $name, Property $property) use ($resource): array {
+                $usedName = $this->resolveName($property, $resource);
+
+                $properties[$name] = $property
+                    ->type()
+                    ->normalize(
+                        $resource
+                            ->properties()
+                            ->get($usedName)
+                            ->value()
+                    );
+
+                return $properties;
+            }
+        );
 
         return ['resource' => $properties];
     }

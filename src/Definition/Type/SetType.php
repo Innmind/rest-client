@@ -12,7 +12,6 @@ use Innmind\Rest\Client\{
 };
 use Innmind\Immutable\{
     Str,
-    SetInterface,
     Set,
 };
 
@@ -26,7 +25,7 @@ final class SetType implements Type
     public function __construct(Type $inner)
     {
         $this->inner = $inner;
-        $this->denormalized = new Set(
+        $this->denormalized = Set::of(
             $inner instanceof DateType ?
                 \DateTimeImmutable::class : (string) $inner
         );
@@ -34,7 +33,7 @@ final class SetType implements Type
 
     public static function fromString(string $type, Types $build): Type
     {
-        $type = new Str($type);
+        $type = Str::of($type);
 
         if (!$type->matches(self::PATTERN)) {
             throw new DomainException;
@@ -42,9 +41,10 @@ final class SetType implements Type
 
         return new self(
             $build(
-                (string) $type
+                $type
                     ->capture(self::PATTERN)
                     ->get('inner')
+                    ->toString(),
             )
         );
     }
@@ -54,9 +54,9 @@ final class SetType implements Type
      */
     public function normalize($data)
     {
-        if (!$data instanceof SetInterface) {
+        if (!$data instanceof Set) {
             throw new NormalizationException(
-                'The value must be an instance of Innmind\Immutable\SetInterface'
+                'The value must be an instance of Innmind\Immutable\Set'
             );
         }
 

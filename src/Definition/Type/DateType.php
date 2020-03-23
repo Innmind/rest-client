@@ -29,16 +29,17 @@ final class DateType implements Type
 
     public static function fromString(string $type, Types $build): Type
     {
-        $type = new Str($type);
+        $type = Str::of($type);
 
         if (!$type->matches(self::PATTERN)) {
             throw new DomainException;
         }
 
         return new self(
-            (string) $type
+            $type
                 ->capture(self::PATTERN)
                 ->get('format')
+                ->toString(),
         );
     }
 

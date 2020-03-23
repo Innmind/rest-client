@@ -12,64 +12,59 @@ use Innmind\Rest\Client\{
     Formats,
 };
 use Innmind\HttpTransport\Transport;
-use Innmind\Url\{
-    UrlInterface,
-    Url,
-};
-use Innmind\UrlResolver\ResolverInterface;
+use Innmind\Url\Url;
+use Innmind\UrlResolver\Resolver;
 use Innmind\Http\{
     Message\Request\Request,
-    Message\Method\Method,
-    Headers\Headers,
-    ProtocolVersion\ProtocolVersion,
+    Message\Method,
+    Headers,
+    ProtocolVersion,
     Header\Value,
     Header\LinkValue,
     Header\Accept,
     Header\AcceptValue,
 };
 use Innmind\Immutable\{
-    MapInterface,
-    SetInterface,
     Map,
     Set,
 };
+use function Innmind\Immutable\unwrap;
 
 final class Capabilities implements CapabilitiesInterface
 {
     private Transport $fulfill;
-    private UrlInterface $host;
-    private ResolverInterface $resolver;
+    private Url $host;
+    private Resolver $resolve;
     private DefinitionFactory $make;
     private Formats $formats;
-    private UrlInterface $optionsUrl;
-    private ?SetInterface $names = null;
+    private Url $optionsUrl;
+    private ?Set $names = null;
     private Map $paths;
     private Map $definitions;
 
     public function __construct(
         Transport $fulfill,
-        UrlInterface $host,
-        ResolverInterface $resolver,
+        Url $host,
+        Resolver $resolve,
         DefinitionFactory $make,
         Formats $formats
     ) {
         $this->fulfill = $fulfill;
         $this->host = $host;
-        $this->resolver = $resolver;
+        $this->resolve = $resolve;
         $this->make = $make;
         $this->formats = $formats;
-        $optionsUrl = $resolver->resolve((string) $host, '/*');
-        $this->optionsUrl = Url::fromString($optionsUrl);
-        $this->paths = new Map('string', UrlInterface::class);
-        $this->definitions = new Map('string', HttpResource::class);
+        $this->optionsUrl = $resolve($host, Url::of('/*'));
+        $this->paths = Map::of('string', Url::class);
+        $this->definitions = Map::of('string', HttpResource::class);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function names(): SetInterface
+    public function names(): Set
     {
-        if ($this->names instanceof SetInterface) {
+        if ($this->names instanceof Set) {
             return $this->names;
         }
 
@@ -83,8 +78,8 @@ final class Capabilities implements CapabilitiesInterface
             )
             ->headers();
 
-        if (!$headers->has('Link')) {
-            return $this->names = new Set('string');
+        if (!$headers->contains('Link')) {
+            return $this->names = Set::strings();
         }
 
         return $this->names = $headers
@@ -94,7 +89,7 @@ final class Capabilities implements CapabilitiesInterface
                 return $value instanceof LinkValue;
             })
             ->reduce(
-                new Set('string'),
+                Set::strings(),
                 function(Set $names, LinkValue $link): Set {
                     $this->paths = $this->paths->put(
                         $link->relationship(),
@@ -116,11 +111,10 @@ final class Capabilities implements CapabilitiesInterface
             return $this->definitions->get($name);
         }
 
-        $url = $this->resolver->resolve(
-            (string) $this->host,
-            (string) $this->paths->get($name)
+        $url = ($this->resolve)(
+            $this->host,
+            $this->paths->get($name)
         );
-        $url = Url::fromString($url);
         $response = ($this->fulfill)(
             new Request(
                 $url,
@@ -128,7 +122,7 @@ final class Capabilities implements CapabilitiesInterface
                 new ProtocolVersion(1, 1),
                 Headers::of(
                     new Accept(
-                        ...$this
+                        ...unwrap($this
                             ->formats
                             ->all()
                             ->values()
@@ -136,14 +130,14 @@ final class Capabilities implements CapabilitiesInterface
                                 return $a->priority() < $b->priority();
                             })
                             ->reduce(
-                                new Set(Value::class),
+                                Set::of(Value::class),
                                 function(Set $values, Format $format): Set {
                                     return $values->add(new AcceptValue(
                                         $format->preferredMediaType()->topLevel(),
                                         $format->preferredMediaType()->subType()
                                     ));
                                 }
-                            )
+                            ))
                     )
                 )
             )
@@ -164,7 +158,7 @@ final class Capabilities implements CapabilitiesInterface
     /**
      * {@inheritdoc}
      */
-    public function definitions(): MapInterface
+    public function definitions(): Map
     {
         $this->names()->foreach(function(string $name) {
             $this->get($name);

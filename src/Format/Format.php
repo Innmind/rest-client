@@ -4,20 +4,20 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Format;
 
 use Innmind\Rest\Client\Exception\DomainException;
-use Innmind\Immutable\SetInterface;
+use Innmind\Immutable\Set;
 
 final class Format
 {
     private string $name;
-    private SetInterface $types;
+    private Set $types;
     private int $priority;
     private MediaType $preferredType;
 
-    public function __construct(string $name, SetInterface $types, int $priority)
+    public function __construct(string $name, Set $types, int $priority)
     {
         if ((string) $types->type() !== MediaType::class) {
             throw new \TypeError(sprintf(
-                'Argument 2 must be of type SetInterface<%s>',
+                'Argument 2 must be of type Set<%s>',
                 MediaType::class
             ));
         }
@@ -42,9 +42,9 @@ final class Format
     }
 
     /**
-     * @return SetInterface<MediaType>
+     * @return Set<MediaType>
      */
-    public function mediaTypes(): SetInterface
+    public function mediaTypes(): Set
     {
         return $this->types;
     }

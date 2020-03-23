@@ -33,26 +33,28 @@ final class DenormalizeResource
                 }
 
                 return isset($data[$name]);
-            })
-            ->foreach(function(string $name) use ($data) {
-                if (!isset($data[$name])) {
-                    throw new MissingProperty($name);
-                }
-            })
-            ->reduce(
-                new Map('string', Property::class),
-                function(Map $properties, string $name, PropertyDefinition $property) use ($data): Map {
-                    return $properties->put(
+            });
+
+        $properties->foreach(function(string $name) use ($data) {
+            if (!isset($data[$name])) {
+                throw new MissingProperty($name);
+            }
+        });
+
+        $properties = $properties->reduce(
+            Map::of('string', Property::class),
+            function(Map $properties, string $name, PropertyDefinition $property) use ($data): Map {
+                return $properties->put(
+                    $name,
+                    new Property(
                         $name,
-                        new Property(
-                            $name,
-                            $property
-                                ->type()
-                                ->denormalize($data[$name])
-                        )
-                    );
-                }
-            );
+                        $property
+                            ->type()
+                            ->denormalize($data[$name])
+                    )
+                );
+            }
+        );
 
         return new HttpResource(
             $definition->name(),

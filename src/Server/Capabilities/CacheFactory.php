@@ -11,7 +11,7 @@ use Innmind\Rest\Client\{
     Serializer\Denormalizer\DenormalizeDefinition,
     Serializer\Normalizer\NormalizeDefinition,
 };
-use Innmind\Url\UrlInterface;
+use Innmind\Url\Url;
 use Innmind\Filesystem\Adapter;
 
 final class CacheFactory implements Factory
@@ -42,7 +42,7 @@ final class CacheFactory implements Factory
         $this->make = $make;
     }
 
-    public function __invoke(UrlInterface $url): CapabilitiesInterface
+    public function __invoke(Url $url): CapabilitiesInterface
     {
         return new CacheCapabilities(
             ($this->make)($url),

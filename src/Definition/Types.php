@@ -14,10 +14,8 @@ use Innmind\Rest\Client\{
     Exception\DomainException,
     Exception\UnknownType,
 };
-use Innmind\Immutable\{
-    SetInterface,
-    Set,
-};
+use Innmind\Immutable\Set;
+use function Innmind\Immutable\unwrap;
 
 final class Types
 {
@@ -27,7 +25,7 @@ final class Types
     public function __construct(string ...$types)
     {
         if (\count($types) === 0) {
-            $types = self::defaults()->toPrimitive();
+            $types = unwrap(self::defaults());
         }
 
         foreach ($types as $type) {
@@ -59,9 +57,9 @@ final class Types
     }
 
     /**
-     * @return SetInterface<string>
+     * @return Set<string>
      */
-    public static function defaults(): SetInterface
+    public static function defaults(): Set
     {
         return self::$defaults ??= Set::of(
             'string',

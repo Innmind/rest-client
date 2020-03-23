@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Server\Capabilities;
 
 use Innmind\Rest\Client\Server\Capabilities as CapabilitiesInterface;
-use Innmind\Url\UrlInterface;
+use Innmind\Url\Url;
 
 final class RefreshLimitedFactory implements Factory
 {
@@ -15,7 +15,7 @@ final class RefreshLimitedFactory implements Factory
         $this->make = $make;
     }
 
-    public function __invoke(UrlInterface $url): CapabilitiesInterface
+    public function __invoke(Url $url): CapabilitiesInterface
     {
         return new RefreshLimitedCapabilities(
             ($this->make)($url)

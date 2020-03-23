@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Format;
 
-use Innmind\Filesystem\MediaType\MediaType as FilesystemMediaType;
+use Innmind\MediaType\MediaType as FilesystemMediaType;
 
 final class MediaType
 {
@@ -12,7 +12,7 @@ final class MediaType
 
     public function __construct(string $mime, int $priority)
     {
-        $this->mime = FilesystemMediaType::fromString($mime);
+        $this->mime = FilesystemMediaType::of($mime);
         $this->priority = $priority;
     }
 
@@ -38,6 +38,6 @@ final class MediaType
 
     public function __toString(): string
     {
-        return (string) $this->mime;
+        return $this->mime->toString();
     }
 }

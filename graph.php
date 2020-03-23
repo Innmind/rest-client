@@ -19,8 +19,7 @@ use Innmind\ObjectGraph\{
     Visitor\RemoveDependenciesSubGraph,
 };
 use Innmind\Url\{
-    UrlInterface,
-    PathInterface,
+    Url,
     Path,
 };
 
@@ -39,15 +38,15 @@ new class extends Main {
         $visualize = new Visualize(new class($env->workingDirectory()) implements LocationRewriter {
             private $workingDirectory;
 
-            public function __construct(PathInterface $workingDirectory)
+            public function __construct(Path $workingDirectory)
             {
                 $this->workingDirectory = $workingDirectory;
             }
 
-            public function __invoke(UrlInterface $location): UrlInterface
+            public function __invoke(Url $location): Url
             {
-                return $location->withPath(new Path(
-                    \str_replace((string) $this->workingDirectory, '', (string) $location->path())
+                return $location->withPath(Path::of(
+                    \str_replace($this->workingDirectory->toString(), '', $location->path()->toString())
                 ));
             }
         });

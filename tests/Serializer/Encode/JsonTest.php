@@ -24,7 +24,7 @@ class JsonTest extends TestCase
         $this->assertInstanceOf(Readable::class, $stream);
         $this->assertSame(
             '{"foo":"bar"}',
-            (string) $stream
+            $stream->toString(),
         );
     }
 }

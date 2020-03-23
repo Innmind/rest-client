@@ -8,6 +8,10 @@ use Innmind\Rest\Client\{
     Definition\HttpResource,
     Definition\Types,
 };
+use function Innmind\Immutable\{
+    unwrap,
+    first,
+};
 use PHPUnit\Framework\TestCase;
 
 class DenormalizeDefinitionTest extends TestCase
@@ -17,7 +21,7 @@ class DenormalizeDefinitionTest extends TestCase
 
     public function setUp(): void
     {
-        $types = new Types(...Types::defaults());
+        $types = new Types(...unwrap(Types::defaults()));
 
         $this->denormalize = new DenormalizeDefinition($types);
         $this->raw = [
@@ -57,7 +61,7 @@ class DenormalizeDefinitionTest extends TestCase
 
         $this->assertInstanceOf(HttpResource::class, $definition);
         $this->assertSame('foo', $definition->name());
-        $this->assertSame('http://example.com/foo', (string) $definition->url());
+        $this->assertSame('http://example.com/foo', $definition->url()->toString());
         $this->assertSame('uuid', (string) $definition->identity());
         $this->assertSame(
             'uuid',
@@ -69,11 +73,11 @@ class DenormalizeDefinitionTest extends TestCase
         );
         $this->assertSame(
             ['READ'],
-            $definition->properties()->get('uuid')->access()->mask()->toPrimitive()
+            unwrap($definition->properties()->get('uuid')->access()->mask())
         );
         $this->assertSame(
             ['guid'],
-            $definition->properties()->get('uuid')->variants()->toPrimitive()
+            unwrap($definition->properties()->get('uuid')->variants())
         );
         $this->assertFalse(
             $definition->properties()->get('uuid')->isOptional()
@@ -88,11 +92,11 @@ class DenormalizeDefinitionTest extends TestCase
         );
         $this->assertSame(
             ['READ', 'CREATE', 'UPDATE'],
-            $definition->properties()->get('url')->access()->mask()->toPrimitive()
+            unwrap($definition->properties()->get('url')->access()->mask())
         );
         $this->assertSame(
             [],
-            $definition->properties()->get('url')->variants()->toPrimitive()
+            unwrap($definition->properties()->get('url')->variants())
         );
         $this->assertTrue(
             $definition->properties()->get('url')->isOptional()
@@ -102,8 +106,8 @@ class DenormalizeDefinitionTest extends TestCase
             $definition->metas()->get('foo')
         );
         $this->assertCount(1, $definition->links());
-        $this->assertSame('res', $definition->links()->current()->resourcePath());
-        $this->assertSame('rel', $definition->links()->current()->relationship());
+        $this->assertSame('res', first($definition->links())->resourcePath());
+        $this->assertSame('rel', first($definition->links())->relationship());
         $this->assertTrue($definition->isRangeable());
     }
 }

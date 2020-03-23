@@ -9,10 +9,7 @@ use Innmind\Rest\Client\{
     Identity,
     Exception\DomainException,
 };
-use Innmind\Immutable\{
-    MapInterface,
-    Map,
-};
+use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;
 
 class LinkTest extends TestCase
@@ -23,7 +20,7 @@ class LinkTest extends TestCase
             'foo',
             $identity = $this->createMock(Identity::class),
             'baz',
-            $parameters = new Map('string', Parameter::class)
+            $parameters = Map::of('string', Parameter::class)
         );
 
         $this->assertSame('foo', $link->definition());
@@ -57,7 +54,7 @@ class LinkTest extends TestCase
         );
 
         $this->assertInstanceOf(
-            MapInterface::class,
+            Map::class,
             $link->parameters()
         );
         $this->assertSame('string', (string) $link->parameters()->keyType());
@@ -70,13 +67,13 @@ class LinkTest extends TestCase
     public function testThrowWhenInvalidParameterMap()
     {
         $this->expectException(\TypeError::class);
-        $this->expectExceptionMessage('Argument 4 must be of type MapInterface<string, Innmind\Rest\Client\Link\Parameter>');
+        $this->expectExceptionMessage('Argument 4 must be of type Map<string, Innmind\Rest\Client\Link\Parameter>');
 
         new Link(
             'foo',
             $this->createMock(Identity::class),
             'baz',
-            new Map('string', 'string')
+            Map::of('string', 'string')
         );
     }
 
@@ -88,7 +85,7 @@ class LinkTest extends TestCase
             '',
             $this->createMock(Identity::class),
             'baz',
-            new Map('string', Parameter::class)
+            Map::of('string', Parameter::class)
         );
     }
 
@@ -100,7 +97,7 @@ class LinkTest extends TestCase
             'foo',
             $this->createMock(Identity::class),
             '',
-            new Map('string', Parameter::class)
+            Map::of('string', Parameter::class)
         );
     }
 }

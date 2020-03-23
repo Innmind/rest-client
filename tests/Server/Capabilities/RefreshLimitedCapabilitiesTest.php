@@ -11,10 +11,8 @@ use Innmind\Rest\Client\{
     Definition\Identity,
     Definition\AllowedLink,
 };
-use Innmind\Url\UrlInterface;
+use Innmind\Url\Url;
 use Innmind\Immutable\{
-    MapInterface,
-    SetInterface,
     Map,
     Set,
 };
@@ -41,7 +39,7 @@ class RefreshLimitedCapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('names')
             ->willReturn(
-                $expected = $this->createMock(SetInterface::class)
+                $expected = Set::strings()
             );
 
         $this->assertSame($expected, $capabilities->names());
@@ -59,11 +57,11 @@ class RefreshLimitedCapabilitiesTest extends TestCase
             ->willReturn(
                 $expected = new HttpResource(
                     'foo',
-                    $this->createMock(UrlInterface::class),
+                    Url::of('http://example.com/'),
                     new Identity('uuid'),
-                    new Map('string', Property::class),
-                    new Map('scalar', 'variable'),
-                    new Set(AllowedLink::class),
+                    Map::of('string', Property::class),
+                    Map::of('scalar', 'variable'),
+                    Set::of(AllowedLink::class),
                     false
                 )
             );
@@ -80,7 +78,7 @@ class RefreshLimitedCapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('definitions')
             ->willReturn(
-                $expected = $this->createMock(MapInterface::class)
+                $expected = Map::of('string', HttpResource::class)
             );
 
         $this->assertSame($expected, $capabilities->definitions());

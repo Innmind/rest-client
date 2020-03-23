@@ -14,10 +14,7 @@ use Innmind\Http\{
     Header\Value,
     Header\LinkValue,
 };
-use Innmind\Immutable\{
-    SetInterface,
-    Set,
-};
+use Innmind\Immutable\Set;
 
 final class ExtractIdentities
 {
@@ -28,12 +25,12 @@ final class ExtractIdentities
         $this->resolveIdentity = $resolveIdentity;
     }
 
-    public function __invoke(Response $response, HttpResource $definition): SetInterface
+    public function __invoke(Response $response, HttpResource $definition): Set
     {
         $headers = $response->headers();
 
-        if (!$headers->has('Link')) {
-            return new Set(Identity::class);
+        if (!$headers->contains('Link')) {
+            return Set::of(Identity::class);
         }
 
         return $headers
@@ -46,7 +43,7 @@ final class ExtractIdentities
                 return $link->relationship() === 'resource';
             })
             ->reduce(
-                new Set(Identity::class),
+                Set::of(Identity::class),
                 function(Set $identities, LinkValue $link) use ($definition): Set {
                     return $identities->add(
                         new Identity\Identity(

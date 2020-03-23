@@ -16,8 +16,8 @@ use Innmind\Rest\Client\{
     Format\MediaType,
 };
 use Innmind\HttpTransport\Transport;
-use Innmind\UrlResolver\ResolverInterface;
-use Innmind\Url\UrlInterface;
+use Innmind\UrlResolver\Resolver;
+use Innmind\Url\Url;
 use Innmind\Immutable\{
     Map,
     Set,
@@ -32,7 +32,7 @@ class FactoryTest extends TestCase
     {
         $this->make = new Factory(
             $this->createMock(Transport::class),
-            $this->createMock(ResolverInterface::class),
+            $resolver = $this->createMock(Resolver::class),
             new DefinitionFactory(
                 new DenormalizeDefinition(new Types),
                 new Json
@@ -48,6 +48,10 @@ class FactoryTest extends TestCase
                 )
             )
         );
+        $resolver
+            ->expects($this->any())
+            ->method('__invoke')
+            ->willReturn(Url::of('http://example.com'));
     }
 
     public function testInterface()
@@ -63,7 +67,7 @@ class FactoryTest extends TestCase
         $this->assertInstanceOf(
             Capabilities::class,
             ($this->make)(
-                $this->createMock(UrlInterface::class)
+                Url::of('http://example.com/')
             )
         );
     }

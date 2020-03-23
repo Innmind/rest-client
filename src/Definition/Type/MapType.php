@@ -12,7 +12,6 @@ use Innmind\Rest\Client\{
 };
 use Innmind\Immutable\{
     Str,
-    MapInterface,
     Map,
 };
 
@@ -28,7 +27,7 @@ final class MapType implements Type
     {
         $this->key = $key;
         $this->value = $value;
-        $this->denormalized = new Map(
+        $this->denormalized = Map::of(
             $key instanceof DateType ?
                 \DateTimeImmutable::class : (string) $key,
             $value instanceof DateType ?
@@ -38,7 +37,7 @@ final class MapType implements Type
 
     public static function fromString(string $type, Types $build): Type
     {
-        $type = new Str($type);
+        $type = Str::of($type);
 
         if (!$type->matches(self::PATTERN)) {
             throw new DomainException;
@@ -47,8 +46,8 @@ final class MapType implements Type
         $matches = $type->capture(self::PATTERN);
 
         return new self(
-            $build((string) $matches->get('key')),
-            $build((string) $matches->get('value'))
+            $build($matches->get('key')->toString()),
+            $build($matches->get('value')->toString()),
         );
     }
 
@@ -57,9 +56,9 @@ final class MapType implements Type
      */
     public function normalize($data)
     {
-        if (!$data instanceof MapInterface) {
+        if (!$data instanceof Map) {
             throw new NormalizationException(
-                'The value must be an instance of Innmind\Immutable\MapInterface'
+                'The value must be an instance of Innmind\Immutable\Map'
             );
         }
 

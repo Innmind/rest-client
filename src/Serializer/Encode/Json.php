@@ -6,13 +6,13 @@ namespace Innmind\Rest\Client\Serializer\Encode;
 use Innmind\Rest\Client\Serializer\Encode;
 use Innmind\Stream\Readable;
 use Innmind\Json\Json as JsonLib;
-use Innmind\Filesystem\Stream\StringStream;
+use Innmind\Stream\Readable\Stream;
 
 final class Json implements Encode
 {
     public function __invoke(array $content): Readable
     {
-        return new StringStream(
+        return Stream::ofContent(
             JsonLib::encode($content)
         );
     }

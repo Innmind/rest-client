@@ -7,30 +7,30 @@ use Innmind\Rest\Client\{
     Link,
     Exception\DomainException,
 };
-use Innmind\Url\UrlInterface;
+use Innmind\Url\Url;
 use Innmind\Immutable\{
-    MapInterface,
-    SetInterface,
+    Map,
+    Set,
     Str,
 };
 
 final class HttpResource
 {
     private string $name;
-    private UrlInterface $url;
+    private Url $url;
     private Identity $identity;
-    private MapInterface $properties;
-    private MapInterface $metas;
-    private SetInterface $links;
+    private Map $properties;
+    private Map $metas;
+    private Set $links;
     private bool $rangeable;
 
     public function __construct(
         string $name,
-        UrlInterface $url,
+        Url $url,
         Identity $identity,
-        MapInterface $properties,
-        MapInterface $metas,
-        SetInterface $links,
+        Map $properties,
+        Map $metas,
+        Set $links,
         bool $rangeable
     ) {
         if (Str::of($name)->empty()) {
@@ -42,7 +42,7 @@ final class HttpResource
             (string) $properties->valueType() !== Property::class
         ) {
             throw new \TypeError(sprintf(
-                'Argument 4 must be of type MapInterface<string, %s>',
+                'Argument 4 must be of type Map<string, %s>',
                 Property::class
             ));
         }
@@ -51,12 +51,12 @@ final class HttpResource
             (string) $metas->keyType() !== 'scalar' ||
             (string) $metas->valueType() !== 'variable'
         ) {
-            throw new \TypeError('Argument 5 must be of type MapInterface<scalar, variable>');
+            throw new \TypeError('Argument 5 must be of type Map<scalar, variable>');
         }
 
         if ((string) $links->type() !== AllowedLink::class) {
             throw new \TypeError(\sprintf(
-                'Argument 6 must be of type SetInterface<%s>',
+                'Argument 6 must be of type Set<%s>',
                 AllowedLink::class
             ));
         }
@@ -75,7 +75,7 @@ final class HttpResource
         return $this->name;
     }
 
-    public function url(): UrlInterface
+    public function url(): Url
     {
         return $this->url;
     }
@@ -86,25 +86,25 @@ final class HttpResource
     }
 
     /**
-     * @return MapInterface<string, Property>
+     * @return Map<string, Property>
      */
-    public function properties(): MapInterface
+    public function properties(): Map
     {
         return $this->properties;
     }
 
     /**
-     * @return MapInterface<scalar, variable>
+     * @return Map<scalar, variable>
      */
-    public function metas(): MapInterface
+    public function metas(): Map
     {
         return $this->metas;
     }
 
     /**
-     * @return SetInterface<AllowedLink>
+     * @return Set<AllowedLink>
      */
-    public function links(): SetInterface
+    public function links(): Set
     {
         return $this->links;
     }

@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Rest\Client\Format;
 
 use Innmind\Rest\Client\Format\MediaType;
-use Innmind\Filesystem\Exception\InvalidMediaTypeString;
+use Innmind\MediaType\Exception\InvalidMediaTypeString;
 use PHPUnit\Framework\TestCase;
 
 class MediaTypeTest extends TestCase

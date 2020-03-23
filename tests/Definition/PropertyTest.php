@@ -22,7 +22,7 @@ class PropertyTest extends TestCase
             '',
             $this->createMock(Type::class),
             new Access,
-            new Set('string'),
+            Set::of('string'),
             true
         );
     }
@@ -30,13 +30,13 @@ class PropertyTest extends TestCase
     public function testThrowWhenInvalidVariants()
     {
         $this->expectException(\TypeError::class);
-        $this->expectExceptionMessage('Argument 4 must be of type SetInterface<string>');
+        $this->expectExceptionMessage('Argument 4 must be of type Set<string>');
 
         new Property(
             'foo',
             $this->createMock(Type::class),
             new Access,
-            new Set('int'),
+            Set::of('int'),
             true
         );
     }
@@ -47,7 +47,7 @@ class PropertyTest extends TestCase
             'foo',
             $type = $this->createMock(Type::class),
             $access = new Access,
-            $variants = new Set('string'),
+            $variants = Set::of('string'),
             true
         );
 
@@ -64,7 +64,7 @@ class PropertyTest extends TestCase
             'foo',
             $this->createMock(Type::class),
             new Access,
-            new Set('string'),
+            Set::of('string'),
             false
         );
 

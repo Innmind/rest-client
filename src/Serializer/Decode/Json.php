@@ -18,6 +18,6 @@ final class Json implements Decode
             throw new LogicException;
         }
 
-        return JsonLib::decode((string) $content);
+        return JsonLib::decode($content->toString());
     }
 }

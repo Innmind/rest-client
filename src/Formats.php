@@ -10,27 +10,25 @@ use Innmind\Rest\Client\{
     Exception\DomainException,
 };
 use Innmind\Immutable\{
-    MapInterface,
     Map,
-    SetInterface,
     Set,
 };
 use Negotiation\Negotiator;
 
 final class Formats
 {
-    private MapInterface $formats;
+    private Map $formats;
     private Negotiator $negotiator;
-    private ?SetInterface $types = null;
+    private ?Set $types = null;
 
-    public function __construct(MapInterface $formats)
+    public function __construct(Map $formats)
     {
         if (
             (string) $formats->keyType() !== 'string' ||
             (string) $formats->valueType() !== Format::class
         ) {
             throw new \TypeError(sprintf(
-                'Argument 1 must be of type MapInterface<string, %s>',
+                'Argument 1 must be of type Map<string, %s>',
                 Format::class
             ));
         }
@@ -61,23 +59,23 @@ final class Formats
     }
 
     /**
-     * @return MapInterface<string, Format>
+     * @return Map<string, Format>
      */
-    public function all(): MapInterface
+    public function all(): Map
     {
         return $this->formats;
     }
 
     /**
-     * @return SetInterface<MediaType>
+     * @return Set<MediaType>
      */
-    public function mediaTypes(): SetInterface
+    public function mediaTypes(): Set
     {
         if ($this->types === null) {
             $this->types = $this
                 ->formats
                 ->reduce(
-                    new Set(MediaType::class),
+                    Set::of(MediaType::class),
                     function(Set $types, string $name, Format $format): Set {
                         return $types->merge($format->mediaTypes());
                     }
@@ -89,7 +87,7 @@ final class Formats
 
     public function fromMediaType(string $wished): Format
     {
-        $format = $this
+        $formats = $this
             ->formats
             ->values()
             ->filter(function(Format $format) use ($wished) {
@@ -105,14 +103,13 @@ final class Formats
                             return (string) $mediaType === $wished;
                         }
                     );
-            })
-            ->current();
+            });
 
-        if (!$format instanceof Format) {
+        if ($formats->empty()) {
             throw new InvalidArgumentException;
         }
 
-        return $format;
+        return $formats->first();
     }
 
     public function matching(string $wished): Format

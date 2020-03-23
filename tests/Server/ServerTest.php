@@ -37,14 +37,11 @@ use Innmind\Rest\Client\{
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\UrlResolver;
-use Innmind\Url\{
-    Url,
-    UrlInterface,
-};
+use Innmind\Url\Url;
 use Innmind\Http\{
     Message\Request,
     Message\Response,
-    Headers\Headers,
+    Headers,
     Header,
     Header\ContentType,
     Header\ContentTypeValue,
@@ -53,12 +50,12 @@ use Innmind\Http\{
     Header\Link as LinkHeader,
     Header\LinkValue,
 };
-use Innmind\Filesystem\Stream\StringStream;
+use Innmind\Stream\Readable\Stream;
 use Innmind\Immutable\{
     Map,
-    SetInterface,
     Set,
 };
+use function Innmind\Immutable\unwrap;
 use Innmind\Specification\{
     Comparator,
     Sign,
@@ -76,7 +73,7 @@ class ServerTest extends TestCase
     public function setUp(): void
     {
         $this->server = new Server(
-            $this->url = Url::fromString('http://example.com/'),
+            $this->url = Url::of('http://example.com/'),
             $this->transport = $this->createMock(Transport::class),
             $this->capabilities = $this->createMock(Capabilities::class),
             $resolver = new UrlResolver,
@@ -167,11 +164,11 @@ class ServerTest extends TestCase
             ->willReturn(
                 new HttpResourceDefinition(
                     'foo',
-                    $this->createMock(UrlInterface::class),
+                    Url::of('http://example.com'),
                     new IdentityDefinition('uuid'),
-                    new Map('string', PropertyDefinition::class),
-                    new Map('scalar', 'variable'),
-                    new Set(AllowedLink::class),
+                    Map::of('string', PropertyDefinition::class),
+                    Map::of('scalar', 'variable'),
+                    Set::of(AllowedLink::class),
                     false
                 )
             );
@@ -195,11 +192,11 @@ class ServerTest extends TestCase
             ->willReturn(
                 $definition = new HttpResourceDefinition(
                     'foo',
-                    Url::fromString('http://example.com/foo'),
+                    Url::of('http://example.com/foo'),
                     new IdentityDefinition('uuid'),
-                    new Map('string', PropertyDefinition::class),
-                    new Map('scalar', 'variable'),
-                    new Set(AllowedLink::class),
+                    Map::of('string', PropertyDefinition::class),
+                    Map::of('scalar', 'variable'),
+                    Set::of(AllowedLink::class),
                     false
                 )
             );
@@ -208,10 +205,10 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/foo' &&
-                    (string) $request->method() === 'GET' &&
+                return $request->url()->toString() === 'http://example.com/foo' &&
+                    $request->method()->toString() === 'GET' &&
                     $request->headers()->count() === 0 &&
-                    (string) $request->body() === '';
+                    $request->body()->toString() === '';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
@@ -222,11 +219,11 @@ class ServerTest extends TestCase
             ->willReturn(Headers::of(
                 new LinkHeader(
                     new LinkValue(
-                        Url::fromString('http://example.com/foo/some-uuid'),
+                        Url::of('http://example.com/foo/some-uuid'),
                         'resource'
                     ),
                     new LinkValue(
-                        Url::fromString('http://example.com/foo/some-other-uuid'),
+                        Url::of('http://example.com/foo/some-other-uuid'),
                         'resource'
                     )
                 )
@@ -234,12 +231,13 @@ class ServerTest extends TestCase
 
         $all = $this->server->all('foo');
 
-        $this->assertInstanceOf(SetInterface::class, $all);
+        $this->assertInstanceOf(Set::class, $all);
         $this->assertSame(Identity::class, (string) $all->type());
         $this->assertCount(2, $all);
-        $this->assertSame('some-uuid', (string) $all->current());
-        $all->next();
-        $this->assertSame('some-other-uuid', (string) $all->current());
+        $all = unwrap($all);
+        $this->assertSame('some-uuid', (string) \current($all));
+        \next($all);
+        $this->assertSame('some-other-uuid', (string) \current($all));
     }
 
     public function testAllWithRange()
@@ -252,11 +250,11 @@ class ServerTest extends TestCase
             ->willReturn(
                 $definition = new HttpResourceDefinition(
                     'foo',
-                    Url::fromString('http://example.com/foo'),
+                    Url::of('http://example.com/foo'),
                     new IdentityDefinition('uuid'),
-                    new Map('string', PropertyDefinition::class),
-                    new Map('scalar', 'variable'),
-                    new Set(AllowedLink::class),
+                    Map::of('string', PropertyDefinition::class),
+                    Map::of('scalar', 'variable'),
+                    Set::of(AllowedLink::class),
                     true
                 )
             );
@@ -265,12 +263,12 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/foo' &&
-                    (string) $request->method() === 'GET' &&
+                return $request->url()->toString() === 'http://example.com/foo' &&
+                    $request->method()->toString() === 'GET' &&
                     $request->headers()->count() === 1 &&
-                    $request->headers()->has('range') &&
-                    (string) $request->headers()->get('range') === 'Range: resource=10-20' &&
-                    (string) $request->body() === '';
+                    $request->headers()->contains('range') &&
+                    $request->headers()->get('range')->toString() === 'Range: resource=10-20' &&
+                    $request->body()->toString() === '';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
@@ -281,11 +279,11 @@ class ServerTest extends TestCase
             ->willReturn(Headers::of(
                 new LinkHeader(
                     new LinkValue(
-                        Url::fromString('http://example.com/foo/some-uuid'),
+                        Url::of('http://example.com/foo/some-uuid'),
                         'resource'
                     ),
                     new LinkValue(
-                        Url::fromString('http://example.com/foo/some-other-uuid'),
+                        Url::of('http://example.com/foo/some-other-uuid'),
                         'resource'
                     )
                 )
@@ -293,12 +291,13 @@ class ServerTest extends TestCase
 
         $all = $this->server->all('foo', null, new Range(10, 20));
 
-        $this->assertInstanceOf(SetInterface::class, $all);
+        $this->assertInstanceOf(Set::class, $all);
         $this->assertSame(Identity::class, (string) $all->type());
         $this->assertCount(2, $all);
-        $this->assertSame('some-uuid', (string) $all->current());
-        $all->next();
-        $this->assertSame('some-other-uuid', (string) $all->current());
+        $all = unwrap($all);
+        $this->assertSame('some-uuid', (string) \current($all));
+        \next($all);
+        $this->assertSame('some-other-uuid', (string) \current($all));
     }
 
     public function testAllWithQuery()
@@ -311,11 +310,11 @@ class ServerTest extends TestCase
             ->willReturn(
                 $definition = new HttpResourceDefinition(
                     'foo',
-                    Url::fromString('http://example.com/foo'),
+                    Url::of('http://example.com/foo'),
                     new IdentityDefinition('uuid'),
-                    new Map('string', PropertyDefinition::class),
-                    new Map('scalar', 'variable'),
-                    new Set(AllowedLink::class),
+                    Map::of('string', PropertyDefinition::class),
+                    Map::of('scalar', 'variable'),
+                    Set::of(AllowedLink::class),
                     false
                 )
             );
@@ -324,10 +323,10 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/foo?bar=baz' &&
-                    (string) $request->method() === 'GET' &&
+                return $request->url()->toString() === 'http://example.com/foo?bar=baz' &&
+                    $request->method()->toString() === 'GET' &&
                     $request->headers()->count() === 0 &&
-                    (string) $request->body() === '';
+                    $request->body()->toString() === '';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
@@ -351,11 +350,11 @@ class ServerTest extends TestCase
             ->willReturn(Headers::of(
                 new LinkHeader(
                     new LinkValue(
-                        Url::fromString('http://example.com/foo/some-uuid'),
+                        Url::of('http://example.com/foo/some-uuid'),
                         'resource'
                     ),
                     new LinkValue(
-                        Url::fromString('http://example.com/foo/some-other-uuid'),
+                        Url::of('http://example.com/foo/some-other-uuid'),
                         'resource'
                     )
                 )
@@ -363,12 +362,13 @@ class ServerTest extends TestCase
 
         $all = $this->server->all('foo', $specification);
 
-        $this->assertInstanceOf(SetInterface::class, $all);
+        $this->assertInstanceOf(Set::class, $all);
         $this->assertSame(Identity::class, (string) $all->type());
         $this->assertCount(2, $all);
-        $this->assertSame('some-uuid', (string) $all->current());
-        $all->next();
-        $this->assertSame('some-other-uuid', (string) $all->current());
+        $all = unwrap($all);
+        $this->assertSame('some-uuid', (string) \current($all));
+        \next($all);
+        $this->assertSame('some-other-uuid', (string) \current($all));
     }
 
     public function testAllWithQueryAndRange()
@@ -381,11 +381,11 @@ class ServerTest extends TestCase
             ->willReturn(
                 $definition = new HttpResourceDefinition(
                     'foo',
-                    Url::fromString('http://example.com/foo'),
+                    Url::of('http://example.com/foo'),
                     new IdentityDefinition('uuid'),
-                    new Map('string', PropertyDefinition::class),
-                    new Map('scalar', 'variable'),
-                    new Set(AllowedLink::class),
+                    Map::of('string', PropertyDefinition::class),
+                    Map::of('scalar', 'variable'),
+                    Set::of(AllowedLink::class),
                     true
                 )
             );
@@ -394,12 +394,12 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/foo?bar=baz' &&
-                    (string) $request->method() === 'GET' &&
+                return $request->url()->toString() === 'http://example.com/foo?bar=baz' &&
+                    $request->method()->toString() === 'GET' &&
                     $request->headers()->count() === 1 &&
-                    $request->headers()->has('range') &&
-                    (string) $request->headers()->get('range') === 'Range: resource=10-20' &&
-                    (string) $request->body() === '';
+                    $request->headers()->contains('range') &&
+                    $request->headers()->get('range')->toString() === 'Range: resource=10-20' &&
+                    $request->body()->toString() === '';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
@@ -423,11 +423,11 @@ class ServerTest extends TestCase
             ->willReturn(Headers::of(
                 new LinkHeader(
                     new LinkValue(
-                        Url::fromString('http://example.com/foo/some-uuid'),
+                        Url::of('http://example.com/foo/some-uuid'),
                         'resource'
                     ),
                     new LinkValue(
-                        Url::fromString('http://example.com/foo/some-other-uuid'),
+                        Url::of('http://example.com/foo/some-other-uuid'),
                         'resource'
                     )
                 )
@@ -435,12 +435,13 @@ class ServerTest extends TestCase
 
         $all = $this->server->all('foo', $specification, new Range(10, 20));
 
-        $this->assertInstanceOf(SetInterface::class, $all);
+        $this->assertInstanceOf(Set::class, $all);
         $this->assertSame(Identity::class, (string) $all->type());
         $this->assertCount(2, $all);
-        $this->assertSame('some-uuid', (string) $all->current());
-        $all->next();
-        $this->assertSame('some-other-uuid', (string) $all->current());
+        $all = unwrap($all);
+        $this->assertSame('some-uuid', (string) \current($all));
+        \next($all);
+        $this->assertSame('some-other-uuid', (string) \current($all));
     }
 
     public function testThrowWhenReadResponseHasNoContentType()
@@ -517,11 +518,11 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/foo/bar' &&
-                    (string) $request->method() === 'GET' &&
+                return $request->url()->toString() === 'http://example.com/foo/bar' &&
+                    $request->method()->toString() === 'GET' &&
                     $request->headers()->count() === 1 &&
-                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml' &&
-                    (string) $request->body() === '';
+                    $request->headers()->get('Accept')->toString() === 'Accept: application/json, text/xml' &&
+                    $request->body()->toString() === '';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
@@ -543,7 +544,7 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('body')
             ->willReturn(
-                new StringStream('{"resource":{"uuid":"bar","url":"example.com"}}')
+                Stream::ofContent('{"resource":{"uuid":"bar","url":"example.com"}}')
             );
 
         $resource = $this->server->read('foo', new Identity\Identity('bar'));
@@ -574,12 +575,12 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/foo' &&
-                    (string) $request->method() === 'POST' &&
+                return $request->url()->toString() === 'http://example.com/foo' &&
+                    $request->method()->toString() === 'POST' &&
                     $request->headers()->count() === 2 &&
-                    (string) $request->headers()->get('Content-Type') === 'Content-Type: application/json' &&
-                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml' &&
-                    (string) $request->body() === '{"resource":{"url":"foobar"}}';
+                    $request->headers()->get('Content-Type')->toString() === 'Content-Type: application/json' &&
+                    $request->headers()->get('Accept')->toString() === 'Accept: application/json, text/xml' &&
+                    $request->body()->toString() === '{"resource":{"url":"foobar"}}';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
@@ -590,7 +591,7 @@ class ServerTest extends TestCase
             ->willReturn(Headers::of(
                 new Location(
                     new LocationValue(
-                        Url::fromString('http://example.com/foo/some-uuid')
+                        Url::of('http://example.com/foo/some-uuid')
                     )
                 )
             ));
@@ -618,12 +619,12 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
-                    (string) $request->method() === 'PUT' &&
+                return $request->url()->toString() === 'http://example.com/foo/some-uuid' &&
+                    $request->method()->toString() === 'PUT' &&
                     $request->headers()->count() === 2 &&
-                    (string) $request->headers()->get('Content-Type') === 'Content-Type: application/json' &&
-                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml' &&
-                    (string) $request->body() === '{"resource":{"url":"foobar"}}';
+                    $request->headers()->get('Content-Type')->toString() === 'Content-Type: application/json' &&
+                    $request->headers()->get('Accept')->toString() === 'Accept: application/json, text/xml' &&
+                    $request->body()->toString() === '{"resource":{"url":"foobar"}}';
             }))
             ->willReturn(
                 $this->createMock(Response::class)
@@ -653,10 +654,10 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
-                    (string) $request->method() === 'DELETE' &&
+                return $request->url()->toString() === 'http://example.com/foo/some-uuid' &&
+                    $request->method()->toString() === 'DELETE' &&
                     $request->headers()->count() === 0 &&
-                    (string) $request->body() === '';
+                    $request->body()->toString() === '';
             }))
             ->willReturn(
                 $this->createMock(Response::class)
@@ -673,12 +674,12 @@ class ServerTest extends TestCase
     public function testThrowWhenInvalidSetOfLinks()
     {
         $this->expectException(\TypeError::class);
-        $this->expectExceptionMessage('Argument 3 must be of type SetInterface<Innmind\Rest\Client\Link>');
+        $this->expectExceptionMessage('Argument 3 must be of type Set<Innmind\Rest\Client\Link>');
 
         $this->server->link(
             'foo',
             $this->createMock(Identity::class),
-            new Set('string')
+            Set::of('string')
         );
     }
 
@@ -689,7 +690,7 @@ class ServerTest extends TestCase
         $this->server->link(
             'foo',
             $this->createMock(Identity::class),
-            new Set(Link::class)
+            Set::of(Link::class)
         );
     }
 
@@ -742,11 +743,11 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
-                    (string) $request->method() === 'LINK' &&
-                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml' &&
-                    (string) $request->headers()->get('Link') === 'Link: </foo/cano>; rel="canonical";attr=val' &&
-                    (string) $request->body() === '';
+                return $request->url()->toString() === 'http://example.com/foo/some-uuid' &&
+                    $request->method()->toString() === 'LINK' &&
+                    $request->headers()->get('Accept')->toString() === 'Accept: application/json, text/xml' &&
+                    $request->headers()->get('Link')->toString() === 'Link: </foo/cano>; rel="canonical";attr=val' &&
+                    $request->body()->toString() === '';
             }));
 
         $this->assertSame(
@@ -770,12 +771,12 @@ class ServerTest extends TestCase
     public function testThrowWhenInvalidSetOfLinksToUnlink()
     {
         $this->expectException(\TypeError::class);
-        $this->expectExceptionMessage('Argument 3 must be of type SetInterface<Innmind\Rest\Client\Link>');
+        $this->expectExceptionMessage('Argument 3 must be of type Set<Innmind\Rest\Client\Link>');
 
         $this->server->unlink(
             'foo',
             $this->createMock(Identity::class),
-            new Set('string')
+            Set::of('string')
         );
     }
 
@@ -786,7 +787,7 @@ class ServerTest extends TestCase
         $this->server->unlink(
             'foo',
             $this->createMock(Identity::class),
-            new Set(Link::class)
+            Set::of(Link::class)
         );
     }
 
@@ -839,11 +840,11 @@ class ServerTest extends TestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/foo/some-uuid' &&
-                    (string) $request->method() === 'UNLINK' &&
-                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml' &&
-                    (string) $request->headers()->get('Link') === 'Link: </foo/cano>; rel="canonical";attr=val' &&
-                    (string) $request->body() === '';
+                return $request->url()->toString() === 'http://example.com/foo/some-uuid' &&
+                    $request->method()->toString() === 'UNLINK' &&
+                    $request->headers()->get('Accept')->toString() === 'Accept: application/json, text/xml' &&
+                    $request->headers()->get('Link')->toString() === 'Link: </foo/cano>; rel="canonical";attr=val' &&
+                    $request->body()->toString() === '';
             }));
 
         $this->assertSame(

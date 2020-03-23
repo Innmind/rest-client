@@ -13,7 +13,7 @@ use Innmind\Rest\Client\{
     Identity as IdentityInterface,
     Exception\DomainException,
 };
-use Innmind\Url\UrlInterface;
+use Innmind\Url\Url;
 use Innmind\Immutable\{
     Map,
     Set,
@@ -26,11 +26,11 @@ class HttpResourceTest extends TestCase
     {
         $resource = new HttpResource(
             'foo',
-            $url = $this->createMock(UrlInterface::class),
+            $url = Url::of('http://example.com/'),
             $identity = new Identity('uuid'),
-            $properties = new Map('string', Property::class),
-            $metas = new Map('scalar', 'variable'),
-            $links = new Set(AllowedLink::class),
+            $properties = Map::of('string', Property::class),
+            $metas = Map::of('scalar', 'variable'),
+            $links = Set::of(AllowedLink::class),
             true
         );
 
@@ -50,11 +50,11 @@ class HttpResourceTest extends TestCase
 
         new HttpResource(
             '',
-            $this->createMock(UrlInterface::class),
+            Url::of('http://example.com/'),
             new Identity('uuid'),
-            new Map('string', Property::class),
-            new Map('scalar', 'variable'),
-            new Set(AllowedLink::class),
+            Map::of('string', Property::class),
+            Map::of('scalar', 'variable'),
+            Set::of(AllowedLink::class),
             true
         );
     }
@@ -62,15 +62,15 @@ class HttpResourceTest extends TestCase
     public function testThrowWhenInvalidPropertyMap()
     {
         $this->expectException(\TypeError::class);
-        $this->expectExceptionMessage('Argument 4 must be of type MapInterface<string, Innmind\Rest\Client\Definition\Property>');
+        $this->expectExceptionMessage('Argument 4 must be of type Map<string, Innmind\Rest\Client\Definition\Property>');
 
         new HttpResource(
             'foo',
-            $this->createMock(UrlInterface::class),
+            Url::of('http://example.com/'),
             new Identity('uuid'),
-            new Map('int', Property::class),
-            new Map('scalar', 'variable'),
-            new Set(AllowedLink::class),
+            Map::of('int', Property::class),
+            Map::of('scalar', 'variable'),
+            Set::of(AllowedLink::class),
             true
         );
     }
@@ -78,15 +78,15 @@ class HttpResourceTest extends TestCase
     public function testThrowWhenInvalidMetaMap()
     {
         $this->expectException(\TypeError::class);
-        $this->expectExceptionMessage('Argument 5 must be of type MapInterface<scalar, variable>');
+        $this->expectExceptionMessage('Argument 5 must be of type Map<scalar, variable>');
 
         new HttpResource(
             'foo',
-            $this->createMock(UrlInterface::class),
+            Url::of('http://example.com/'),
             new Identity('uuid'),
-            new Map('string', Property::class),
-            new Map('string', 'scalar'),
-            new Set(AllowedLink::class),
+            Map::of('string', Property::class),
+            Map::of('string', 'scalar'),
+            Set::of(AllowedLink::class),
             true
         );
     }
@@ -94,15 +94,15 @@ class HttpResourceTest extends TestCase
     public function testThrowWhenInvalidLinkMap()
     {
         $this->expectException(\TypeError::class);
-        $this->expectExceptionMessage('Argument 6 must be of type SetInterface<Innmind\Rest\Client\Definition\AllowedLink>');
+        $this->expectExceptionMessage('Argument 6 must be of type Set<Innmind\Rest\Client\Definition\AllowedLink>');
 
         new HttpResource(
             'foo',
-            $this->createMock(UrlInterface::class),
+            Url::of('http://example.com/'),
             new Identity('uuid'),
-            new Map('string', Property::class),
-            new Map('scalar', 'variable'),
-            new Set('string'),
+            Map::of('string', Property::class),
+            Map::of('scalar', 'variable'),
+            Set::of('string'),
             true
         );
     }
@@ -111,10 +111,10 @@ class HttpResourceTest extends TestCase
     {
         $resource = new HttpResource(
             'foo',
-            $this->createMock(UrlInterface::class),
+            Url::of('http://example.com/'),
             new Identity('uuid'),
-            new Map('string', Property::class),
-            new Map('scalar', 'variable'),
+            Map::of('string', Property::class),
+            Map::of('scalar', 'variable'),
             Set::of(
                 AllowedLink::class,
                 new AllowedLink(

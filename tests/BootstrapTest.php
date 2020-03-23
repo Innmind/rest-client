@@ -6,7 +6,7 @@ namespace Tests\Innmind\Rest\Client;
 use function Innmind\Rest\Client\bootstrap;
 use Innmind\Rest\Client\Client;
 use Innmind\HttpTransport\Transport;
-use Innmind\UrlResolver\ResolverInterface;
+use Innmind\UrlResolver\Resolver;
 use Innmind\Filesystem\Adapter;
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +16,7 @@ class BootstrapTest extends TestCase
     {
         $client = bootstrap(
             $this->createMock(Transport::class),
-            $this->createMock(ResolverInterface::class),
+            $this->createMock(Resolver::class),
             $this->createMock(Adapter::class)
         );
 

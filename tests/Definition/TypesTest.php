@@ -16,7 +16,8 @@ use Innmind\Rest\Client\{
     Exception\DomainException,
     Exception\UnknownType,
 };
-use Innmind\Immutable\SetInterface;
+use Innmind\Immutable\Set;
+use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
 
 class TypesTest extends TestCase
@@ -95,7 +96,7 @@ class TypesTest extends TestCase
     {
         $defaults = Types::defaults();
 
-        $this->assertInstanceOf(SetInterface::class, $defaults);
+        $this->assertInstanceOf(Set::class, $defaults);
         $this->assertSame('string', (string) $defaults->type());
         $this->assertCount(7, $defaults);
         $this->assertSame(
@@ -108,7 +109,7 @@ class TypesTest extends TestCase
                 SetType::class,
                 StringType::class,
             ],
-            $defaults->toPrimitive()
+            unwrap($defaults)
         );
 
         $this->assertInstanceOf(BoolType::class, (new Types)('bool'));

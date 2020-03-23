@@ -6,22 +6,16 @@ namespace Innmind\Rest\Client\Serializer\Normalizer;
 use Innmind\Rest\Client\{
     Definition\HttpResource,
     Definition\Property,
-    Definition\Identity,
-    Definition\Access,
     Definition\AllowedLink,
 };
-use Innmind\Url\Url;
-use Innmind\Immutable\{
-    Map,
-    Set,
-};
+use function Innmind\Immutable\unwrap;
 
 final class NormalizeDefinition
 {
     public function __invoke(HttpResource $definition): array
     {
         return [
-            'url' => (string) $definition->url(),
+            'url' => $definition->url()->toString(),
             'identity' => (string) $definition->identity(),
             'properties' => $definition
                 ->properties()
@@ -30,8 +24,8 @@ final class NormalizeDefinition
                     function(array $properties, string $name, Property $property): array {
                         $properties[$name] = [
                             'type' => (string) $property->type(),
-                            'access' => $property->access()->mask()->toPrimitive(),
-                            'variants' => $property->variants()->toPrimitive(),
+                            'access' => unwrap($property->access()->mask()),
+                            'variants' => unwrap($property->variants()),
                             'optional' => $property->isOptional(),
                         ];
 
@@ -39,8 +33,8 @@ final class NormalizeDefinition
                     }
                 ),
             'metas' => array_combine(
-                $definition->metas()->keys()->toPrimitive(),
-                $definition->metas()->values()->toPrimitive()
+                unwrap($definition->metas()->keys()),
+                unwrap($definition->metas()->values()),
             ),
             'linkable_to' => $definition
                 ->links()
@@ -50,7 +44,7 @@ final class NormalizeDefinition
                         $links[] = [
                             'relationship' => $link->relationship(),
                             'resource_path' => $link->resourcePath(),
-                            'parameters' => $link->parameters()->toPrimitive(),
+                            'parameters' => unwrap($link->parameters()),
                         ];
 
                         return $links;

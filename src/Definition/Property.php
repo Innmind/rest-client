@@ -5,7 +5,7 @@ namespace Innmind\Rest\Client\Definition;
 
 use Innmind\Rest\Client\Exception\DomainException;
 use Innmind\Immutable\{
-    SetInterface,
+    Set,
     Str,
 };
 
@@ -14,14 +14,14 @@ final class Property
     private string $name;
     private Type $type;
     private Access $access;
-    private SetInterface $variants;
+    private Set $variants;
     private bool $optional;
 
     public function __construct(
         string $name,
         Type $type,
         Access $access,
-        SetInterface $variants,
+        Set $variants,
         bool $optional
     ) {
         if (Str::of($name)->empty()) {
@@ -29,7 +29,7 @@ final class Property
         }
 
         if ((string) $variants->type() !== 'string') {
-            throw new \TypeError(sprintf('Argument 4 must be of type SetInterface<string>'));
+            throw new \TypeError(sprintf('Argument 4 must be of type Set<string>'));
         }
 
         $this->name = $name;
@@ -54,7 +54,7 @@ final class Property
         return $this->access;
     }
 
-    public function variants(): SetInterface
+    public function variants(): Set
     {
         return $this->variants;
     }

@@ -8,7 +8,6 @@ use Innmind\Rest\Client\{
     Exception\DomainException,
 };
 use Innmind\Immutable\{
-    MapInterface,
     Map,
     Str,
 };
@@ -16,9 +15,9 @@ use Innmind\Immutable\{
 final class HttpResource
 {
     private string $name;
-    private MapInterface $properties;
+    private Map $properties;
 
-    public function __construct(string $name, MapInterface $properties)
+    public function __construct(string $name, Map $properties)
     {
         if (Str::of($name)->empty()) {
             throw new DomainException;
@@ -29,7 +28,7 @@ final class HttpResource
             (string) $properties->valueType() !== Property::class
         ) {
             throw new \TypeError(sprintf(
-                'Argument 2 must be of type MapInterface<string, %s>',
+                'Argument 2 must be of type Map<string, %s>',
                 Property::class
             ));
         }
@@ -55,9 +54,9 @@ final class HttpResource
     }
 
     /**
-     * @return MapInterface<string, Property>
+     * @return Map<string, Property>
      */
-    public function properties(): MapInterface
+    public function properties(): Map
     {
         return $this->properties;
     }

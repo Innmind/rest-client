@@ -8,8 +8,8 @@ use Innmind\Rest\Client\{
     Definition\HttpResource,
 };
 use Innmind\Immutable\{
-    SetInterface,
-    MapInterface,
+    Set,
+    Map,
 };
 
 final class RefreshLimitedCapabilities implements CapabilitiesInterface
@@ -25,7 +25,7 @@ final class RefreshLimitedCapabilities implements CapabilitiesInterface
     /**
      * {@inheritdoc}
      */
-    public function names(): SetInterface
+    public function names(): Set
     {
         return $this->capabilities->names();
     }
@@ -38,7 +38,7 @@ final class RefreshLimitedCapabilities implements CapabilitiesInterface
     /**
      * {@inheritdoc}
      */
-    public function definitions(): MapInterface
+    public function definitions(): Map
     {
         return $this->capabilities->definitions();
     }

@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\Server as ServerInterface;
-use Innmind\Url\UrlInterface;
+use Innmind\Url\Url;
 
 final class RetryServerFactory implements Factory
 {
@@ -15,7 +15,7 @@ final class RetryServerFactory implements Factory
         $this->make = $make;
     }
 
-    public function __invoke(UrlInterface $url): ServerInterface
+    public function __invoke(Url $url): ServerInterface
     {
         return new RetryServer(
             ($this->make)($url)

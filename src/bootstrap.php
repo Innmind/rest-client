@@ -26,19 +26,18 @@ use Innmind\Rest\Client\{
     Response\ExtractIdentities,
 };
 use Innmind\HttpTransport\Transport;
-use Innmind\UrlResolver\ResolverInterface;
+use Innmind\UrlResolver\Resolver;
 use Innmind\Filesystem\Adapter;
 use Innmind\Immutable\{
-    SetInterface,
     Set,
     Map,
 };
 
 function bootstrap(
     Transport $transport,
-    ResolverInterface $urlResolver,
+    Resolver $urlResolver,
     Adapter $cache,
-    SetInterface $types = null,
+    Set $types = null,
     Formats $contentTypes = null,
     Decode $decode = null
 ): Client {

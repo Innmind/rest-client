@@ -19,12 +19,11 @@ use Innmind\HttpTransport\Exception\ClientError;
 use Innmind\Http\Message\{
     Request,
     Response,
-    StatusCode\StatusCode,
+    StatusCode,
 };
-use Innmind\Url\UrlInterface;
+use Innmind\Url\Url;
 use Innmind\Specification\Specification;
 use Innmind\Immutable\{
-    SetInterface,
     Map,
     Set,
 };
@@ -59,7 +58,7 @@ class RetryServerTest extends TestCase
             ->expects($this->once())
             ->method('all')
             ->with('foo', $specification, $range)
-            ->willReturn($expected = $this->createMock(SetInterface::class));
+            ->willReturn($expected = Set::of(Identity::class));
 
         $identities = $this->server->all('foo', $specification, $range);
 
@@ -96,7 +95,7 @@ class RetryServerTest extends TestCase
             ->expects($this->at(2))
             ->method('all')
             ->with('foo', $specification, $range)
-            ->willReturn($expected = $this->createMock(SetInterface::class));
+            ->willReturn($expected = Set::of(Identity::class));
 
         $identities = $this->server->all('foo', $specification, $range);
 
@@ -447,7 +446,7 @@ class RetryServerTest extends TestCase
             ->expects($this->once())
             ->method('url')
             ->willReturn(
-                $expected = $this->createMock(UrlInterface::class)
+                $expected = Url::of('http://example.com/')
             );
 
         $this->assertSame(
@@ -459,7 +458,7 @@ class RetryServerTest extends TestCase
     public function testLink()
     {
         $identity = $this->createMock(Identity::class);
-        $links = new Set(Link::class);
+        $links = Set::of(Link::class);
         $this
             ->inner
             ->expects($this->once())
@@ -478,7 +477,7 @@ class RetryServerTest extends TestCase
     public function testRetryLink(\Throwable $e)
     {
         $identity = $this->createMock(Identity::class);
-        $links = new Set(Link::class);
+        $links = Set::of(Link::class);
         $this
             ->inner
             ->expects($this->at(0))
@@ -510,7 +509,7 @@ class RetryServerTest extends TestCase
     public function testDoesntRetryLink()
     {
         $identity = $this->createMock(Identity::class);
-        $links = new Set(Link::class);
+        $links = Set::of(Link::class);
         $this
             ->inner
             ->expects($this->once())
@@ -530,7 +529,7 @@ class RetryServerTest extends TestCase
     public function testUnlink()
     {
         $identity = $this->createMock(Identity::class);
-        $links = new Set(Link::class);
+        $links = Set::of(Link::class);
         $this
             ->inner
             ->expects($this->once())
@@ -549,7 +548,7 @@ class RetryServerTest extends TestCase
     public function testRetryUnlink(\Throwable $e)
     {
         $identity = $this->createMock(Identity::class);
-        $links = new Set(Link::class);
+        $links = Set::of(Link::class);
         $this
             ->inner
             ->expects($this->at(0))
@@ -581,7 +580,7 @@ class RetryServerTest extends TestCase
     public function testDoesntRetryUnlink()
     {
         $identity = $this->createMock(Identity::class);
-        $links = new Set(Link::class);
+        $links = Set::of(Link::class);
         $this
             ->inner
             ->expects($this->once())

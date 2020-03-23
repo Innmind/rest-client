@@ -4,7 +4,8 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Rest\Client\Definition;
 
 use Innmind\Rest\Client\Definition\Access;
-use Innmind\Immutable\SetInterface;
+use Innmind\Immutable\Set;
+use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
 
 class AccessTest extends TestCase
@@ -62,11 +63,11 @@ class AccessTest extends TestCase
             Access::UPDATE
         );
 
-        $this->assertInstanceOf(SetInterface::class, $access->mask());
+        $this->assertInstanceOf(Set::class, $access->mask());
         $this->assertSame('string', (string) $access->mask()->type());
         $this->assertSame(
             [Access::READ, Access::CREATE, Access::UPDATE],
-            $access->mask()->toPrimitive()
+            unwrap($access->mask())
         );
     }
 

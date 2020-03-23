@@ -10,20 +10,20 @@ use Innmind\Rest\Client\{
     Server\DefinitionFactory,
     Formats,
 };
-use Innmind\Url\UrlInterface;
-use Innmind\UrlResolver\ResolverInterface;
+use Innmind\Url\Url;
+use Innmind\UrlResolver\Resolver;
 use Innmind\HttpTransport\Transport;
 
 final class Factory implements FactoryInterface
 {
     private Transport $transport;
-    private ResolverInterface $resolver;
+    private Resolver $resolver;
     private DefinitionFactory $definitionFactory;
     private Formats $formats;
 
     public function __construct(
         Transport $transport,
-        ResolverInterface $resolver,
+        Resolver $resolver,
         DefinitionFactory $definitionFactory,
         Formats $formats
     ) {
@@ -33,7 +33,7 @@ final class Factory implements FactoryInterface
         $this->formats = $formats;
     }
 
-    public function __invoke(UrlInterface $url): CapabilitiesInterface
+    public function __invoke(Url $url): CapabilitiesInterface
     {
         return new Capabilities(
             $this->transport,
