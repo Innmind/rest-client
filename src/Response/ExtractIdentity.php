@@ -45,8 +45,8 @@ final class ExtractIdentity
         return new Identity\Identity(
             ($this->resolveIdentity)(
                 $definition->url(),
-                $header
-            )
+                $header,
+            ),
         );
     }
 }

@@ -78,8 +78,8 @@ final class Capabilities implements CapabilitiesInterface
                 new Request(
                     $this->optionsUrl,
                     Method::options(),
-                    new ProtocolVersion(1, 1)
-                )
+                    new ProtocolVersion(1, 1),
+                ),
             )
             ->headers();
 
@@ -98,9 +98,9 @@ final class Capabilities implements CapabilitiesInterface
         return $this->names = $links->mapTo(
             'string',
             function(LinkValue $link): string {
-                $this->paths = $this->paths->put(
+                $this->paths = ($this->paths)(
                     $link->relationship(),
-                    $link->url()
+                    $link->url(),
                 );
 
                 return $link->relationship();
@@ -120,7 +120,7 @@ final class Capabilities implements CapabilitiesInterface
 
         $url = ($this->resolve)(
             $this->host,
-            $this->paths->get($name)
+            $this->paths->get($name),
         );
         $response = ($this->fulfill)(
             new Request(
@@ -136,27 +136,25 @@ final class Capabilities implements CapabilitiesInterface
                             ->sort(static function(Format $a, Format $b): int {
                                 return (int) ($a->priority() < $b->priority());
                             })
-                            ->reduce(
-                                Set::of(Value::class),
-                                function(Set $values, Format $format): Set {
-                                    return $values->add(new AcceptValue(
-                                        $format->preferredMediaType()->topLevel(),
-                                        $format->preferredMediaType()->subType()
-                                    ));
-                                }
-                            ))
-                    )
-                )
-            )
+                            ->mapTo(
+                                Value::class,
+                                static fn(Format $format): AcceptValue => new AcceptValue(
+                                    $format->preferredMediaType()->topLevel(),
+                                    $format->preferredMediaType()->subType(),
+                                ),
+                            )),
+                    ),
+                ),
+            ),
         );
         $definition = ($this->make)(
             $name,
             $url,
-            $response
+            $response,
         );
-        $this->definitions = $this->definitions->put(
+        $this->definitions = ($this->definitions)(
             $name,
-            $definition
+            $definition,
         );
 
         return $definition;

@@ -44,14 +44,14 @@ final class DenormalizeDefinition
 
 
         foreach ($definition['properties'] as $property => $value) {
-            $properties = $properties->put(
+            $properties = ($properties)(
                 $property,
-                $this->buildProperty($property, $value)
+                $this->buildProperty($property, $value),
             );
         }
 
         foreach ($definition['linkable_to'] as $value) {
-            $links = $links->add($this->buildLink($value));
+            $links = ($links)($this->buildLink($value));
         }
 
         return new HttpResource(
@@ -61,7 +61,7 @@ final class DenormalizeDefinition
             $properties,
             $metas,
             $links,
-            $definition['rangeable']
+            $definition['rangeable'],
         );
     }
 
@@ -77,7 +77,7 @@ final class DenormalizeDefinition
             ($this->build)($definition['type']),
             new Access(...$definition['access']),
             $variants,
-            $definition['optional']
+            $definition['optional'],
         );
     }
 
@@ -89,7 +89,7 @@ final class DenormalizeDefinition
         return new AllowedLink(
             $link['resource_path'],
             $link['relationship'],
-            Set::strings(...$link['parameters'])
+            Set::strings(...$link['parameters']),
         );
     }
 }

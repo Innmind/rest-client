@@ -27,7 +27,7 @@ final class SetType implements Type
         $this->inner = $inner;
         $this->denormalized = Set::of(
             $inner instanceof DateType ?
-                \DateTimeImmutable::class : $inner->toString()
+                \DateTimeImmutable::class : $inner->toString(),
         );
     }
 
@@ -45,7 +45,7 @@ final class SetType implements Type
                     ->capture(self::PATTERN)
                     ->get('inner')
                     ->toString(),
-            )
+            ),
         );
     }
 
@@ -56,7 +56,7 @@ final class SetType implements Type
     {
         if (!$data instanceof Set) {
             throw new NormalizationException(
-                'The value must be an instance of Innmind\Immutable\Set'
+                'The value must be an instance of Innmind\Immutable\Set',
             );
         }
 
@@ -85,9 +85,7 @@ final class SetType implements Type
         try {
             /** @psalm-suppress MixedAssignment */
             foreach ($data as $value) {
-                $set = $set->add(
-                    $this->inner->denormalize($value)
-                );
+                $set = ($set)($this->inner->denormalize($value));
             }
 
             return $set;

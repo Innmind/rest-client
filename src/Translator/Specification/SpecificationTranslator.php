@@ -34,7 +34,7 @@ final class SpecificationTranslator implements SpecificationTranslatorInterface
                 return \sprintf(
                     '%s=%s',
                     $specification->property(),
-                    $specification->value()
+                    $specification->value(),
                 );
 
             case $specification instanceof Composite:
@@ -45,7 +45,7 @@ final class SpecificationTranslator implements SpecificationTranslatorInterface
                 return \sprintf(
                     '%s&%s',
                     $this($specification->left()),
-                    $this($specification->right())
+                    $this($specification->right()),
                 );
 
             default:

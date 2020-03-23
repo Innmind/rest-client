@@ -58,7 +58,7 @@ final class DateType implements Type
 
         if (!$data instanceof \DateTimeInterface) {
             throw new NormalizationException(
-                'The value must be an instance of \DateTimeInterface'
+                'The value must be an instance of \DateTimeInterface',
             );
         }
 
@@ -77,7 +77,7 @@ final class DateType implements Type
         try {
             $date = \DateTimeImmutable::createFromFormat(
                 $this->format,
-                $data
+                $data,
             );
 
             if (!$date instanceof \DateTimeImmutable) {

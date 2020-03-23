@@ -13,6 +13,7 @@ use Innmind\Immutable\{
     Map,
     Set,
 };
+use function Innmind\Immutable\assertMap;
 use Negotiation\Negotiator;
 
 final class Formats
@@ -20,25 +21,15 @@ final class Formats
     /** @var Map<string, Format> */
     private Map $formats;
     private Negotiator $negotiator;
-    /** @var Set<MediaType>|null */
-    private ?Set $types = null;
 
     /**
      * @param Map<string, Format> $formats
      */
     public function __construct(Map $formats)
     {
-        if (
-            (string) $formats->keyType() !== 'string' ||
-            (string) $formats->valueType() !== Format::class
-        ) {
-            throw new \TypeError(sprintf(
-                'Argument 1 must be of type Map<string, %s>',
-                Format::class
-            ));
-        }
+        assertMap('string', Format::class, $formats, 1);
 
-        if ($formats->size() === 0) {
+        if ($formats->empty()) {
             throw new DomainException;
         }
 
@@ -53,7 +44,7 @@ final class Formats
         \array_unshift($formats, $first);
 
         foreach ($formats as $format) {
-            $map = $map->put($format->name(), $format);
+            $map = ($map)($format->name(), $format);
         }
 
         return new self($map);
@@ -77,20 +68,15 @@ final class Formats
      */
     public function mediaTypes(): Set
     {
-        if ($this->types === null) {
-            /** @var Set<MediaType> */
-            $this->types = $this
-                ->formats
-                ->reduce(
-                    Set::of(MediaType::class),
-                    function(Set $types, string $name, Format $format): Set {
-                        return $types->merge($format->mediaTypes());
-                    }
-                );
-        }
-
         /** @var Set<MediaType> */
-        return $this->types;
+        return $this
+            ->formats
+            ->reduce(
+                Set::of(MediaType::class),
+                function(Set $types, string $name, Format $format): Set {
+                    return $types->merge($format->mediaTypes());
+                }
+            );
     }
 
     public function fromMediaType(string $wished): Format
@@ -109,7 +95,7 @@ final class Formats
                             }
 
                             return $mediaType->toString() === $wished;
-                        }
+                        },
                     );
             });
 
@@ -132,8 +118,8 @@ final class Formats
                         $carry[] = $type->toString();
 
                         return $carry;
-                    }
-                )
+                    },
+                ),
         );
 
         if ($best === null) {

@@ -53,6 +53,7 @@ use Innmind\Immutable\{
 use function Innmind\Immutable\{
     unwrap,
     join,
+    assertSet,
 };
 use Innmind\Specification\Specification;
 
@@ -131,9 +132,9 @@ final class Server implements ServerInterface
                     new RangeValue(
                         'resource',
                         $range->firstPosition(),
-                        $range->lastPosition()
-                    )
-                )
+                        $range->lastPosition(),
+                    ),
+                ),
             );
         }
 
@@ -142,8 +143,8 @@ final class Server implements ServerInterface
                 $url,
                 Method::get(),
                 new ProtocolVersion(1, 1),
-                $headers
-            )
+                $headers,
+            ),
         );
 
         return ($this->extractIdentities)($response, $definition);
@@ -156,14 +157,14 @@ final class Server implements ServerInterface
             new Request(
                 $this->resolveUrl(
                     $definition->url(),
-                    $identity
+                    $identity,
                 ),
                 Method::get(),
                 new ProtocolVersion(1, 1),
                 Headers::of(
-                    $this->generateAcceptHeader()
-                )
-            )
+                    $this->generateAcceptHeader(),
+                ),
+            ),
         );
 
         try {
@@ -177,7 +178,7 @@ final class Server implements ServerInterface
                         ->mapTo(
                             'string',
                             static fn(Value $value): string => $value->toString(),
-                        )
+                        ),
                 )->toString(),
             );
         } catch (\Exception $e) {
@@ -186,13 +187,13 @@ final class Server implements ServerInterface
 
         $data = ($this->decode)(
             $format->name(),
-            $response->body()
+            $response->body(),
         );
 
         return ($this->denormalizeResource)(
             $data,
             $definition,
-            new Access(Access::READ)
+            new Access(Access::READ),
         );
     }
 
@@ -205,22 +206,17 @@ final class Server implements ServerInterface
                 Method::post(),
                 new ProtocolVersion(1, 1),
                 Headers::of(
-                    new ContentType(
-                        new ContentTypeValue(
-                            'application',
-                            'json'
-                        )
-                    ),
-                    $this->generateAcceptHeader()
+                    ContentType::of('application', 'json'),
+                    $this->generateAcceptHeader(),
                 ),
                 ($this->encode)(
                     ($this->normalizeResource)(
                         $resource,
                         $definition,
-                        new Access(Access::CREATE)
-                    )
-                )
-            )
+                        new Access(Access::CREATE),
+                    ),
+                ),
+            ),
         );
 
         return ($this->extractIdentity)($response, $definition);
@@ -235,27 +231,22 @@ final class Server implements ServerInterface
             new Request(
                 $this->resolveUrl(
                     $definition->url(),
-                    $identity
+                    $identity,
                 ),
                 Method::put(),
                 new ProtocolVersion(1, 1),
                 Headers::of(
-                    new ContentType(
-                        new ContentTypeValue(
-                            'application',
-                            'json'
-                        )
-                    ),
-                    $this->generateAcceptHeader()
+                    ContentType::of('application', 'json'),
+                    $this->generateAcceptHeader(),
                 ),
                 ($this->encode)(
                     ($this->normalizeResource)(
                         $resource,
                         $definition,
-                        new Access(Access::UPDATE)
-                    )
-                )
-            )
+                        new Access(Access::UPDATE),
+                    ),
+                ),
+            ),
         );
 
         return $this;
@@ -268,11 +259,11 @@ final class Server implements ServerInterface
             new Request(
                 $this->resolveUrl(
                     $definition->url(),
-                    $identity
+                    $identity,
                 ),
                 Method::delete(),
-                new ProtocolVersion(1, 1)
-            )
+                new ProtocolVersion(1, 1),
+            ),
         );
 
         return $this;
@@ -286,14 +277,9 @@ final class Server implements ServerInterface
         Identity $identity,
         Set $links
     ): ServerInterface {
-        if ((string) $links->type() !== Link::class) {
-            throw new \TypeError(sprintf(
-                'Argument 3 must be of type Set<%s>',
-                Link::class
-            ));
-        }
+        assertSet(Link::class, $links, 3);
 
-        if ($links->size() === 0) {
+        if ($links->empty()) {
             throw new DomainException;
         }
 
@@ -303,15 +289,15 @@ final class Server implements ServerInterface
             new Request(
                 $this->resolveUrl(
                     $definition->url(),
-                    $identity
+                    $identity,
                 ),
                 Method::link(),
                 new ProtocolVersion(1, 1),
                 Headers::of(
                     $this->generateAcceptHeader(),
-                    $this->generateLinkHeader($links)
-                )
-            )
+                    $this->generateLinkHeader($links),
+                ),
+            ),
         );
 
         return $this;
@@ -325,14 +311,9 @@ final class Server implements ServerInterface
         Identity $identity,
         Set $links
     ): ServerInterface {
-        if ((string) $links->type() !== Link::class) {
-            throw new \TypeError(sprintf(
-                'Argument 3 must be of type Set<%s>',
-                Link::class
-            ));
-        }
+        assertSet(Link::class, $links, 3);
 
-        if ($links->size() === 0) {
+        if ($links->empty()) {
             throw new DomainException;
         }
 
@@ -342,15 +323,15 @@ final class Server implements ServerInterface
             new Request(
                 $this->resolveUrl(
                     $definition->url(),
-                    $identity
+                    $identity,
                 ),
                 Method::unlink(),
                 new ProtocolVersion(1, 1),
                 Headers::of(
                     $this->generateAcceptHeader(),
-                    $this->generateLinkHeader($links)
-                )
-            )
+                    $this->generateLinkHeader($links),
+                ),
+            ),
         );
 
         return $this;
@@ -366,10 +347,8 @@ final class Server implements ServerInterface
         return $this->url;
     }
 
-    private function resolveUrl(
-        Url $url,
-        Identity $identity
-    ): Url {
+    private function resolveUrl(Url $url, Identity $identity): Url
+    {
         $url = \rtrim($url->toString(), '/').'/'.$identity->toString();
 
         return Url::of($url);
@@ -385,24 +364,22 @@ final class Server implements ServerInterface
                 ->sort(function(Format $a, Format $b): int {
                     return (int) ($a->priority() < $b->priority());
                 })
-                ->reduce(
-                    Set::of(Value::class),
-                    function(Set $values, Format $format): Set {
-                        return $values->add(new AcceptValue(
-                            $format->preferredMediaType()->topLevel(),
-                            $format->preferredMediaType()->subType()
-                        ));
-                    }
-                ))
+                ->mapTo(
+                    Value::class,
+                    static fn(Format $format): AcceptValue => new AcceptValue(
+                        $format->preferredMediaType()->topLevel(),
+                        $format->preferredMediaType()->subType()
+                    ),
+                )),
         );
     }
 
     private function generateLinkHeader(Set $links): LinkHeader
     {
         return new LinkHeader(
-            ...unwrap($links->reduce(
-                Set::of(Value::class),
-                function(Set $carry, Link $link): Set {
+            ...unwrap($links->mapTo(
+                Value::class,
+                function(Link $link): LinkValue {
                     $url = $this->resolveUrl(
                         $this
                             ->capabilities
@@ -421,15 +398,13 @@ final class Server implements ServerInterface
                             ),
                         );
 
-                    return $carry->add(
-                        new LinkValue(
-                            Url::of($url->path()->toString()),
-                            $link->relationship(),
-                            ...unwrap($parameters)
-                        )
+                    return new LinkValue(
+                        Url::of($url->path()->toString()),
+                        $link->relationship(),
+                        ...unwrap($parameters)
                     );
-                }
-            ))
+                },
+            )),
         );
     }
 

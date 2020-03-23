@@ -72,7 +72,7 @@ final class ServerFactory implements Factory
             $this->encode,
             $this->decode,
             $this->translator,
-            $this->formats
+            $this->formats,
         );
     }
 }

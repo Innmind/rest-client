@@ -31,7 +31,7 @@ final class MapType implements Type
             $key instanceof DateType ?
                 \DateTimeImmutable::class : $key->toString(),
             $value instanceof DateType ?
-                \DateTimeImmutable::class : $value->toString()
+                \DateTimeImmutable::class : $value->toString(),
         );
     }
 
@@ -58,7 +58,7 @@ final class MapType implements Type
     {
         if (!$data instanceof Map) {
             throw new NormalizationException(
-                'The value must be an instance of Innmind\Immutable\Map'
+                'The value must be an instance of Innmind\Immutable\Map',
             );
         }
 
@@ -92,9 +92,9 @@ final class MapType implements Type
         try {
             /** @psalm-suppress MixedAssignment */
             foreach ($data as $key => $value) {
-                $map = $map->put(
+                $map = ($map)(
                     $this->key->denormalize($key),
-                    $this->value->denormalize($value)
+                    $this->value->denormalize($value),
                 );
             }
 

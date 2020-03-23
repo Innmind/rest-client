@@ -18,7 +18,7 @@ final class RetryServerFactory implements Factory
     public function __invoke(Url $url): ServerInterface
     {
         return new RetryServer(
-            ($this->make)($url)
+            ($this->make)($url),
         );
     }
 }

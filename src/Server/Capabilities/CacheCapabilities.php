@@ -77,9 +77,7 @@ final class CacheCapabilities implements CapabilitiesInterface
             /** @var list<string> */
             $names = ($this->decode)('json', $file->content());
 
-            return $this->names = ($this->denormalizeNames)(
-                $names
-            );
+            return $this->names = ($this->denormalizeNames)($names);
         } catch (FileNotFound $e) {
             $this->names = $this->capabilities->names();
             $this->persist('.names', unwrap($this->names));
@@ -100,19 +98,19 @@ final class CacheCapabilities implements CapabilitiesInterface
             $definition = ($this->decode)('json', $file->content());
             $definition = ($this->denormalizeDefinition)(
                 $definition,
-                $name
+                $name,
             );
         } catch (FileNotFound $e) {
             $definition = $this->capabilities->get($name);
             $this->persist(
                 $name,
-                ($this->normalizeDefinition)($definition)
+                ($this->normalizeDefinition)($definition),
             );
         }
 
-        $this->definitions = $this->definitions->put(
+        $this->definitions = ($this->definitions)(
             $name,
-            $definition
+            $definition,
         );
 
         return $definition;
@@ -164,7 +162,7 @@ final class CacheCapabilities implements CapabilitiesInterface
         return $directory->get($file);
     }
 
-    private function persist(string $name, array $data): self
+    private function persist(string $name, array $data): void
     {
         if ($this->filesystem->contains($this->directory)) {
             /** @var Directory */
@@ -176,11 +174,9 @@ final class CacheCapabilities implements CapabilitiesInterface
         $directory = $directory->add(
             File\File::named(
                 $name.'.json',
-                ($this->encode)($data)
-            )
+                ($this->encode)($data),
+            ),
         );
         $this->filesystem->add($directory);
-
-        return $this;
     }
 }

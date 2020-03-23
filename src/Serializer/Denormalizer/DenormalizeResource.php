@@ -43,25 +43,23 @@ final class DenormalizeResource
         });
 
         /** @var Map<string, Property> */
-        $properties = $properties->reduce(
-            Map::of('string', Property::class),
-            function(Map $properties, string $name, PropertyDefinition $property) use ($data): Map {
+        $properties = $properties->toMapOf(
+            'string',
+            Property::class,
+            static function(string $name, PropertyDefinition $property) use ($data): \Generator {
                 /** @psalm-suppress MixedArrayAccess */
-                return $properties->put(
+                yield $name => new Property(
                     $name,
-                    new Property(
-                        $name,
-                        $property
-                            ->type()
-                            ->denormalize($data[$name])
-                    )
+                    $property
+                        ->type()
+                        ->denormalize($data[$name]),
                 );
-            }
+            },
         );
 
         return new HttpResource(
             $definition->name(),
-            $properties
+            $properties,
         );
     }
 }

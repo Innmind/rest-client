@@ -5,6 +5,7 @@ namespace Innmind\Rest\Client\Format;
 
 use Innmind\Rest\Client\Exception\DomainException;
 use Innmind\Immutable\Set;
+use function Innmind\Immutable\assertSet;
 
 final class Format
 {
@@ -19,14 +20,9 @@ final class Format
      */
     public function __construct(string $name, Set $types, int $priority)
     {
-        if ((string) $types->type() !== MediaType::class) {
-            throw new \TypeError(sprintf(
-                'Argument 2 must be of type Set<%s>',
-                MediaType::class
-            ));
-        }
+        assertSet(MediaType::class, $types, 2);
 
-        if ($types->size() === 0) {
+        if ($types->empty()) {
             throw new DomainException;
         }
 

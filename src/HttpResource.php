@@ -11,6 +11,7 @@ use Innmind\Immutable\{
     Map,
     Str,
 };
+use function Innmind\Immutable\assertMap;
 
 final class HttpResource
 {
@@ -27,15 +28,7 @@ final class HttpResource
             throw new DomainException;
         }
 
-        if (
-            (string) $properties->keyType() !== 'string' ||
-            (string) $properties->valueType() !== Property::class
-        ) {
-            throw new \TypeError(sprintf(
-                'Argument 2 must be of type Map<string, %s>',
-                Property::class
-            ));
-        }
+        assertMap('string', Property::class, $properties, 2);
 
         $this->name = $name;
         $this->properties = $properties;
@@ -47,7 +40,7 @@ final class HttpResource
         $map = Map::of('string', Property::class);
 
         foreach ($properties as $property) {
-            $map = $map->put($property->name(), $property);
+            $map = ($map)($property->name(), $property);
         }
 
         return new self($name, $map);

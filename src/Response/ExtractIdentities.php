@@ -54,8 +54,8 @@ final class ExtractIdentities
                 fn(LinkValue $link): Identity => new Identity\Identity(
                     ($this->resolveIdentity)(
                         $definition->url(),
-                        $link->url()
-                    )
+                        $link->url(),
+                    ),
                 ),
             );
     }

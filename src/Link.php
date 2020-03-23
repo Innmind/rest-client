@@ -11,6 +11,7 @@ use Innmind\Immutable\{
     Map,
     Str,
 };
+use function Innmind\Immutable\assertMap;
 
 final class Link
 {
@@ -38,15 +39,7 @@ final class Link
             throw new DomainException;
         }
 
-        if (
-            (string) $parameters->keyType() !== 'string' ||
-            (string) $parameters->valueType() !== Parameter::class
-        ) {
-            throw new \TypeError(sprintf(
-                'Argument 4 must be of type Map<string, %s>',
-                Parameter::class
-            ));
-        }
+        assertMap('string', Parameter::class, $parameters, 4);
 
         $this->definition = $definition;
         $this->identity = $identity;
@@ -64,7 +57,7 @@ final class Link
         $map = Map::of('string', Parameter::class);
 
         foreach ($parameters as $parameter) {
-            $map = $map->put($parameter->key(), $parameter);
+            $map = ($map)($parameter->key(), $parameter);
         }
 
         return new self($definition, $identity, $relationship, $map);

@@ -7,11 +7,9 @@ final class MissingProperty extends RuntimeException
 {
     public function __construct(string $property)
     {
-        parent::__construct(
-            sprintf(
-                'Missing property "%s"',
-                $property
-            )
-        );
+        parent::__construct(\sprintf(
+            'Missing property "%s"',
+            $property,
+        ));
     }
 }

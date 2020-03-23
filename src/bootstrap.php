@@ -46,8 +46,8 @@ function bootstrap(
         new Format(
             'json',
             Set::of(MediaType::class, new MediaType('application/json', 0)),
-            0
-        )
+            0,
+        ),
     );
     $types = new Types(...($types ?? []));
     $resolveIdentity = new ResolveIdentity($urlResolver);
@@ -81,11 +81,11 @@ function bootstrap(
                             $transport,
                             $urlResolver,
                             new DefinitionFactory($denormalizeDefinition, $decode),
-                            $contentTypes
-                        )
-                    )
-                )
-            )
-        )
+                            $contentTypes,
+                        ),
+                    ),
+                ),
+            ),
+        ),
     );
 }

@@ -52,7 +52,7 @@ final class CacheFactory implements Factory
             $this->denormalizeNames,
             $this->denormalizeDefinition,
             $this->normalizeDefinition,
-            $url
+            $url,
         );
     }
 }

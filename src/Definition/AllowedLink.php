@@ -5,6 +5,7 @@ namespace Innmind\Rest\Client\Definition;
 
 use Innmind\Rest\Client\Link;
 use Innmind\Immutable\Set;
+use function Innmind\Immutable\assertSet;
 
 final class AllowedLink
 {
@@ -21,9 +22,7 @@ final class AllowedLink
         string $relationship,
         Set $parameters
     ) {
-        if ((string) $parameters->type() !== 'string') {
-            throw new \TypeError('Argument 3 must be of type Set<string>');
-        }
+        assertSet('string', $parameters, 3);
 
         $this->resourcePath = $resourcePath;
         $this->relationship = $relationship;
@@ -62,7 +61,7 @@ final class AllowedLink
             true,
             static function(bool $accept, string $parameter) use ($link): bool {
                 return $accept && $link->parameters()->contains($parameter);
-            }
+            },
         );
     }
 }

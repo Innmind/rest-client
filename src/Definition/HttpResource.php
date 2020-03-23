@@ -13,6 +13,10 @@ use Innmind\Immutable\{
     Set,
     Str,
 };
+use function Innmind\Immutable\{
+    assertMap,
+    assertSet,
+};
 
 final class HttpResource
 {
@@ -45,29 +49,9 @@ final class HttpResource
             throw new DomainException;
         }
 
-        if (
-            (string) $properties->keyType() !== 'string' ||
-            (string) $properties->valueType() !== Property::class
-        ) {
-            throw new \TypeError(sprintf(
-                'Argument 4 must be of type Map<string, %s>',
-                Property::class
-            ));
-        }
-
-        if (
-            (string) $metas->keyType() !== 'scalar' ||
-            (string) $metas->valueType() !== 'scalar|array'
-        ) {
-            throw new \TypeError('Argument 5 must be of type Map<scalar, scalar|array>');
-        }
-
-        if ((string) $links->type() !== AllowedLink::class) {
-            throw new \TypeError(\sprintf(
-                'Argument 6 must be of type Set<%s>',
-                AllowedLink::class
-            ));
-        }
+        assertMap('string', Property::class, $properties, 4);
+        assertMap('scalar', 'scalar|array', $metas, 5);
+        assertSet(AllowedLink::class, $links, 6);
 
         $this->name = $name;
         $this->url = $url;
@@ -123,7 +107,7 @@ final class HttpResource
             false,
             static function(bool $allows, AllowedLink $allowed) use ($link): bool {
                 return $allows || $allowed->allows($link);
-            }
+            },
         );
     }
 

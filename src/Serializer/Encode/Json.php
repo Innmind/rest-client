@@ -13,7 +13,7 @@ final class Json implements Encode
     public function __invoke(array $content): Readable
     {
         return Stream::ofContent(
-            JsonLib::encode($content)
+            JsonLib::encode($content),
         );
     }
 }

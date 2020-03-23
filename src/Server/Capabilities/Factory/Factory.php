@@ -40,7 +40,7 @@ final class Factory implements FactoryInterface
             $url,
             $this->resolver,
             $this->definitionFactory,
-            $this->formats
+            $this->formats,
         );
     }
 }

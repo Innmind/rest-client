@@ -8,6 +8,7 @@ use Innmind\Immutable\{
     Set,
     Str,
 };
+use function Innmind\Immutable\assertSet;
 
 final class Property
 {
@@ -28,9 +29,7 @@ final class Property
             throw new DomainException;
         }
 
-        if ((string) $variants->type() !== 'string') {
-            throw new \TypeError(sprintf('Argument 4 must be of type Set<string>'));
-        }
+        assertSet('string', $variants, 4);
 
         $this->name = $name;
         $this->type = $type;

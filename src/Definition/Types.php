@@ -19,7 +19,6 @@ use function Innmind\Immutable\unwrap;
 
 final class Types
 {
-    private static ?Set $defaults = null;
     /** @var list<class-string<Type>> */
     private array $types = [];
 
@@ -34,9 +33,7 @@ final class Types
 
         /** @var class-string<Type> $type */
         foreach ($types as $type) {
-            $refl = new \ReflectionClass($type);
-
-            if (!$refl->implementsInterface(Type::class)) {
+            if (!\is_a($type, Type::class, true)) {
                 throw new DomainException;
             }
         }
@@ -50,11 +47,7 @@ final class Types
         foreach ($this->types as $builder) {
             try {
                 /** @var Type */
-                return call_user_func(
-                    [$builder, 'of'],
-                    $type,
-                    $this
-                );
+                return [$builder, 'of']($type, $this);
             } catch (DomainException $e) {
                 //pass
             }
@@ -68,8 +61,7 @@ final class Types
      */
     public static function defaults(): Set
     {
-        /** @var Set<string> */
-        return self::$defaults ??= Set::strings(
+        return Set::strings(
             BoolType::class,
             DateType::class,
             FloatType::class,

@@ -53,7 +53,7 @@ final class NormalizeResource
                         $resource
                             ->properties()
                             ->get($usedName)
-                            ->value()
+                            ->value(),
                     );
 
                 return $properties;
@@ -77,7 +77,7 @@ final class NormalizeResource
                     }
 
                     return $usedName;
-                }
+                },
             );
     }
 }

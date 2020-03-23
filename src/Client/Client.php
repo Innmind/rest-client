@@ -34,7 +34,7 @@ final class Client implements ClientInterface
         }
 
         $server = ($this->make)($url);
-        $this->servers = $this->servers->put($hash, $server);
+        $this->servers = ($this->servers)($hash, $server);
 
         return $server;
     }

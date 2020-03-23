@@ -18,7 +18,7 @@ final class RefreshLimitedFactory implements Factory
     public function __invoke(Url $url): CapabilitiesInterface
     {
         return new RefreshLimitedCapabilities(
-            ($this->make)($url)
+            ($this->make)($url),
         );
     }
 }
