@@ -20,7 +20,7 @@ class BoolTypeTest extends TestCase
 
     public function testFromString()
     {
-        $type = BoolType::fromString(
+        $type = BoolType::of(
             'bool',
             new Types
         );
@@ -32,7 +32,7 @@ class BoolTypeTest extends TestCase
     {
         $this->expectException(DomainException::class);
 
-        BoolType::fromString('int', new Types);
+        BoolType::of('int', new Types);
     }
 
     public function testNormalize()

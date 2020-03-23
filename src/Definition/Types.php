@@ -44,7 +44,7 @@ final class Types
         foreach ($this->types as $builder) {
             try {
                 return call_user_func(
-                    [$builder, 'fromString'],
+                    [$builder, 'of'],
                     $type,
                     $this
                 );

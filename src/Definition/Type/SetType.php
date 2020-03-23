@@ -27,11 +27,11 @@ final class SetType implements Type
         $this->inner = $inner;
         $this->denormalized = Set::of(
             $inner instanceof DateType ?
-                \DateTimeImmutable::class : (string) $inner
+                \DateTimeImmutable::class : $inner->toString()
         );
     }
 
-    public static function fromString(string $type, Types $build): Type
+    public static function of(string $type, Types $build): Type
     {
         $type = Str::of($type);
 

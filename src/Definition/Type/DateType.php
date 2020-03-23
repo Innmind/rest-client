@@ -27,7 +27,7 @@ final class DateType implements Type
         $this->format = $format;
     }
 
-    public static function fromString(string $type, Types $build): Type
+    public static function of(string $type, Types $build): Type
     {
         $type = Str::of($type);
 

@@ -22,7 +22,7 @@ class IntTypeTest extends TestCase
 
     public function testFromString()
     {
-        $type = IntType::fromString(
+        $type = IntType::of(
             'int',
             new Types
         );
@@ -34,7 +34,7 @@ class IntTypeTest extends TestCase
     {
         $this->expectException(DomainException::class);
 
-        IntType::fromString('float', new Types);
+        IntType::of('float', new Types);
     }
 
     public function testNormalize()

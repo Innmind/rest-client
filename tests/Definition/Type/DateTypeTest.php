@@ -22,7 +22,7 @@ class DateTypeTest extends TestCase
 
     public function testFromString()
     {
-        $type = DateType::fromString(
+        $type = DateType::of(
             'date<c>',
             new Types
         );
@@ -34,7 +34,7 @@ class DateTypeTest extends TestCase
     {
         $this->expectException(DomainException::class);
 
-        DateType::fromString('date<>', new Types);
+        DateType::of('date<>', new Types);
     }
 
     public function testNormalize()

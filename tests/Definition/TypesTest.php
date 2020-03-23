@@ -32,7 +32,7 @@ class TypesTest extends TestCase
     public function testBuild()
     {
         $type1 = new class implements Type {
-            public static function fromString(string $type, Types $build): Type
+            public static function of(string $type, Types $build): Type
             {
                 if ($type !== 'type1') {
                     throw new DomainException;
@@ -55,7 +55,7 @@ class TypesTest extends TestCase
             }
         };
         $type2 = new class implements Type {
-            public static function fromString(string $type, Types $build): Type
+            public static function of(string $type, Types $build): Type
             {
                 if ($type !== 'type2') {
                     throw new DomainException;

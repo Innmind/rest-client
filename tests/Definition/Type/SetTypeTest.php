@@ -28,7 +28,7 @@ class SetTypeTest extends TestCase
 
     public function testFromString()
     {
-        $type = SetType::fromString(
+        $type = SetType::of(
             'set<date<c>>',
             new Types(DateType::class)
         );
@@ -40,7 +40,7 @@ class SetTypeTest extends TestCase
     {
         $this->expectException(DomainException::class);
 
-        SetType::fromString('set<>', new Types);
+        SetType::of('set<>', new Types);
     }
 
     public function testNormalize()

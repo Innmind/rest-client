@@ -32,14 +32,14 @@ class MapTypeTest extends TestCase
     public function testFromString()
     {
         $types = new Types(DateType::class, IntType::class);
-        $type = MapType::fromString(
+        $type = MapType::of(
             'map<int,date<c>>',
             $types
         );
 
         $this->assertInstanceOf(MapType::class, $type);
 
-        $type = MapType::fromString(
+        $type = MapType::of(
             'map<int, date<c>>',
             $types
         );
@@ -51,7 +51,7 @@ class MapTypeTest extends TestCase
     {
         $this->expectException(DomainException::class);
 
-        MapType::fromString('map<,>', new Types);
+        MapType::of('map<,>', new Types);
     }
 
     public function testNormalize()
