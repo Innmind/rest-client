@@ -17,7 +17,7 @@ use Innmind\Immutable\{
 
 final class MapType implements Type
 {
-    const PATTERN = '~map<(?<key>.+), ?(?<value>.+)>~';
+    private const PATTERN = '~map<(?<key>.+), ?(?<value>.+)>~';
 
     private Type $key;
     private Type $value;

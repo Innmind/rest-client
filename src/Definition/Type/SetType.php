@@ -17,7 +17,7 @@ use Innmind\Immutable\{
 
 final class SetType implements Type
 {
-    const PATTERN = '~set<(?<inner>.+)>~';
+    private const PATTERN = '~set<(?<inner>.+)>~';
 
     private Type $inner;
     private Set $denormalized;

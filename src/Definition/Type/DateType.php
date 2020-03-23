@@ -14,7 +14,7 @@ use Innmind\Immutable\Str;
 
 final class DateType implements Type
 {
-    const PATTERN = '~date<(?<format>.+)>~';
+    private const PATTERN = '~date<(?<format>.+)>~';
 
     private string $format;
 

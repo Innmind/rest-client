@@ -8,9 +8,9 @@ use function Innmind\Immutable\unwrap;
 
 final class Access
 {
-    const READ = 'READ';
-    const CREATE = 'CREATE';
-    const UPDATE = 'UPDATE';
+    public const READ = 'READ';
+    public const CREATE = 'CREATE';
+    public const UPDATE = 'UPDATE';
 
     /** @var Set<string> */
     private Set $mask;
