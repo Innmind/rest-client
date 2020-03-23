@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\Request;
 
-use Innmind\Rest\Client\Request\Range;
+use Innmind\Rest\Client\{
+    Request\Range,
+    Exception\DomainException,
+};
 use PHPUnit\Framework\TestCase;
 
 class RangeTest extends TestCase
@@ -16,19 +19,17 @@ class RangeTest extends TestCase
         $this->assertSame(20, $range->lastPosition());
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenFirstPositionNegative()
     {
+        $this->expectException(DomainException::class);
+
         new Range(-1, 20);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenLastPositionLowerThanFirstOne()
     {
+        $this->expectException(DomainException::class);
+
         new Range(10, 5);
     }
 }

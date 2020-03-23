@@ -3,17 +3,17 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\Definition\Type;
 
-use Innmind\Rest\Client\Definition\{
-    Type\MapType,
-    Type\DateType,
-    Type\IntType,
-    Types,
-    Type,
+use Innmind\Rest\Client\{
+    Definition\Type\MapType,
+    Definition\Type\DateType,
+    Definition\Type\IntType,
+    Definition\Types,
+    Definition\Type,
+    Exception\DomainException,
+    Exception\NormalizationException,
+    Exception\DenormalizationException,
 };
-use Innmind\Immutable\{
-    MapInterface,
-    Map,
-};
+use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;
 
 class MapTypeTest extends TestCase
@@ -32,14 +32,14 @@ class MapTypeTest extends TestCase
     public function testFromString()
     {
         $types = new Types(DateType::class, IntType::class);
-        $type = MapType::fromString(
+        $type = MapType::of(
             'map<int,date<c>>',
             $types
         );
 
         $this->assertInstanceOf(MapType::class, $type);
 
-        $type = MapType::fromString(
+        $type = MapType::of(
             'map<int, date<c>>',
             $types
         );
@@ -47,12 +47,11 @@ class MapTypeTest extends TestCase
         $this->assertInstanceOf(MapType::class, $type);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenBuildInvalidType()
     {
-        MapType::fromString('map<,>', new Types);
+        $this->expectException(DomainException::class);
+
+        MapType::of('map<,>', new Types);
     }
 
     public function testNormalize()
@@ -85,12 +84,11 @@ class MapTypeTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\NormalizationException
-     * @expectedExceptionMessage The value must be an instance of Innmind\Immutable\MapInterface
-     */
     public function testThrowWhenNormalizingInvalidData()
     {
+        $this->expectException(NormalizationException::class);
+        $this->expectExceptionMessage('The value must be an instance of Innmind\Immutable\Map');
+
         (new MapType(new IntType, new DateType('c')))->normalize(new \stdClass);
     }
 
@@ -99,30 +97,28 @@ class MapTypeTest extends TestCase
         $date = new MapType(new IntType, new DateType('d/m/Y'));
 
         $value = $date->denormalize(['2' => '30/01/2016']);
-        $this->assertInstanceOf(MapInterface::class, $value);
+        $this->assertInstanceOf(Map::class, $value);
         $this->assertSame('int', (string) $value->keyType());
         $this->assertSame(\DateTimeImmutable::class, (string) $value->valueType());
         $this->assertCount(1, $value);
         $this->assertSame('2016-01-30', $value->get(2)->format('Y-m-d'));
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DenormalizationException
-     * @expectedExceptionMessage The value must be an array
-     */
     public function testThrowWhenDenormalizingInvalidData()
     {
+        $this->expectException(DenormalizationException::class);
+        $this->expectExceptionMessage('The value must be an array');
+
         (new MapType(new IntType, new DateType('c')))->denormalize(new \stdClass);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DenormalizationException
-     * @expectedExceptionMessage The value must be a valid map
-     */
     public function testThrowWhenDenormalizingInvalidDateString()
     {
         $values = new \SplObjectStorage;
         $values->attach(new \stdClass, 'foo');
+
+        $this->expectException(DenormalizationException::class);
+        $this->expectExceptionMessage('The value must be a valid map');
 
         (new MapType(new IntType, new DateType('c')))->denormalize($values);
     }
@@ -131,7 +127,7 @@ class MapTypeTest extends TestCase
     {
         $this->assertSame(
             'map<int, date<c>>',
-            (string) new MapType(new IntType, new DateType('c'))
+            (new MapType(new IntType, new DateType('c')))->toString()
         );
     }
 }

@@ -6,42 +6,39 @@ namespace Innmind\Rest\Client\Serializer\Normalizer;
 use Innmind\Rest\Client\{
     Definition\HttpResource,
     Definition\Property,
-    Definition\Identity,
-    Definition\Access,
     Definition\AllowedLink,
 };
-use Innmind\Url\Url;
-use Innmind\Immutable\{
-    Map,
-    Set,
-};
+use function Innmind\Immutable\unwrap;
 
 final class NormalizeDefinition
 {
     public function __invoke(HttpResource $definition): array
     {
+        /** @psalm-suppress InvalidScalarArgument */
+        $metas = \array_combine(
+            unwrap($definition->metas()->keys()),
+            unwrap($definition->metas()->values()),
+        );
+
         return [
-            'url' => (string) $definition->url(),
-            'identity' => (string) $definition->identity(),
+            'url' => $definition->url()->toString(),
+            'identity' => $definition->identity()->toString(),
             'properties' => $definition
                 ->properties()
                 ->reduce(
                     [],
                     function(array $properties, string $name, Property $property): array {
                         $properties[$name] = [
-                            'type' => (string) $property->type(),
-                            'access' => $property->access()->mask()->toPrimitive(),
-                            'variants' => $property->variants()->toPrimitive(),
+                            'type' => $property->type()->toString(),
+                            'access' => unwrap($property->access()->mask()),
+                            'variants' => unwrap($property->variants()),
                             'optional' => $property->isOptional(),
                         ];
 
                         return $properties;
                     }
                 ),
-            'metas' => array_combine(
-                $definition->metas()->keys()->toPrimitive(),
-                $definition->metas()->values()->toPrimitive()
-            ),
+            'metas' => $metas,
             'linkable_to' => $definition
                 ->links()
                 ->reduce(
@@ -50,7 +47,7 @@ final class NormalizeDefinition
                         $links[] = [
                             'relationship' => $link->relationship(),
                             'resource_path' => $link->resourcePath(),
-                            'parameters' => $link->parameters()->toPrimitive(),
+                            'parameters' => unwrap($link->parameters()),
                         ];
 
                         return $links;

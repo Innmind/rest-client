@@ -16,7 +16,7 @@ class ClientTest extends TestCase
     private $client;
     private $factory;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->client = new Client(
             $this->factory = $this->createMock(Factory::class)
@@ -38,14 +38,14 @@ class ClientTest extends TestCase
             ->expects($this->at(0))
             ->method('__invoke')
             ->with($this->callback(function($url): bool {
-                return (string) $url === 'http://example.com/';
+                return $url->toString() === 'http://example.com/';
             }));
         $this
             ->factory
             ->expects($this->at(1))
             ->method('__invoke')
             ->with($this->callback(function($url): bool {
-                return (string) $url === 'http://example.com/api/';
+                return $url->toString() === 'http://example.com/api/';
             }));
 
         $server = $this->client->server('http://example.com/');

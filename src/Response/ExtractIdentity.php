@@ -14,10 +14,11 @@ use Innmind\Http\{
     Header\Location,
 };
 use Innmind\Url\Url;
+use function Innmind\Immutable\first;
 
 final class ExtractIdentity
 {
-    private $resolveIdentity;
+    private ResolveIdentity $resolveIdentity;
 
     public function __construct(ResolveIdentity $resolveIdentity)
     {
@@ -28,24 +29,24 @@ final class ExtractIdentity
     {
         $headers = $response->headers();
 
-        if (
-            !$headers->has('Location') ||
-            !$headers->get('Location') instanceof Location
-        ) {
+        if (!$headers->contains('Location')) {
             throw new IdentityNotFound;
         }
 
-        $header = $headers
-            ->get('Location')
-            ->values()
-            ->current();
-        $header = Url::fromString((string) $header);
+        $header = $headers->get('Location');
+
+        if (!$headers->get('Location') instanceof Location) {
+            throw new IdentityNotFound;
+        }
+
+        $header = first($header->values());
+        $header = Url::of($header->toString());
 
         return new Identity\Identity(
             ($this->resolveIdentity)(
                 $definition->url(),
-                $header
-            )
+                $header,
+            ),
         );
     }
 }

@@ -14,30 +14,31 @@ use Innmind\Rest\Client\{
     Exception\DomainException,
     Exception\UnknownType,
 };
-use Innmind\Immutable\{
-    SetInterface,
-    Set,
-};
+use Innmind\Immutable\Set;
+use function Innmind\Immutable\unwrap;
 
 final class Types
 {
-    private static $defaults;
-    private $types = [];
+    /** @var list<class-string<Type>> */
+    private array $types = [];
 
+    /**
+     * @param list<class-string<Type>> $types
+     */
     public function __construct(string ...$types)
     {
         if (\count($types) === 0) {
-            $types = self::defaults()->toPrimitive();
+            $types = unwrap(self::defaults());
         }
 
+        /** @var class-string<Type> $type */
         foreach ($types as $type) {
-            $refl = new \ReflectionClass($type);
-
-            if (!$refl->implementsInterface(Type::class)) {
-                throw new DomainException;
+            if (!\is_a($type, Type::class, true)) {
+                throw new DomainException($type);
             }
         }
 
+        /** @var list<class-string<Type>> */
         $this->types = $types;
     }
 
@@ -45,33 +46,29 @@ final class Types
     {
         foreach ($this->types as $builder) {
             try {
-                return call_user_func(
-                    [$builder, 'fromString'],
-                    $type,
-                    $this
-                );
+                /** @var Type */
+                return [$builder, 'of']($type, $this);
             } catch (DomainException $e) {
                 //pass
             }
         }
 
-        throw new UnknownType;
+        throw new UnknownType($type);
     }
 
     /**
-     * @return SetInterface<string>
+     * @return Set<string>
      */
-    public static function defaults(): SetInterface
+    public static function defaults(): Set
     {
-        return self::$defaults ?? self::$defaults = Set::of(
-            'string',
+        return Set::strings(
             BoolType::class,
             DateType::class,
             FloatType::class,
             IntType::class,
             MapType::class,
             SetType::class,
-            StringType::class
+            StringType::class,
         );
     }
 }

@@ -20,6 +20,7 @@ final class DenormalizeResource
         ResourceDefinition $definition,
         Access $access
     ): HttpResource {
+        /** @var array */
         $data = $data['resource'];
 
         $properties = $definition
@@ -33,30 +34,32 @@ final class DenormalizeResource
                 }
 
                 return isset($data[$name]);
-            })
-            ->foreach(function(string $name) use ($data) {
-                if (!isset($data[$name])) {
-                    throw new MissingProperty($name);
-                }
-            })
-            ->reduce(
-                new Map('string', Property::class),
-                function(Map $properties, string $name, PropertyDefinition $property) use ($data): Map {
-                    return $properties->put(
-                        $name,
-                        new Property(
-                            $name,
-                            $property
-                                ->type()
-                                ->denormalize($data[$name])
-                        )
-                    );
-                }
-            );
+            });
+
+        $properties->foreach(function(string $name) use ($data) {
+            if (!isset($data[$name])) {
+                throw new MissingProperty($name);
+            }
+        });
+
+        /** @var Map<string, Property> */
+        $properties = $properties->toMapOf(
+            'string',
+            Property::class,
+            static function(string $name, PropertyDefinition $property) use ($data): \Generator {
+                /** @psalm-suppress MixedArrayAccess */
+                yield $name => new Property(
+                    $name,
+                    $property
+                        ->type()
+                        ->denormalize($data[$name]),
+                );
+            },
+        );
 
         return new HttpResource(
             $definition->name(),
-            $properties
+            $properties,
         );
     }
 }

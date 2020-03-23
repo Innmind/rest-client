@@ -13,18 +13,15 @@ use Innmind\Rest\Client\{
 
 final class IntType implements Type
 {
-    public static function fromString(string $type, Types $build): Type
+    public static function of(string $type, Types $build): Type
     {
         if ($type !== 'int') {
-            throw new DomainException;
+            throw new DomainException($type);
         }
 
         return new self;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function normalize($data)
     {
         try {
@@ -34,9 +31,6 @@ final class IntType implements Type
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function denormalize($data)
     {
         try {
@@ -46,7 +40,7 @@ final class IntType implements Type
         }
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return 'int';
     }

@@ -14,24 +14,25 @@ use Innmind\Rest\Client\{
     Definition\Type\SetType,
     Definition\Type\StringType,
     Exception\DomainException,
+    Exception\UnknownType,
 };
-use Innmind\Immutable\SetInterface;
+use Innmind\Immutable\Set;
+use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
 
 class TypesTest extends TestCase
 {
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenRegisteringInvalidType()
     {
+        $this->expectException(DomainException::class);
+
         new Types('stdClass');
     }
 
     public function testBuild()
     {
         $type1 = new class implements Type {
-            public static function fromString(string $type, Types $build): Type
+            public static function of(string $type, Types $build): Type
             {
                 if ($type !== 'type1') {
                     throw new DomainException;
@@ -48,13 +49,13 @@ class TypesTest extends TestCase
             {
             }
 
-            public function __toString(): string
+            public function toString(): string
             {
                 return 'type1';
             }
         };
         $type2 = new class implements Type {
-            public static function fromString(string $type, Types $build): Type
+            public static function of(string $type, Types $build): Type
             {
                 if ($type !== 'type2') {
                     throw new DomainException;
@@ -71,7 +72,7 @@ class TypesTest extends TestCase
             {
             }
 
-            public function __toString(): string
+            public function toString(): string
             {
                 return 'type2';
             }
@@ -84,11 +85,10 @@ class TypesTest extends TestCase
         $this->assertInstanceOf($class2, $build('type2'));
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\UnknownType
-     */
     public function testThrowWhenBuildingUnknownType()
     {
+        $this->expectException(UnknownType::class);
+
         (new Types)('type1');
     }
 
@@ -96,7 +96,7 @@ class TypesTest extends TestCase
     {
         $defaults = Types::defaults();
 
-        $this->assertInstanceOf(SetInterface::class, $defaults);
+        $this->assertInstanceOf(Set::class, $defaults);
         $this->assertSame('string', (string) $defaults->type());
         $this->assertCount(7, $defaults);
         $this->assertSame(
@@ -109,7 +109,7 @@ class TypesTest extends TestCase
                 SetType::class,
                 StringType::class,
             ],
-            $defaults->toPrimitive()
+            unwrap($defaults)
         );
 
         $this->assertInstanceOf(BoolType::class, (new Types)('bool'));

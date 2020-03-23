@@ -5,26 +5,26 @@ namespace Innmind\Rest\Client\Server;
 
 use Innmind\Rest\Client\Definition\HttpResource;
 use Innmind\Immutable\{
-    MapInterface,
-    SetInterface,
+    Map,
+    Set,
 };
 
 interface Capabilities
 {
     /**
-     * @return SetInterface<string>
+     * @return Set<string>
      */
-    public function names(): SetInterface;
+    public function names(): Set;
     public function get(string $name): HttpResource;
 
     /**
-     * @return MapInterface<string, HttpResource>
+     * @return Map<string, HttpResource>
      */
-    public function definitions(): MapInterface;
+    public function definitions(): Map;
 
     /**
      * Clear all definition references it holds, in order to be sure next time
      * we access one it is a fresh definition
      */
-    public function refresh(): self;
+    public function refresh(): void;
 }

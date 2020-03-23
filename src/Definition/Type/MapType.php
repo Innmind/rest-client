@@ -12,61 +12,62 @@ use Innmind\Rest\Client\{
 };
 use Innmind\Immutable\{
     Str,
-    MapInterface,
     Map,
 };
 
 final class MapType implements Type
 {
-    const PATTERN = '~map<(?<key>.+), ?(?<value>.+)>~';
+    private const PATTERN = '~map<(?<key>.+), ?(?<value>.+)>~';
 
-    private $key;
-    private $value;
-    private $denormalized;
+    private Type $key;
+    private Type $value;
+    private Map $denormalized;
 
     public function __construct(Type $key, Type $value)
     {
         $this->key = $key;
         $this->value = $value;
-        $this->denormalized = new Map(
+        $this->denormalized = Map::of(
             $key instanceof DateType ?
-                \DateTimeImmutable::class : (string) $key,
+                \DateTimeImmutable::class : $key->toString(),
             $value instanceof DateType ?
-                \DateTimeImmutable::class : (string) $value
+                \DateTimeImmutable::class : $value->toString(),
         );
     }
 
-    public static function fromString(string $type, Types $build): Type
+    public static function of(string $type, Types $build): Type
     {
-        $type = new Str($type);
+        $type = Str::of($type);
 
         if (!$type->matches(self::PATTERN)) {
-            throw new DomainException;
+            throw new DomainException($type->toString());
         }
 
         $matches = $type->capture(self::PATTERN);
 
         return new self(
-            $build((string) $matches->get('key')),
-            $build((string) $matches->get('value'))
+            $build($matches->get('key')->toString()),
+            $build($matches->get('value')->toString()),
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function normalize($data)
     {
-        if (!$data instanceof MapInterface) {
+        if (!$data instanceof Map) {
             throw new NormalizationException(
-                'The value must be an instance of Innmind\Immutable\MapInterface'
+                'The value must be an instance of Innmind\Immutable\Map',
             );
         }
 
         return $data->reduce(
             [],
             function(array $values, $key, $value): array {
+                /** @psalm-suppress MixedAssignment */
                 $key = $this->key->normalize($key);
+                /**
+                 * @psalm-suppress MixedAssignment
+                 * @psalm-suppress MixedArrayOffset
+                 */
                 $values[$key] = $this->value->normalize($value);
 
                 return $values;
@@ -74,9 +75,6 @@ final class MapType implements Type
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function denormalize($data)
     {
         if (!\is_array($data) && !$data instanceof \Traversable) {
@@ -86,10 +84,11 @@ final class MapType implements Type
         $map = $this->denormalized;
 
         try {
+            /** @psalm-suppress MixedAssignment */
             foreach ($data as $key => $value) {
-                $map = $map->put(
+                $map = ($map)(
                     $this->key->denormalize($key),
-                    $this->value->denormalize($value)
+                    $this->value->denormalize($value),
                 );
             }
 
@@ -99,8 +98,8 @@ final class MapType implements Type
         }
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
-        return 'map<'.$this->key.', '.$this->value.'>';
+        return 'map<'.$this->key->toString().', '.$this->value->toString().'>';
     }
 }

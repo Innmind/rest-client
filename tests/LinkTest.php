@@ -7,11 +7,9 @@ use Innmind\Rest\Client\{
     Link,
     Link\Parameter,
     Identity,
+    Exception\DomainException,
 };
-use Innmind\Immutable\{
-    MapInterface,
-    Map,
-};
+use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;
 
 class LinkTest extends TestCase
@@ -22,7 +20,7 @@ class LinkTest extends TestCase
             'foo',
             $identity = $this->createMock(Identity::class),
             'baz',
-            $parameters = new Map('string', Parameter::class)
+            $parameters = Map::of('string', Parameter::class)
         );
 
         $this->assertSame('foo', $link->definition());
@@ -56,7 +54,7 @@ class LinkTest extends TestCase
         );
 
         $this->assertInstanceOf(
-            MapInterface::class,
+            Map::class,
             $link->parameters()
         );
         $this->assertSame('string', (string) $link->parameters()->keyType());
@@ -66,43 +64,40 @@ class LinkTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException TypeError
-     * @expectedExceptionMessage Argument 4 must be of type MapInterface<string, Innmind\Rest\Client\Link\Parameter>
-     */
     public function testThrowWhenInvalidParameterMap()
     {
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('Argument 4 must be of type Map<string, Innmind\Rest\Client\Link\Parameter>');
+
         new Link(
             'foo',
             $this->createMock(Identity::class),
             'baz',
-            new Map('string', 'string')
+            Map::of('string', 'string')
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenEmptyDefinition()
     {
+        $this->expectException(DomainException::class);
+
         new Link(
             '',
             $this->createMock(Identity::class),
             'baz',
-            new Map('string', Parameter::class)
+            Map::of('string', Parameter::class)
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenEmptyRelationship()
     {
+        $this->expectException(DomainException::class);
+
         new Link(
             'foo',
             $this->createMock(Identity::class),
             '',
-            new Map('string', Parameter::class)
+            Map::of('string', Parameter::class)
         );
     }
 }

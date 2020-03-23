@@ -15,17 +15,18 @@ use Innmind\Rest\Client\{
     Serializer\Normalizer\NormalizeDefinition,
 };
 use Innmind\Filesystem\{
-    Adapter\MemoryAdapter,
+    Adapter\InMemory,
     Directory\Directory,
     File\File,
-    Stream\StringStream,
+    Name,
 };
+use Innmind\Stream\Readable\Stream;
 use Innmind\Url\Url;
 use Innmind\Immutable\{
-    SetInterface,
     Set,
-    MapInterface,
+    Map,
 };
+use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
 
 class CacheCapabilitiesTest extends TestCase
@@ -38,19 +39,19 @@ class CacheCapabilitiesTest extends TestCase
     private $definition;
     private $raw;
 
-    public function setUp()
+    public function setUp(): void
     {
         $denormalizeDefinition = new DenormalizeDefinition(new Types);
 
         $this->capabilities = new CacheCapabilities(
             $this->inner = $this->createMock(Capabilities::class),
-            $this->filesystem = new MemoryAdapter,
+            $this->filesystem = new InMemory,
             new Decode\Json,
             new Encode\Json,
             new DenormalizeCapabilitiesNames,
             $denormalizeDefinition,
             $this->normalizeDefinition = new NormalizeDefinition,
-            Url::fromString('http://example.com/')
+            Url::of('http://example.com/')
         );
         $this->directory = md5('http://example.com/');
         $this->raw = [
@@ -98,22 +99,23 @@ class CacheCapabilitiesTest extends TestCase
             );
         $names = $this->capabilities->names();
 
-        $this->assertInstanceOf(SetInterface::class, $names);
+        $this->assertInstanceOf(Set::class, $names);
         $this->assertSame('string', (string) $names->type());
         $this->assertCount(2, $names);
-        $this->assertSame(['foo', 'bar'], $names->toPrimitive());
+        $this->assertSame(['foo', 'bar'], unwrap($names));
         $this->assertSame($names, $this->capabilities->names());
-        $this->assertTrue($this->filesystem->has($this->directory));
+        $this->assertTrue($this->filesystem->contains(new Name($this->directory)));
         $this->assertTrue(
-            $this->filesystem->get($this->directory)->has('.names.json')
+            $this->filesystem->get(new Name($this->directory))->contains(new Name('.names.json'))
         );
         $this->assertSame(
             '["foo","bar"]',
-            (string) $this
+            $this
                 ->filesystem
-                ->get($this->directory)
-                ->get('.names.json')
+                ->get(new Name($this->directory))
+                ->get(new Name('.names.json'))
                 ->content()
+                ->toString()
         );
     }
 
@@ -126,19 +128,19 @@ class CacheCapabilitiesTest extends TestCase
         $this
             ->filesystem
             ->add(
-                (new Directory($this->directory))->add(
-                    new File(
+                (Directory::named($this->directory))->add(
+                    File::named(
                         '.names.json',
-                        new StringStream('["foo","bar"]')
+                        Stream::ofContent('["foo","bar"]')
                     )
                 )
             );
         $names = $this->capabilities->names();
 
-        $this->assertInstanceOf(SetInterface::class, $names);
+        $this->assertInstanceOf(Set::class, $names);
         $this->assertSame('string', (string) $names->type());
         $this->assertCount(2, $names);
-        $this->assertSame(['foo', 'bar'], $names->toPrimitive());
+        $this->assertSame(['foo', 'bar'], unwrap($names));
         $this->assertSame($names, $this->capabilities->names());
     }
 
@@ -155,17 +157,18 @@ class CacheCapabilitiesTest extends TestCase
 
         $this->assertSame($this->definition, $definition);
         $this->assertSame($definition, $this->capabilities->get('foo'));
-        $this->assertTrue($this->filesystem->has($this->directory));
+        $this->assertTrue($this->filesystem->contains(new Name($this->directory)));
         $this->assertTrue(
-            $this->filesystem->get($this->directory)->has('foo.json')
+            $this->filesystem->get(new Name($this->directory))->contains(new Name('foo.json'))
         );
         $this->assertSame(
             json_encode($this->raw),
-            (string) $this
+            $this
                 ->filesystem
-                ->get($this->directory)
-                ->get('foo.json')
+                ->get(new Name($this->directory))
+                ->get(new Name('foo.json'))
                 ->content()
+                ->toString()
         );
     }
 
@@ -178,10 +181,10 @@ class CacheCapabilitiesTest extends TestCase
         $this
             ->filesystem
             ->add(
-                (new Directory($this->directory))->add(
-                    new File(
+                (Directory::named($this->directory))->add(
+                    File::named(
                         'foo.json',
-                        new StringStream(\json_encode($this->raw))
+                        Stream::ofContent(\json_encode($this->raw))
                     )
                 )
             );
@@ -238,7 +241,7 @@ class CacheCapabilitiesTest extends TestCase
 
         $definitions = $this->capabilities->definitions();
 
-        $this->assertInstanceOf(MapInterface::class, $definitions);
+        $this->assertInstanceOf(Map::class, $definitions);
         $this->assertSame('string', (string) $definitions->keyType());
         $this->assertSame(
             HttpResource::class,
@@ -266,17 +269,17 @@ class CacheCapabilitiesTest extends TestCase
         $this
             ->filesystem
             ->add(
-                (new Directory($this->directory))->add(
-                    new File(
+                (Directory::named($this->directory))->add(
+                    File::named(
                         '.names.json',
-                        new StringStream('["foo","bar"]')
+                        Stream::ofContent('["foo","bar"]')
                     )
                 )
             );
 
         $names = $this->capabilities->names();
-        $this->assertSame($this->capabilities, $this->capabilities->refresh());
-        $this->assertFalse($this->filesystem->has($this->directory));
+        $this->assertNull($this->capabilities->refresh());
+        $this->assertFalse($this->filesystem->contains(new Name($this->directory)));
         $this->assertNotSame($names, $this->capabilities->names());
     }
 }

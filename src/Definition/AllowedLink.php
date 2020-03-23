@@ -4,22 +4,25 @@ declare(strict_types = 1);
 namespace Innmind\Rest\Client\Definition;
 
 use Innmind\Rest\Client\Link;
-use Innmind\Immutable\SetInterface;
+use Innmind\Immutable\Set;
+use function Innmind\Immutable\assertSet;
 
 final class AllowedLink
 {
-    private $resourcePath;
-    private $relationship;
-    private $parameters;
+    private string $resourcePath;
+    private string $relationship;
+    /** @var Set<string> */
+    private Set $parameters;
 
+    /**
+     * @param Set<string> $parameters
+     */
     public function __construct(
         string $resourcePath,
         string $relationship,
-        SetInterface $parameters
+        Set $parameters
     ) {
-        if ((string) $parameters->type() !== 'string') {
-            throw new \TypeError('Argument 3 must be of type SetInterface<string>');
-        }
+        assertSet('string', $parameters, 3);
 
         $this->resourcePath = $resourcePath;
         $this->relationship = $relationship;
@@ -37,9 +40,9 @@ final class AllowedLink
     }
 
     /**
-     * @return SetInterface<string>
+     * @return Set<string>
      */
-    public function parameters(): SetInterface
+    public function parameters(): Set
     {
         return $this->parameters;
     }
@@ -58,7 +61,7 @@ final class AllowedLink
             true,
             static function(bool $accept, string $parameter) use ($link): bool {
                 return $accept && $link->parameters()->contains($parameter);
-            }
+            },
         );
     }
 }

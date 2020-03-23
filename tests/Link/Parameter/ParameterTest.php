@@ -3,9 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\Link\Parameter;
 
-use Innmind\Rest\Client\Link\{
-    Parameter\Parameter,
-    Parameter as ParameterInterface,
+use Innmind\Rest\Client\{
+    Link\Parameter\Parameter,
+    Link\Parameter as ParameterInterface,
+    Exception\DomainException,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -20,11 +21,10 @@ class ParameterTest extends TestCase
         $this->assertSame('bar', $parameter->value());
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenEmptyKey()
     {
+        $this->expectException(DomainException::class);
+
         new Parameter('', 'bar');
     }
 }

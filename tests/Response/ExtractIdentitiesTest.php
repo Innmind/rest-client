@@ -14,7 +14,7 @@ use Innmind\Rest\Client\{
 };
 use Innmind\Http\{
     Message\Response,
-    Headers\Headers,
+    Headers,
     Header\Value,
     Header\Link,
     Header\LinkValue,
@@ -23,9 +23,9 @@ use Innmind\Url\Url;
 use Innmind\UrlResolver\UrlResolver;
 use Innmind\Immutable\{
     Map,
-    SetInterface,
     Set,
 };
+use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
 
 class ExtractIdentitiesTest extends TestCase
@@ -33,7 +33,7 @@ class ExtractIdentitiesTest extends TestCase
     private $extract;
     private $definition;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->extract = new ExtractIdentities(
             new ResolveIdentity(
@@ -42,11 +42,11 @@ class ExtractIdentitiesTest extends TestCase
         );
         $this->definition = new HttpResource(
             'foo',
-            Url::fromString('http://example.com/foo'),
+            Url::of('http://example.com/foo'),
             new Identity('uuid'),
-            new Map('string', Property::class),
-            new Map('scalar', 'variable'),
-            new Set(AllowedLink::class),
+            Map::of('string', Property::class),
+            Map::of('scalar', 'scalar|array'),
+            Set::of(AllowedLink::class),
             false
         );
     }
@@ -63,7 +63,7 @@ class ExtractIdentitiesTest extends TestCase
 
         $identities = ($this->extract)($response, $this->definition);
 
-        $this->assertInstanceOf(SetInterface::class, $identities);
+        $this->assertInstanceOf(Set::class, $identities);
         $this->assertSame(
             IdentityInterface::class,
             (string) $identities->type()
@@ -81,15 +81,15 @@ class ExtractIdentitiesTest extends TestCase
                 Headers::of(
                     new Link(
                         new LinkValue(
-                            Url::fromString('/foo/42'),
+                            Url::of('/foo/42'),
                             'resource'
                         ),
                         new LinkValue(
-                            Url::fromString('/foo/66'),
+                            Url::of('/foo/66'),
                             'resource'
                         ),
                         new LinkValue(
-                            Url::fromString('/foo?range[]=10&range[]=20'),
+                            Url::of('/foo?range[]=10&range[]=20'),
                             'next'
                         )
                     )
@@ -98,14 +98,15 @@ class ExtractIdentitiesTest extends TestCase
 
         $identities = ($this->extract)($response, $this->definition);
 
-        $this->assertInstanceOf(SetInterface::class, $identities);
+        $this->assertInstanceOf(Set::class, $identities);
         $this->assertSame(
             IdentityInterface::class,
             (string) $identities->type()
         );
         $this->assertCount(2, $identities);
-        $this->assertSame('42', (string) $identities->current());
-        $identities->next();
-        $this->assertSame('66', (string) $identities->current());
+        $identities = unwrap($identities);
+        $this->assertSame('42', \current($identities)->toString());
+        \next($identities);
+        $this->assertSame('66', \current($identities)->toString());
     }
 }

@@ -3,9 +3,14 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Definition;
 
+use Innmind\Rest\Client\Exception\{
+    DenormalizationException,
+    NormalizationException,
+};
+
 interface Type
 {
-    public static function fromString(string $type, Types $build): self;
+    public static function of(string $type, Types $build): self;
 
     /**
      * Transform the data received via http to a data understandable for php
@@ -29,5 +34,5 @@ interface Type
      */
     public function normalize($data);
 
-    public function __toString(): string;
+    public function toString(): string;
 }

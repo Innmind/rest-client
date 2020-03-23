@@ -11,32 +11,26 @@ use Innmind\Rest\Client\{
 
 final class BoolType implements Type
 {
-    public static function fromString(string $type, Types $build): Type
+    public static function of(string $type, Types $build): Type
     {
         if ($type !== 'bool') {
-            throw new DomainException;
+            throw new DomainException($type);
         }
 
         return new self;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function normalize($data)
     {
         return (bool) $data;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function denormalize($data)
     {
         return (bool) $data;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return 'bool';
     }

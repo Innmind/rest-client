@@ -13,26 +13,28 @@ use Innmind\Immutable\Map;
 
 final class Client implements ClientInterface
 {
-    private $make;
-    private $servers;
+    private Factory $make;
+    /** @var Map<string, Server> */
+    private Map $servers;
 
     public function __construct(Factory $make)
     {
         $this->make = $make;
-        $this->servers = new Map('string', Server::class);
+        /** @var Map<string, Server> */
+        $this->servers = Map::of('string', Server::class);
     }
 
     public function server(string $url): Server
     {
-        $url = Url::fromString($url);
-        $hash = \md5((string) $url);
+        $url = Url::of($url);
+        $hash = \md5($url->toString());
 
         if ($this->servers->contains($hash)) {
             return $this->servers->get($hash);
         }
 
         $server = ($this->make)($url);
-        $this->servers = $this->servers->put($hash, $server);
+        $this->servers = ($this->servers)($hash, $server);
 
         return $server;
     }

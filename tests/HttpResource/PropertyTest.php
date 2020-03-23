@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\HttpResource;
 
-use Innmind\Rest\Client\HttpResource\Property;
+use Innmind\Rest\Client\{
+    HttpResource\Property,
+    Exception\DomainException,
+};
 use PHPUnit\Framework\TestCase;
 
 class PropertyTest extends TestCase
@@ -16,11 +19,10 @@ class PropertyTest extends TestCase
         $this->assertSame(['bar'], $property->value());
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenEmptyName()
     {
+        $this->expectException(DomainException::class);
+
         new Property('', ['bar']);
     }
 }

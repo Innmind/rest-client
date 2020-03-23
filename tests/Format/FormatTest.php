@@ -3,9 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\Format;
 
-use Innmind\Rest\Client\Format\{
-    Format,
-    MediaType,
+use Innmind\Rest\Client\{
+    Format\Format,
+    Format\MediaType,
+    Exception\DomainException,
 };
 use Innmind\Immutable\Set;
 use PHPUnit\Framework\TestCase;
@@ -24,7 +25,7 @@ class FormatTest extends TestCase
         );
 
         $this->assertSame('json', $format->name());
-        $this->assertSame('json', (string) $format);
+        $this->assertSame('json', $format->toString());
         $this->assertSame($types, $format->mediaTypes());
         $this->assertSame(24, $format->priority());
     }
@@ -43,23 +44,21 @@ class FormatTest extends TestCase
 
         $mime = $format->preferredMediaType();
         $this->assertInstanceOf(MediaType::class, $mime);
-        $this->assertSame('application/json', (string) $mime);
+        $this->assertSame('application/json', $mime->toString());
     }
 
-    /**
-     * @expectedException TypeError
-     * @expectedExceptionMessage Argument 2 must be of type SetInterface<Innmind\Rest\Client\Format\MediaType>
-     */
     public function testThrowWhenInvalidMediaType()
     {
-        new Format('foo', new Set('string'), 42);
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('Argument 2 must be of type Set<Innmind\Rest\Client\Format\MediaType>');
+
+        new Format('foo', Set::of('string'), 42);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenNoMediaType()
     {
-        new Format('foo', new Set(MediaType::class), 42);
+        $this->expectException(DomainException::class);
+
+        new Format('foo', Set::of(MediaType::class), 42);
     }
 }

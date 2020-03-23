@@ -8,42 +8,39 @@ use Innmind\Rest\Client\{
     Exception\DomainException,
 };
 use Innmind\Immutable\{
-    MapInterface,
     Map,
     Str,
 };
+use function Innmind\Immutable\assertMap;
 
 final class HttpResource
 {
-    private $name;
-    private $properties;
+    private string $name;
+    /** @var Map<string, Property> */
+    private Map $properties;
 
-    public function __construct(string $name, MapInterface $properties)
+    /**
+     * @param Map<string, Property> $properties
+     */
+    public function __construct(string $name, Map $properties)
     {
         if (Str::of($name)->empty()) {
             throw new DomainException;
         }
 
-        if (
-            (string) $properties->keyType() !== 'string' ||
-            (string) $properties->valueType() !== Property::class
-        ) {
-            throw new \TypeError(sprintf(
-                'Argument 2 must be of type MapInterface<string, %s>',
-                Property::class
-            ));
-        }
+        assertMap('string', Property::class, $properties, 2);
 
         $this->name = $name;
         $this->properties = $properties;
     }
 
-    public static function of(string $name, Property ...$properties)
+    public static function of(string $name, Property ...$properties): self
     {
+        /** @var Map<string, Property> */
         $map = Map::of('string', Property::class);
 
         foreach ($properties as $property) {
-            $map = $map->put($property->name(), $property);
+            $map = ($map)($property->name(), $property);
         }
 
         return new self($name, $map);
@@ -55,9 +52,9 @@ final class HttpResource
     }
 
     /**
-     * @return MapInterface<string, Property>
+     * @return Map<string, Property>
      */
-    public function properties(): MapInterface
+    public function properties(): Map
     {
         return $this->properties;
     }

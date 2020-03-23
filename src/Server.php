@@ -7,45 +7,34 @@ use Innmind\Rest\Client\{
     Server\Capabilities,
     Request\Range,
 };
-use Innmind\Url\UrlInterface;
-use Innmind\Immutable\SetInterface;
+use Innmind\Url\Url;
+use Innmind\Immutable\Set;
 use Innmind\Specification\Specification;
 
 interface Server
 {
     /**
-     * @return SetInterface<Identity>
+     * @return Set<Identity>
      */
     public function all(
         string $name,
         Specification $specification = null,
         Range $range = null
-    ): SetInterface;
+    ): Set;
     public function read(string $name, Identity $identity): HttpResource;
     public function create(HttpResource $resource): Identity;
-    public function update(
-        Identity $identity,
-        HttpResource $resource
-    ): self;
-    public function remove(string $name, Identity $identity): self;
+    public function update(Identity $identity, HttpResource $resource): void;
+    public function remove(string $name, Identity $identity): void;
 
     /**
-     * @param SetInterface<Link> $links
+     * @param Set<Link> $links
      */
-    public function link(
-        string $name,
-        Identity $identity,
-        SetInterface $links
-    ): self;
+    public function link(string $name, Identity $identity, Set $links): void;
 
     /**
-     * @param SetInterface<Link> $links
+     * @param Set<Link> $links
      */
-    public function unlink(
-        string $name,
-        Identity $identity,
-        SetInterface $links
-    ): self;
+    public function unlink(string $name, Identity $identity, Set $links): void;
     public function capabilities(): Capabilities;
-    public function url(): UrlInterface;
+    public function url(): Url;
 }

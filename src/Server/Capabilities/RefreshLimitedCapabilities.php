@@ -8,24 +8,21 @@ use Innmind\Rest\Client\{
     Definition\HttpResource,
 };
 use Innmind\Immutable\{
-    SetInterface,
-    MapInterface,
+    Set,
+    Map,
 };
 
 final class RefreshLimitedCapabilities implements CapabilitiesInterface
 {
-    private $capabilities;
-    private $isFresh = false;
+    private CapabilitiesInterface $capabilities;
+    private bool $isFresh = false;
 
     public function __construct(CapabilitiesInterface $capabilities)
     {
         $this->capabilities = $capabilities;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function names(): SetInterface
+    public function names(): Set
     {
         return $this->capabilities->names();
     }
@@ -35,26 +32,18 @@ final class RefreshLimitedCapabilities implements CapabilitiesInterface
         return $this->capabilities->get($name);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function definitions(): MapInterface
+    public function definitions(): Map
     {
         return $this->capabilities->definitions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function refresh(): CapabilitiesInterface
+    public function refresh(): void
     {
         if ($this->isFresh) {
-            return $this;
+            return;
         }
 
         $this->capabilities->refresh();
         $this->isFresh = true;
-
-        return $this;
     }
 }

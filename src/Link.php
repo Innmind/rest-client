@@ -8,25 +8,29 @@ use Innmind\Rest\Client\{
     Exception\DomainException,
 };
 use Innmind\Immutable\{
-    MapInterface,
     Map,
     Str,
 };
+use function Innmind\Immutable\assertMap;
 
 final class Link
 {
-    private $definition;
-    private $identity;
-    private $relationship;
-    private $parameters;
+    private string $definition;
+    private Identity $identity;
+    private string $relationship;
+    /** @var Map<string, Parameter> */
+    private Map $parameters;
 
+    /**
+     * @param Map<string, Parameter>|null $parameters
+     */
     public function __construct(
         string $definition,
         Identity $identity,
         string $relationship,
-        MapInterface $parameters = null
+        Map $parameters = null
     ) {
-        $parameters = $parameters ?? new Map('string', Parameter::class);
+        $parameters ??= Map::of('string', Parameter::class);
 
         if (
             Str::of($definition)->empty() ||
@@ -35,15 +39,7 @@ final class Link
             throw new DomainException;
         }
 
-        if (
-            (string) $parameters->keyType() !== 'string' ||
-            (string) $parameters->valueType() !== Parameter::class
-        ) {
-            throw new \TypeError(sprintf(
-                'Argument 4 must be of type MapInterface<string, %s>',
-                Parameter::class
-            ));
-        }
+        assertMap('string', Parameter::class, $parameters, 4);
 
         $this->definition = $definition;
         $this->identity = $identity;
@@ -57,10 +53,11 @@ final class Link
         string $relationship,
         Parameter ...$parameters
     ): self {
+        /** @var Map<string, Parameter> */
         $map = Map::of('string', Parameter::class);
 
         foreach ($parameters as $parameter) {
-            $map = $map->put($parameter->key(), $parameter);
+            $map = ($map)($parameter->key(), $parameter);
         }
 
         return new self($definition, $identity, $relationship, $map);
@@ -82,9 +79,9 @@ final class Link
     }
 
     /**
-     * @return MapInterface<string, Parameter>
+     * @return Map<string, Parameter>
      */
-    public function parameters(): MapInterface
+    public function parameters(): Map
     {
         return $this->parameters;
     }

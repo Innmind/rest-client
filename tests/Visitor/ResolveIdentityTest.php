@@ -22,8 +22,8 @@ class ResolveIdentityTest extends TestCase
         $this->assertSame(
             $expected,
             $resolve(
-                Url::fromString($source),
-                Url::fromString($destination)
+                Url::of($source),
+                Url::of($destination)
             )
         );
     }

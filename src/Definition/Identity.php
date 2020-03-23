@@ -8,7 +8,7 @@ use Innmind\Immutable\Str;
 
 final class Identity
 {
-    private $name;
+    private string $name;
 
     public function __construct(string $name)
     {
@@ -19,7 +19,7 @@ final class Identity
         $this->name = $name;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->name;
     }

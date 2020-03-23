@@ -9,8 +9,7 @@ use Innmind\Rest\Client\Server\{
     Capabilities,
     Capabilities\RefreshLimitedCapabilities,
 };
-use Innmind\Url\UrlInterface;
-use Symfony\Component\Serializer\SerializerInterface;
+use Innmind\Url\Url;
 use PHPUnit\Framework\TestCase;
 
 class RefreshLimitedFactoryTest extends TestCase
@@ -18,7 +17,7 @@ class RefreshLimitedFactoryTest extends TestCase
     private $make;
     private $inner;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->make = new RefreshLimitedFactory(
             $this->inner = $this->createMock(Factory::class)
@@ -35,7 +34,7 @@ class RefreshLimitedFactoryTest extends TestCase
 
     public function testMake()
     {
-        $url = $this->createMock(UrlInterface::class);
+        $url = Url::of('http://example.com/');
         $this
             ->inner
             ->expects($this->once())

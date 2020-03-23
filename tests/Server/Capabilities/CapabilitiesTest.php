@@ -21,8 +21,8 @@ use Innmind\UrlResolver\UrlResolver;
 use Innmind\Http\{
     Message\Request,
     Message\Response,
-    Message\StatusCode\StatusCode,
-    Headers\Headers,
+    Message\StatusCode,
+    Headers,
     Header,
     Header\Value,
     Header\Link,
@@ -30,13 +30,12 @@ use Innmind\Http\{
     Header\ContentType,
     Header\ContentTypeValue,
 };
-use Innmind\Filesystem\Stream\StringStream;
+use Innmind\Stream\Readable\Stream;
 use Innmind\Immutable\{
-    MapInterface,
     Map,
-    SetInterface,
     Set,
 };
+use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
 
 class CapabilitiesTest extends TestCase
@@ -44,11 +43,11 @@ class CapabilitiesTest extends TestCase
     private $capabilities;
     private $transport;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->capabilities = new Capabilities(
             $this->transport = $this->createMock(Transport::class),
-            Url::fromString('http://example.com/'),
+            Url::of('http://example.com/'),
             new UrlResolver,
             new DefinitionFactory(
                 new DenormalizeDefinition(new Types),
@@ -57,16 +56,12 @@ class CapabilitiesTest extends TestCase
             Formats::of(
                 new Format(
                     'json',
-                    (new Set(MediaType::class))->add(
-                        new MediaType('application/json', 0)
-                    ),
+                    Set::of(MediaType::class, new MediaType('application/json', 0)),
                     1
                 ),
                 new Format(
                     'xml',
-                    (new Set(MediaType::class))->add(
-                        new MediaType('text/xml', 0)
-                    ),
+                    Set::of(MediaType::class, new MediaType('text/xml', 0)),
                     0
                 )
             )
@@ -88,8 +83,8 @@ class CapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/*' &&
-                    (string) $request->method() === 'OPTIONS';
+                return $request->url()->toString() === 'http://example.com/*' &&
+                    $request->method()->toString() === 'OPTIONS';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
@@ -103,7 +98,7 @@ class CapabilitiesTest extends TestCase
 
         $names = $this->capabilities->names();
 
-        $this->assertInstanceOf(SetInterface::class, $names);
+        $this->assertInstanceOf(Set::class, $names);
         $this->assertSame('string', (string) $names->type());
         $this->assertCount(0, $names);
         $this->assertSame($names, $this->capabilities->names());
@@ -116,8 +111,8 @@ class CapabilitiesTest extends TestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/*' &&
-                    (string) $request->method() === 'OPTIONS';
+                return $request->url()->toString() === 'http://example.com/*' &&
+                    $request->method()->toString() === 'OPTIONS';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
@@ -129,11 +124,11 @@ class CapabilitiesTest extends TestCase
                 Headers::of(
                     new Link(
                         new LinkValue(
-                            Url::fromString('/foo'),
+                            Url::of('/foo'),
                             'foo'
                         ),
                         new LinkValue(
-                            Url::fromString('/bar'),
+                            Url::of('/bar'),
                             'bar'
                         )
                     )
@@ -142,10 +137,10 @@ class CapabilitiesTest extends TestCase
 
         $names = $this->capabilities->names();
 
-        $this->assertInstanceOf(SetInterface::class, $names);
+        $this->assertInstanceOf(Set::class, $names);
         $this->assertSame('string', (string) $names->type());
         $this->assertCount(2, $names);
-        $this->assertSame(['foo', 'bar'], $names->toPrimitive());
+        $this->assertSame(['foo', 'bar'], unwrap($names));
         $this->assertSame($names, $this->capabilities->names());
     }
 
@@ -156,8 +151,8 @@ class CapabilitiesTest extends TestCase
             ->expects($this->at(0))
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/*' &&
-                    (string) $request->method() === 'OPTIONS';
+                return $request->url()->toString() === 'http://example.com/*' &&
+                    $request->method()->toString() === 'OPTIONS';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
@@ -169,11 +164,11 @@ class CapabilitiesTest extends TestCase
                 Headers::of(
                     new Link(
                         new LinkValue(
-                            Url::fromString('/foo'),
+                            Url::of('/foo'),
                             'foo'
                         ),
                         new LinkValue(
-                            Url::fromString('/bar'),
+                            Url::of('/bar'),
                             'bar'
                         )
                     )
@@ -184,10 +179,10 @@ class CapabilitiesTest extends TestCase
             ->expects($this->at(1))
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/foo' &&
-                    (string) $request->method() === 'OPTIONS' &&
-                    $request->headers()->has('Accept') &&
-                    (string) $request->headers()->get('Accept') === 'Accept: application/json, text/xml';
+                return $request->url()->toString() === 'http://example.com/foo' &&
+                    $request->method()->toString() === 'OPTIONS' &&
+                    $request->headers()->contains('Accept') &&
+                    $request->headers()->get('Accept')->toString() === 'Accept: application/json, text/xml';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
@@ -212,7 +207,7 @@ class CapabilitiesTest extends TestCase
         $response
             ->expects($this->once())
             ->method('body')
-            ->willReturn(new StringStream('{"url":"http://example.com/foo","identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"linkable_to":[],"rangeable":true}'));
+            ->willReturn(Stream::ofContent('{"url":"http://example.com/foo","identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"linkable_to":[],"rangeable":true}'));
 
         $definition = $this->capabilities->get('foo');
 
@@ -229,8 +224,8 @@ class CapabilitiesTest extends TestCase
             ->expects($this->at(0))
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/*' &&
-                    (string) $request->method() === 'OPTIONS';
+                return $request->url()->toString() === 'http://example.com/*' &&
+                    $request->method()->toString() === 'OPTIONS';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
@@ -242,11 +237,11 @@ class CapabilitiesTest extends TestCase
                 Headers::of(
                     new Link(
                         new LinkValue(
-                            Url::fromString('/foo'),
+                            Url::of('/foo'),
                             'foo'
                         ),
                         new LinkValue(
-                            Url::fromString('/bar'),
+                            Url::of('/bar'),
                             'bar'
                         )
                     )
@@ -257,8 +252,8 @@ class CapabilitiesTest extends TestCase
             ->expects($this->at(1))
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/foo' &&
-                    (string) $request->method() === 'OPTIONS';
+                return $request->url()->toString() === 'http://example.com/foo' &&
+                    $request->method()->toString() === 'OPTIONS';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
@@ -283,14 +278,14 @@ class CapabilitiesTest extends TestCase
         $response
             ->expects($this->once())
             ->method('body')
-            ->willReturn(new StringStream('{"url":"http://example.com/foo","identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"linkable_to":[],"rangeable":true}'));
+            ->willReturn(Stream::ofContent('{"url":"http://example.com/foo","identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"linkable_to":[],"rangeable":true}'));
         $this
             ->transport
             ->expects($this->at(2))
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/bar' &&
-                    (string) $request->method() === 'OPTIONS';
+                return $request->url()->toString() === 'http://example.com/bar' &&
+                    $request->method()->toString() === 'OPTIONS';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
@@ -315,11 +310,11 @@ class CapabilitiesTest extends TestCase
         $response
             ->expects($this->once())
             ->method('body')
-            ->willReturn(new StringStream('{"url":"http://example.com/foo","identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false}},"metas":[],"linkable_to":[],"rangeable":true}'));
+            ->willReturn(Stream::ofContent('{"url":"http://example.com/foo","identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false}},"metas":[],"linkable_to":[],"rangeable":true}'));
 
         $definitions = $this->capabilities->definitions();
 
-        $this->assertInstanceOf(MapInterface::class, $definitions);
+        $this->assertInstanceOf(Map::class, $definitions);
         $this->assertSame('string', (string) $definitions->keyType());
         $this->assertSame(
             HttpResource::class,
@@ -327,7 +322,7 @@ class CapabilitiesTest extends TestCase
         );
         $this->assertCount(2, $definitions);
         $this->assertSame($definitions, $this->capabilities->definitions());
-        $this->assertSame(['foo', 'bar'], $definitions->keys()->toPrimitive());
+        $this->assertSame(['foo', 'bar'], unwrap($definitions->keys()));
     }
 
     public function testRefresh()
@@ -337,8 +332,8 @@ class CapabilitiesTest extends TestCase
             ->expects($this->exactly(2))
             ->method('__invoke')
             ->with($this->callback(function(Request $request): bool {
-                return (string) $request->url() === 'http://example.com/*' &&
-                    (string) $request->method() === 'OPTIONS';
+                return $request->url()->toString() === 'http://example.com/*' &&
+                    $request->method()->toString() === 'OPTIONS';
             }))
             ->willReturn(
                 $response = $this->createMock(Response::class)
@@ -351,10 +346,10 @@ class CapabilitiesTest extends TestCase
             );
 
         $names = $this->capabilities->names();
-        $this->assertSame($this->capabilities, $this->capabilities->refresh());
+        $this->assertNull($this->capabilities->refresh());
         $names2 = $this->capabilities->names();
         $this->assertNotSame($names, $names2);
-        $this->assertInstanceOf(SetInterface::class, $names2);
+        $this->assertInstanceOf(Set::class, $names2);
         $this->assertSame('string', (string) $names2->type());
         $this->assertCount(0, $names2);
     }

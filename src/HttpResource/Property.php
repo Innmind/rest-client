@@ -8,9 +8,13 @@ use Innmind\Immutable\Str;
 
 final class Property
 {
-    private $name;
+    private string $name;
+    /** @var mixed */
     private $value;
 
+    /**
+     * @param mixed $value
+     */
     public function __construct(string $name, $value)
     {
         if (Str::of($name)->empty()) {
@@ -26,6 +30,9 @@ final class Property
         return $this->name;
     }
 
+    /**
+     * @return mixed
+     */
     public function value()
     {
         return $this->value;

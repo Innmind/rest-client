@@ -14,9 +14,9 @@ use Innmind\Immutable\Str;
 
 final class DateType implements Type
 {
-    const PATTERN = '~date<(?<format>.+)>~';
+    private const PATTERN = '~date<(?<format>.+)>~';
 
-    private $format;
+    private string $format;
 
     public function __construct(string $format)
     {
@@ -27,24 +27,22 @@ final class DateType implements Type
         $this->format = $format;
     }
 
-    public static function fromString(string $type, Types $build): Type
+    public static function of(string $type, Types $build): Type
     {
-        $type = new Str($type);
+        $type = Str::of($type);
 
         if (!$type->matches(self::PATTERN)) {
-            throw new DomainException;
+            throw new DomainException($type->toString());
         }
 
         return new self(
-            (string) $type
+            $type
                 ->capture(self::PATTERN)
                 ->get('format')
+                ->toString(),
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function normalize($data)
     {
         if (\is_string($data)) {
@@ -57,16 +55,13 @@ final class DateType implements Type
 
         if (!$data instanceof \DateTimeInterface) {
             throw new NormalizationException(
-                'The value must be an instance of \DateTimeInterface'
+                'The value must be an instance of \DateTimeInterface',
             );
         }
 
         return $data->format($this->format);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function denormalize($data)
     {
         if (!\is_string($data)) {
@@ -76,7 +71,7 @@ final class DateType implements Type
         try {
             $date = \DateTimeImmutable::createFromFormat(
                 $this->format,
-                $data
+                $data,
             );
 
             if (!$date instanceof \DateTimeImmutable) {
@@ -89,7 +84,7 @@ final class DateType implements Type
         }
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return 'date<'.$this->format.'>';
     }

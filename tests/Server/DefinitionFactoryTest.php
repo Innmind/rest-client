@@ -9,25 +9,27 @@ use Innmind\Rest\Client\{
     Definition\HttpResource,
     Serializer\Denormalizer\DenormalizeDefinition,
     Serializer\Decode\Json,
+    Exception\DomainException,
 };
 use Innmind\Http\{
     Message\Response,
-    Message\StatusCode\StatusCode,
-    Headers\Headers,
+    Message\StatusCode,
+    Headers,
     Header,
     Header\ContentType,
     Header\ContentTypeValue,
 };
-use Innmind\Filesystem\Stream\StringStream;
+use Innmind\Stream\Readable\Stream;
 use Innmind\Url\Url;
 use Innmind\Immutable\Map;
+use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
 
 class DefinitionFactoryTest extends TestCase
 {
     private $make;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->make = new DefinitionFactory(
             new DenormalizeDefinition(new Types),
@@ -35,9 +37,6 @@ class DefinitionFactoryTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenResponseNotSuccessful()
     {
         $response = $this->createMock(Response::class);
@@ -45,13 +44,16 @@ class DefinitionFactoryTest extends TestCase
             ->expects($this->once())
             ->method('statusCode')
             ->willReturn(new StatusCode(404));
+        $response
+            ->expects($this->any())
+            ->method('headers')
+            ->willReturn(new Headers);
 
-        ($this->make)('foo', Url::fromString('/'), $response);
+        $this->expectException(DomainException::class);
+
+        ($this->make)('foo', Url::of('/'), $response);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenResponseHasNoContentType()
     {
         $response = $this->createMock(Response::class);
@@ -66,12 +68,11 @@ class DefinitionFactoryTest extends TestCase
                 new Headers
             );
 
-        ($this->make)('foo', Url::fromString('/'), $response);
+        $this->expectException(DomainException::class);
+
+        ($this->make)('foo', Url::of('/'), $response);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenResponseHasNotJson()
     {
         $response = $this->createMock(Response::class);
@@ -93,7 +94,9 @@ class DefinitionFactoryTest extends TestCase
                 )
             );
 
-        ($this->make)('foo', Url::fromString('/'), $response);
+        $this->expectException(DomainException::class);
+
+        ($this->make)('foo', Url::of('/'), $response);
     }
 
     public function testMake()
@@ -119,33 +122,33 @@ class DefinitionFactoryTest extends TestCase
         $response
             ->expects($this->once())
             ->method('body')
-            ->willReturn(new StringStream('{"identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"linkable_to":[],"rangeable":true}'));
+            ->willReturn(Stream::ofContent('{"identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"linkable_to":[],"rangeable":true}'));
 
         $definition = ($this->make)(
             'foo',
-            Url::fromString('http://example.com/foo'),
+            Url::of('http://example.com/foo'),
             $response
         );
 
         $this->assertInstanceOf(HttpResource::class, $definition);
         $this->assertSame('foo', $definition->name());
-        $this->assertSame('http://example.com/foo', (string) $definition->url());
-        $this->assertSame('uuid', (string) $definition->identity());
+        $this->assertSame('http://example.com/foo', $definition->url()->toString());
+        $this->assertSame('uuid', $definition->identity()->toString());
         $this->assertSame(
             'uuid',
             $definition->properties()->get('uuid')->name()
         );
         $this->assertSame(
             'string',
-            (string) $definition->properties()->get('uuid')->type()
+            $definition->properties()->get('uuid')->type()->toString()
         );
         $this->assertSame(
             ['READ'],
-            $definition->properties()->get('uuid')->access()->mask()->toPrimitive()
+            unwrap($definition->properties()->get('uuid')->access()->mask())
         );
         $this->assertSame(
             [],
-            $definition->properties()->get('uuid')->variants()->toPrimitive()
+            unwrap($definition->properties()->get('uuid')->variants())
         );
         $this->assertFalse(
             $definition->properties()->get('uuid')->isOptional()
@@ -156,15 +159,15 @@ class DefinitionFactoryTest extends TestCase
         );
         $this->assertSame(
             'string',
-            (string) $definition->properties()->get('url')->type()
+            $definition->properties()->get('url')->type()->toString()
         );
         $this->assertSame(
             ['READ', 'CREATE', 'UPDATE'],
-            $definition->properties()->get('url')->access()->mask()->toPrimitive()
+            unwrap($definition->properties()->get('url')->access()->mask())
         );
         $this->assertSame(
             [],
-            $definition->properties()->get('url')->variants()->toPrimitive()
+            unwrap($definition->properties()->get('url')->variants())
         );
         $this->assertFalse(
             $definition->properties()->get('url')->isOptional()

@@ -3,16 +3,18 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\Definition;
 
-use Innmind\Rest\Client\Definition\Identity;
+use Innmind\Rest\Client\{
+    Definition\Identity,
+    Exception\DomainException,
+};
 use PHPUnit\Framework\TestCase;
 
 class IdentityTest extends TestCase
 {
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenEmptyIdentity()
     {
+        $this->expectException(DomainException::class);
+
         new Identity('');
     }
 
@@ -20,7 +22,7 @@ class IdentityTest extends TestCase
     {
         $this->assertSame(
             'foo',
-            (string) new Identity('foo')
+            (new Identity('foo'))->toString()
         );
     }
 }

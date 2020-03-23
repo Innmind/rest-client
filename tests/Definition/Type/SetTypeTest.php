@@ -3,16 +3,17 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\Definition\Type;
 
-use Innmind\Rest\Client\Definition\{
-    Type\SetType,
-    Type\DateType,
-    Types,
-    Type,
+use Innmind\Rest\Client\{
+    Definition\Type\SetType,
+    Definition\Type\DateType,
+    Definition\Types,
+    Definition\Type,
+    Exception\DomainException,
+    Exception\NormalizationException,
+    Exception\DenormalizationException,
 };
-use Innmind\Immutable\{
-    SetInterface,
-    Set,
-};
+use Innmind\Immutable\Set;
+use function Innmind\Immutable\first;
 use PHPUnit\Framework\TestCase;
 
 class SetTypeTest extends TestCase
@@ -27,7 +28,7 @@ class SetTypeTest extends TestCase
 
     public function testFromString()
     {
-        $type = SetType::fromString(
+        $type = SetType::of(
             'set<date<c>>',
             new Types(DateType::class)
         );
@@ -35,12 +36,11 @@ class SetTypeTest extends TestCase
         $this->assertInstanceOf(SetType::class, $type);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenBuildInvalidType()
     {
-        SetType::fromString('set<>', new Types);
+        $this->expectException(DomainException::class);
+
+        SetType::of('set<>', new Types);
     }
 
     public function testNormalize()
@@ -67,12 +67,11 @@ class SetTypeTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\NormalizationException
-     * @expectedExceptionMessage The value must be an instance of Innmind\Immutable\SetInterface
-     */
     public function testThrowWhenNormalizingInvalidData()
     {
+        $this->expectException(NormalizationException::class);
+        $this->expectExceptionMessage('The value must be an instance of Innmind\Immutable\Set');
+
         (new SetType(new DateType('c')))->normalize(new \stdClass);
     }
 
@@ -81,26 +80,24 @@ class SetTypeTest extends TestCase
         $date = new SetType(new DateType('d/m/Y'));
 
         $value = $date->denormalize(['30/01/2016']);
-        $this->assertInstanceOf(SetInterface::class, $value);
+        $this->assertInstanceOf(Set::class, $value);
         $this->assertSame(\DateTimeImmutable::class, (string) $value->type());
-        $this->assertSame('2016-01-30', $value->current()->format('Y-m-d'));
+        $this->assertSame('2016-01-30', first($value)->format('Y-m-d'));
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DenormalizationException
-     * @expectedExceptionMessage The value must be an array
-     */
     public function testThrowWhenDenormalizingInvalidData()
     {
+        $this->expectException(DenormalizationException::class);
+        $this->expectExceptionMessage('The value must be an array');
+
         (new SetType(new DateType('c')))->denormalize(new \stdClass);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DenormalizationException
-     * @expectedExceptionMessage The value must be a valid set
-     */
     public function testThrowWhenDenormalizingInvalidDateString()
     {
+        $this->expectException(DenormalizationException::class);
+        $this->expectExceptionMessage('The value must be a valid set');
+
         (new SetType(new DateType('c')))->denormalize(['foo']);
     }
 
@@ -108,7 +105,7 @@ class SetTypeTest extends TestCase
     {
         $this->assertSame(
             'set<date<c>>',
-            (string) new SetType(new DateType('c'))
+            (new SetType(new DateType('c')))->toString()
         );
     }
 }

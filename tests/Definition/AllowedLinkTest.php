@@ -26,7 +26,7 @@ class AllowedLinkTest extends TestCase
     public function testThrowWhenInvalidParameterSet()
     {
         $this->expectException(\TypeError::class);
-        $this->expectExceptionMessage('Argument 3 must be of type SetInterface<string>');
+        $this->expectExceptionMessage('Argument 3 must be of type Set<string>');
 
         new AllowedLink('path', 'rel', Set::of('object'));
     }

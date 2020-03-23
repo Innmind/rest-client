@@ -26,19 +26,18 @@ use Innmind\Rest\Client\{
     Response\ExtractIdentities,
 };
 use Innmind\HttpTransport\Transport;
-use Innmind\UrlResolver\ResolverInterface;
+use Innmind\UrlResolver\Resolver;
 use Innmind\Filesystem\Adapter;
 use Innmind\Immutable\{
-    SetInterface,
     Set,
     Map,
 };
 
 function bootstrap(
     Transport $transport,
-    ResolverInterface $urlResolver,
+    Resolver $urlResolver,
     Adapter $cache,
-    SetInterface $types = null,
+    Set $types = null,
     Formats $contentTypes = null,
     Decode $decode = null
 ): Client {
@@ -47,8 +46,8 @@ function bootstrap(
         new Format(
             'json',
             Set::of(MediaType::class, new MediaType('application/json', 0)),
-            0
-        )
+            0,
+        ),
     );
     $types = new Types(...($types ?? []));
     $resolveIdentity = new ResolveIdentity($urlResolver);
@@ -82,11 +81,11 @@ function bootstrap(
                             $transport,
                             $urlResolver,
                             new DefinitionFactory($denormalizeDefinition, $decode),
-                            $contentTypes
-                        )
-                    )
-                )
-            )
-        )
+                            $contentTypes,
+                        ),
+                    ),
+                ),
+            ),
+        ),
     );
 }

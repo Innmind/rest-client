@@ -3,15 +3,17 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Serializer\Denormalizer;
 
-use Innmind\Immutable\{
-    SetInterface,
-    Set,
-};
+use Innmind\Immutable\Set;
 
 final class DenormalizeCapabilitiesNames
 {
-    public function __invoke(array $data): SetInterface
+    /**
+     * @param list<string> $data
+     *
+     * @return Set<string>
+     */
+    public function __invoke(array $data): Set
     {
-        return Set::of('string', ...\array_values($data));
+        return Set::strings(...\array_values($data));
     }
 }

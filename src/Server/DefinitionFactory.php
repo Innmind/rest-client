@@ -11,14 +11,15 @@ use Innmind\Rest\Client\{
 };
 use Innmind\Http\Message\{
     Response,
-    StatusCode\StatusCode,
+    StatusCode,
 };
-use Innmind\Url\UrlInterface;
+use Innmind\Url\Url;
+use function Innmind\Immutable\first;
 
 final class DefinitionFactory
 {
-    private $denormalize;
-    private $decode;
+    private DenormalizeDefinition $denormalize;
+    private Decode $decode;
 
     public function __construct(
         DenormalizeDefinition $denormalize,
@@ -30,21 +31,22 @@ final class DefinitionFactory
 
     public function __invoke(
         string $name,
-        UrlInterface $url,
+        Url $url,
         Response $response
     ): HttpResource {
         $headers = $response->headers();
 
         if (
             $response->statusCode()->value() !== StatusCode::codes()->get('OK') ||
-            !$headers->has('Content-Type') ||
-            (string) $headers->get('Content-Type')->values()->current() !== 'application/json'
+            !$headers->contains('Content-Type') ||
+            first($headers->get('Content-Type')->values())->toString() !== 'application/json'
         ) {
             throw new DomainException;
         }
 
+        /** @var array{metas: array<scalar, scalar|array>, properties: array<string, array{variants: list<string>, type: string, access: list<string>, optional: bool}>, linkable_to: list<array{resource_path: string, relationship: string, parameters: list<string>}>, identity: string, rangeable: bool} */
         $data = ($this->decode)('json', $response->body());
-        $data['url'] = (string) $url;
+        $data['url'] = $url->toString();
 
         return ($this->denormalize)($data, $name);
     }

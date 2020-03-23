@@ -14,49 +14,49 @@ use Innmind\Http\{
     Header\Value,
     Header\LinkValue,
 };
-use Innmind\Immutable\{
-    SetInterface,
-    Set,
-};
+use Innmind\Immutable\Set;
 
 final class ExtractIdentities
 {
-    private $resolveIdentity;
+    private ResolveIdentity $resolveIdentity;
 
     public function __construct(ResolveIdentity $resolveIdentity)
     {
         $this->resolveIdentity = $resolveIdentity;
     }
 
-    public function __invoke(Response $response, HttpResource $definition): SetInterface
+    /**
+     * @return Set<Identity>
+     */
+    public function __invoke(Response $response, HttpResource $definition): Set
     {
         $headers = $response->headers();
 
-        if (!$headers->has('Link')) {
-            return new Set(Identity::class);
+        if (!$headers->contains('Link')) {
+            return Set::of(Identity::class);
         }
 
-        return $headers
+        /** @var Set<LinkValue> */
+        $links = $headers
             ->get('Link')
             ->values()
             ->filter(function(Value $link): bool {
                 return $link instanceof LinkValue;
-            })
+            });
+
+        /** @var Set<Identity> */
+        return $links
             ->filter(function(LinkValue $link): bool {
                 return $link->relationship() === 'resource';
             })
-            ->reduce(
-                new Set(Identity::class),
-                function(Set $identities, LinkValue $link) use ($definition): Set {
-                    return $identities->add(
-                        new Identity\Identity(
-                            ($this->resolveIdentity)(
-                                $definition->url(),
-                                $link->url()
-                            )
-                        )
-                    );
-                }
+            ->mapTo(
+                Identity::class,
+                fn(LinkValue $link): Identity => new Identity\Identity(
+                    ($this->resolveIdentity)(
+                        $definition->url(),
+                        $link->url(),
+                    ),
+                ),
             );
     }
 }

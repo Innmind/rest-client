@@ -15,7 +15,7 @@ use Innmind\Rest\Client\{
 };
 use Innmind\Http\{
     Message\Response,
-    Headers\Headers,
+    Headers,
     Header\Header,
     Header\Value\Value,
     Header\HeaderValue,
@@ -26,7 +26,6 @@ use Innmind\Url\Url;
 use Innmind\UrlResolver\UrlResolver;
 use Innmind\Immutable\{
     Map,
-    SetInterface,
     Set,
 };
 use PHPUnit\Framework\TestCase;
@@ -36,7 +35,7 @@ class ExtractIdentityTest extends TestCase
     private $extract;
     private $definition;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->extract = new ExtractIdentity(
             new ResolveIdentity(
@@ -45,11 +44,11 @@ class ExtractIdentityTest extends TestCase
         );
         $this->definition = new HttpResource(
             'foo',
-            Url::fromString('http://example.com/foo'),
+            Url::of('http://example.com/foo'),
             new Identity('uuid'),
-            new Map('string', Property::class),
-            new Map('scalar', 'variable'),
-            new Set(AllowedLink::class),
+            Map::of('string', Property::class),
+            Map::of('scalar', 'scalar|array'),
+            Set::of(AllowedLink::class),
             false
         );
     }
@@ -99,7 +98,7 @@ class ExtractIdentityTest extends TestCase
                 Headers::of(
                     new Location(
                         new LocationValue(
-                            Url::fromString('http://example.com/foo/42')
+                            Url::of('http://example.com/foo/42')
                         )
                     )
                 )
@@ -108,6 +107,6 @@ class ExtractIdentityTest extends TestCase
         $identity = ($this->extract)($response, $this->definition);
 
         $this->assertInstanceOf(IdentityInterface::class, $identity);
-        $this->assertSame('42', (string) $identity);
+        $this->assertSame('42', $identity->toString());
     }
 }

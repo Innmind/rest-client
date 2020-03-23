@@ -8,7 +8,7 @@ use Innmind\Rest\Client\Server\{
     Factory,
     RetryServer,
 };
-use Innmind\Url\UrlInterface;
+use Innmind\Url\Url;
 use PHPUnit\Framework\TestCase;
 
 class RetryServerFactoryTest extends TestCase
@@ -28,7 +28,7 @@ class RetryServerFactoryTest extends TestCase
         $make = new RetryServerFactory(
             $inner = $this->createMock(Factory::class)
         );
-        $url = $this->createMock(UrlInterface::class);
+        $url = Url::of('http://example.com/');
         $inner
             ->expects($this->once())
             ->method('__invoke')

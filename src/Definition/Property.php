@@ -5,32 +5,31 @@ namespace Innmind\Rest\Client\Definition;
 
 use Innmind\Rest\Client\Exception\DomainException;
 use Innmind\Immutable\{
-    SetInterface,
+    Set,
     Str,
 };
+use function Innmind\Immutable\assertSet;
 
 final class Property
 {
-    private $name;
-    private $type;
-    private $access;
-    private $variants;
-    private $optional;
+    private string $name;
+    private Type $type;
+    private Access $access;
+    private Set $variants;
+    private bool $optional;
 
     public function __construct(
         string $name,
         Type $type,
         Access $access,
-        SetInterface $variants,
+        Set $variants,
         bool $optional
     ) {
         if (Str::of($name)->empty()) {
             throw new DomainException;
         }
 
-        if ((string) $variants->type() !== 'string') {
-            throw new \TypeError(sprintf('Argument 4 must be of type SetInterface<string>'));
-        }
+        assertSet('string', $variants, 4);
 
         $this->name = $name;
         $this->type = $type;
@@ -54,7 +53,7 @@ final class Property
         return $this->access;
     }
 
-    public function variants(): SetInterface
+    public function variants(): Set
     {
         return $this->variants;
     }

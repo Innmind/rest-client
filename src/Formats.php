@@ -10,32 +10,26 @@ use Innmind\Rest\Client\{
     Exception\DomainException,
 };
 use Innmind\Immutable\{
-    MapInterface,
     Map,
-    SetInterface,
     Set,
 };
+use function Innmind\Immutable\assertMap;
 use Negotiation\Negotiator;
 
 final class Formats
 {
-    private $formats;
-    private $negotiator;
-    private $types;
+    /** @var Map<string, Format> */
+    private Map $formats;
+    private Negotiator $negotiator;
 
-    public function __construct(MapInterface $formats)
+    /**
+     * @param Map<string, Format> $formats
+     */
+    public function __construct(Map $formats)
     {
-        if (
-            (string) $formats->keyType() !== 'string' ||
-            (string) $formats->valueType() !== Format::class
-        ) {
-            throw new \TypeError(sprintf(
-                'Argument 1 must be of type MapInterface<string, %s>',
-                Format::class
-            ));
-        }
+        assertMap('string', Format::class, $formats, 1);
 
-        if ($formats->size() === 0) {
+        if ($formats->empty()) {
             throw new DomainException;
         }
 
@@ -45,11 +39,12 @@ final class Formats
 
     public static function of(Format $first, Format ...$formats): self
     {
-        $map = Map::of('string', Format::class)
-            ($first->name(), $first);
+        /** @var Map<string, Format> */
+        $map = Map::of('string', Format::class);
+        \array_unshift($formats, $first);
 
         foreach ($formats as $format) {
-            $map = $map->put($format->name(), $format);
+            $map = ($map)($format->name(), $format);
         }
 
         return new self($map);
@@ -61,35 +56,32 @@ final class Formats
     }
 
     /**
-     * @return MapInterface<string, Format>
+     * @return Map<string, Format>
      */
-    public function all(): MapInterface
+    public function all(): Map
     {
         return $this->formats;
     }
 
     /**
-     * @return SetInterface<MediaType>
+     * @return Set<MediaType>
      */
-    public function mediaTypes(): SetInterface
+    public function mediaTypes(): Set
     {
-        if ($this->types === null) {
-            $this->types = $this
-                ->formats
-                ->reduce(
-                    new Set(MediaType::class),
-                    function(Set $types, string $name, Format $format): Set {
-                        return $types->merge($format->mediaTypes());
-                    }
-                );
-        }
-
-        return $this->types;
+        /** @var Set<MediaType> */
+        return $this
+            ->formats
+            ->reduce(
+                Set::of(MediaType::class),
+                function(Set $types, string $name, Format $format): Set {
+                    return $types->merge($format->mediaTypes());
+                }
+            );
     }
 
     public function fromMediaType(string $wished): Format
     {
-        $format = $this
+        $formats = $this
             ->formats
             ->values()
             ->filter(function(Format $format) use ($wished) {
@@ -102,17 +94,16 @@ final class Formats
                                 return true;
                             }
 
-                            return (string) $mediaType === $wished;
-                        }
+                            return $mediaType->toString() === $wished;
+                        },
                     );
-            })
-            ->current();
+            });
 
-        if (!$format instanceof Format) {
+        if ($formats->empty()) {
             throw new InvalidArgumentException;
         }
 
-        return $format;
+        return $formats->first();
     }
 
     public function matching(string $wished): Format
@@ -124,17 +115,18 @@ final class Formats
                 ->reduce(
                     [],
                     function(array $carry, MediaType $type): array {
-                        $carry[] = (string) $type;
+                        $carry[] = $type->toString();
 
                         return $carry;
-                    }
-                )
+                    },
+                ),
         );
 
         if ($best === null) {
             throw new InvalidArgumentException;
         }
 
+        /** @psalm-suppress UndefinedInterfaceMethod */
         return $this->best($best->getBasePart().'/'.$best->getSubPart());
     }
 
@@ -144,8 +136,8 @@ final class Formats
             return $this
                 ->formats
                 ->values()
-                ->sort(function(Format $a, Format $b): bool {
-                    return $a->priority() > $b->priority();
+                ->sort(function(Format $a, Format $b): int {
+                    return (int) ($a->priority() > $b->priority());
                 })
                 ->first();
         }

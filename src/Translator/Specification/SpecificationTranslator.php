@@ -17,9 +17,6 @@ use Innmind\Specification\{
     Sign,
 };
 
-/**
- * {@inheritdoc}
- */
 final class SpecificationTranslator implements SpecificationTranslatorInterface
 {
     public function __invoke(Specification $specification): string
@@ -30,10 +27,11 @@ final class SpecificationTranslator implements SpecificationTranslatorInterface
                     throw new OnlyEqualityCanBeTranslated;
                 }
 
+                /** @psalm-suppress MixedArgument */
                 return \sprintf(
                     '%s=%s',
                     $specification->property(),
-                    $specification->value()
+                    $specification->value(),
                 );
 
             case $specification instanceof Composite:
@@ -44,7 +42,7 @@ final class SpecificationTranslator implements SpecificationTranslatorInterface
                 return \sprintf(
                     '%s&%s',
                     $this($specification->left()),
-                    $this($specification->right())
+                    $this($specification->right()),
                 );
 
             default:

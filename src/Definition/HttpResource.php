@@ -7,59 +7,51 @@ use Innmind\Rest\Client\{
     Link,
     Exception\DomainException,
 };
-use Innmind\Url\UrlInterface;
+use Innmind\Url\Url;
 use Innmind\Immutable\{
-    MapInterface,
-    SetInterface,
+    Map,
+    Set,
     Str,
+};
+use function Innmind\Immutable\{
+    assertMap,
+    assertSet,
 };
 
 final class HttpResource
 {
-    private $name;
-    private $url;
-    private $identity;
-    private $properties;
-    private $metas;
-    private $links;
-    private $rangeable;
+    private string $name;
+    private Url $url;
+    private Identity $identity;
+    /** @var Map<string, Property> */
+    private Map $properties;
+    /** @var Map<scalar, scalar|array> */
+    private Map $metas;
+    /** @var Set<AllowedLink> */
+    private Set $links;
+    private bool $rangeable;
 
+    /**
+     * @param Map<string, Property> $properties
+     * @param Map<scalar, scalar|array> $metas
+     * @param Set<AllowedLink> $links
+     */
     public function __construct(
         string $name,
-        UrlInterface $url,
+        Url $url,
         Identity $identity,
-        MapInterface $properties,
-        MapInterface $metas,
-        SetInterface $links,
+        Map $properties,
+        Map $metas,
+        Set $links,
         bool $rangeable
     ) {
         if (Str::of($name)->empty()) {
             throw new DomainException;
         }
 
-        if (
-            (string) $properties->keyType() !== 'string' ||
-            (string) $properties->valueType() !== Property::class
-        ) {
-            throw new \TypeError(sprintf(
-                'Argument 4 must be of type MapInterface<string, %s>',
-                Property::class
-            ));
-        }
-
-        if (
-            (string) $metas->keyType() !== 'scalar' ||
-            (string) $metas->valueType() !== 'variable'
-        ) {
-            throw new \TypeError('Argument 5 must be of type MapInterface<scalar, variable>');
-        }
-
-        if ((string) $links->type() !== AllowedLink::class) {
-            throw new \TypeError(\sprintf(
-                'Argument 6 must be of type SetInterface<%s>',
-                AllowedLink::class
-            ));
-        }
+        assertMap('string', Property::class, $properties, 4);
+        assertMap('scalar', 'scalar|array', $metas, 5);
+        assertSet(AllowedLink::class, $links, 6);
 
         $this->name = $name;
         $this->url = $url;
@@ -75,7 +67,7 @@ final class HttpResource
         return $this->name;
     }
 
-    public function url(): UrlInterface
+    public function url(): Url
     {
         return $this->url;
     }
@@ -86,25 +78,25 @@ final class HttpResource
     }
 
     /**
-     * @return MapInterface<string, Property>
+     * @return Map<string, Property>
      */
-    public function properties(): MapInterface
+    public function properties(): Map
     {
         return $this->properties;
     }
 
     /**
-     * @return MapInterface<scalar, variable>
+     * @return Map<scalar, scalar|array>
      */
-    public function metas(): MapInterface
+    public function metas(): Map
     {
         return $this->metas;
     }
 
     /**
-     * @return SetInterface<AllowedLink>
+     * @return Set<AllowedLink>
      */
-    public function links(): SetInterface
+    public function links(): Set
     {
         return $this->links;
     }
@@ -115,7 +107,7 @@ final class HttpResource
             false,
             static function(bool $allows, AllowedLink $allowed) use ($link): bool {
                 return $allows || $allowed->allows($link);
-            }
+            },
         );
     }
 
@@ -124,7 +116,7 @@ final class HttpResource
         return $this->rangeable;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->name;
     }

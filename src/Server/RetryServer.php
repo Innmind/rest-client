@@ -12,9 +12,9 @@ use Innmind\Rest\Client\{
     Exception\DenormalizationException,
 };
 use Innmind\HttpTransport\Exception\ClientError;
-use Innmind\Http\Message\StatusCode\StatusCode;
-use Innmind\Url\UrlInterface;
-use Innmind\Immutable\SetInterface;
+use Innmind\Http\Message\StatusCode;
+use Innmind\Url\Url;
+use Innmind\Immutable\Set;
 use Innmind\Specification\Specification;
 
 /**
@@ -24,7 +24,7 @@ use Innmind\Specification\Specification;
  */
 final class RetryServer implements ServerInterface
 {
-    private $server;
+    private ServerInterface $server;
 
     public function __construct(ServerInterface $server)
     {
@@ -38,7 +38,7 @@ final class RetryServer implements ServerInterface
         string $name,
         Specification $specification = null,
         Range $range = null
-    ): SetInterface {
+    ): Set {
         try {
             return $this->server->all($name, $specification, $range);
         } catch (\Throwable $e) {
@@ -82,10 +82,8 @@ final class RetryServer implements ServerInterface
         }
     }
 
-    public function update(
-        Identity $identity,
-        HttpResource $resource
-    ): ServerInterface {
+    public function update(Identity $identity, HttpResource $resource): void
+    {
         try {
             $this->server->update($identity, $resource);
         } catch (\Throwable $e) {
@@ -96,11 +94,9 @@ final class RetryServer implements ServerInterface
             $this->server->capabilities()->refresh();
             $this->server->update($identity, $resource);
         }
-
-        return $this;
     }
 
-    public function remove(string $name, Identity $identity): ServerInterface
+    public function remove(string $name, Identity $identity): void
     {
         try {
             $this->server->remove($name, $identity);
@@ -112,18 +108,10 @@ final class RetryServer implements ServerInterface
             $this->server->capabilities()->refresh();
             $this->server->remove($name, $identity);
         }
-
-        return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function link(
-        string $name,
-        Identity $identity,
-        SetInterface $links
-    ): ServerInterface {
+    public function link(string $name, Identity $identity, Set $links): void
+    {
         try {
             $this->server->link($name, $identity, $links);
         } catch (\Throwable $e) {
@@ -134,18 +122,10 @@ final class RetryServer implements ServerInterface
             $this->server->capabilities()->refresh();
             $this->server->link($name, $identity, $links);
         }
-
-        return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unlink(
-        string $name,
-        Identity $identity,
-        SetInterface $links
-    ): ServerInterface {
+    public function unlink(string $name, Identity $identity, Set $links): void
+    {
         try {
             $this->server->unlink($name, $identity, $links);
         } catch (\Throwable $e) {
@@ -156,8 +136,6 @@ final class RetryServer implements ServerInterface
             $this->server->capabilities()->refresh();
             $this->server->unlink($name, $identity, $links);
         }
-
-        return $this;
     }
 
     public function capabilities(): Capabilities
@@ -165,7 +143,7 @@ final class RetryServer implements ServerInterface
         return $this->server->capabilities();
     }
 
-    public function url(): UrlInterface
+    public function url(): Url
     {
         return $this->server->url();
     }

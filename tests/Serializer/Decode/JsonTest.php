@@ -8,7 +8,7 @@ use Innmind\Rest\Client\{
     Serializer\Decode,
     Exception\LogicException,
 };
-use Innmind\Filesystem\Stream\StringStream;
+use Innmind\Stream\Readable\Stream;
 use PHPUnit\Framework\TestCase;
 
 class JsonTest extends TestCase
@@ -22,7 +22,7 @@ class JsonTest extends TestCase
     {
         $this->assertSame(
             ['foo' => 'bar'],
-            (new Json)('json', new StringStream('{"foo":"bar"}'))
+            (new Json)('json', Stream::ofContent('{"foo":"bar"}'))
         );
     }
 
@@ -30,6 +30,6 @@ class JsonTest extends TestCase
     {
         $this->expectException(LogicException::class);
 
-        (new Json)('xml', new StringStream('{"foo":"bar"}'));
+        (new Json)('xml', Stream::ofContent('{"foo":"bar"}'));
     }
 }

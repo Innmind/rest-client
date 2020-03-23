@@ -20,9 +20,9 @@ use Innmind\Rest\Client\{
     Serializer\Encode,
     Serializer\Decode,
 };
-use Innmind\Url\UrlInterface;
+use Innmind\Url\Url;
 use Innmind\HttpTransport\Transport;
-use Innmind\UrlResolver\ResolverInterface;
+use Innmind\UrlResolver\Resolver;
 use Innmind\Immutable\{
     Map,
     Set,
@@ -34,11 +34,11 @@ class ServerFactoryTest extends TestCase
     private $make;
     private $capabilities;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->make = new ServerFactory(
             $this->createMock(Transport::class),
-            $resolver = $this->createMock(ResolverInterface::class),
+            $resolver = $this->createMock(Resolver::class),
             new ExtractIdentity(new ResolveIdentity($resolver)),
             new ExtractIdentities(new ResolveIdentity($resolver)),
             new DenormalizeResource,
@@ -70,7 +70,7 @@ class ServerFactoryTest extends TestCase
 
     public function testMake()
     {
-        $url = $this->createMock(UrlInterface::class);
+        $url = Url::of('http://example.com/');
         $this
             ->capabilities
             ->expects($this->once())

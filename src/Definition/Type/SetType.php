@@ -12,57 +12,55 @@ use Innmind\Rest\Client\{
 };
 use Innmind\Immutable\{
     Str,
-    SetInterface,
     Set,
 };
 
 final class SetType implements Type
 {
-    const PATTERN = '~set<(?<inner>.+)>~';
+    private const PATTERN = '~set<(?<inner>.+)>~';
 
-    private $inner;
-    private $denormalized;
+    private Type $inner;
+    private Set $denormalized;
 
     public function __construct(Type $inner)
     {
         $this->inner = $inner;
-        $this->denormalized = new Set(
+        $this->denormalized = Set::of(
             $inner instanceof DateType ?
-                \DateTimeImmutable::class : (string) $inner
+                \DateTimeImmutable::class : $inner->toString(),
         );
     }
 
-    public static function fromString(string $type, Types $build): Type
+    public static function of(string $type, Types $build): Type
     {
-        $type = new Str($type);
+        $type = Str::of($type);
 
         if (!$type->matches(self::PATTERN)) {
-            throw new DomainException;
+            throw new DomainException($type->toString());
         }
 
         return new self(
             $build(
-                (string) $type
+                $type
                     ->capture(self::PATTERN)
                     ->get('inner')
-            )
+                    ->toString(),
+            ),
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function normalize($data)
     {
-        if (!$data instanceof SetInterface) {
+        if (!$data instanceof Set) {
             throw new NormalizationException(
-                'The value must be an instance of Innmind\Immutable\SetInterface'
+                'The value must be an instance of Innmind\Immutable\Set',
             );
         }
 
         return $data->reduce(
             [],
             function(array $values, $value): array {
+                /** @psalm-suppress MixedAssignment */
                 $values[] = $this->inner->normalize($value);
 
                 return $values;
@@ -70,9 +68,6 @@ final class SetType implements Type
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function denormalize($data)
     {
         if (!\is_array($data)) {
@@ -82,10 +77,9 @@ final class SetType implements Type
         $set = $this->denormalized;
 
         try {
+            /** @psalm-suppress MixedAssignment */
             foreach ($data as $value) {
-                $set = $set->add(
-                    $this->inner->denormalize($value)
-                );
+                $set = ($set)($this->inner->denormalize($value));
             }
 
             return $set;
@@ -94,8 +88,8 @@ final class SetType implements Type
         }
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
-        return 'set<'.$this->inner.'>';
+        return 'set<'.$this->inner->toString().'>';
     }
 }
