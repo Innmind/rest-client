@@ -7,6 +7,8 @@ use Innmind\Rest\Client\{
     Formats,
     Format\Format,
     Format\MediaType,
+    Exception\InvalidArgumentException,
+    Exception\DomainException,
 };
 use Innmind\Immutable\{
     Map,
@@ -55,29 +57,26 @@ class FormatsTest extends TestCase
         $this->assertSame($format, $formats->get('json'));
     }
 
-    /**
-     * @expectedException TypeError
-     * @expectedExceptionMessage Argument 1 must be of type MapInterface<string, Innmind\Rest\Client\Format\Format>
-     */
     public function testThrowWhenInvalidMapKey()
     {
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('Argument 1 must be of type MapInterface<string, Innmind\Rest\Client\Format\Format>');
+
         new Formats(new Map('int', Format::class));
     }
 
-    /**
-     * @expectedException TypeError
-     * @expectedExceptionMessage Argument 1 must be of type MapInterface<string, Innmind\Rest\Client\Format\Format>
-     */
     public function testThrowWhenInvalidMapValue()
     {
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('Argument 1 must be of type MapInterface<string, Innmind\Rest\Client\Format\Format>');
+
         new Formats(new Map('string', 'string'));
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenEmptyMap()
     {
+        $this->expectException(DomainException::class);
+
         new Formats(new Map('string', Format::class));
     }
 
@@ -153,9 +152,6 @@ class FormatsTest extends TestCase
         $this->assertSame($html, $formats->fromMediaType('text/xhtml'));
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
-     */
     public function testThrowWhenNoFormatForWishedMediaType()
     {
         $formats = new Formats(
@@ -173,6 +169,8 @@ class FormatsTest extends TestCase
                     )
                 )
         );
+
+        $this->expectException(InvalidArgumentException::class);
 
         $formats->fromMediaType('application/json');
     }
@@ -245,9 +243,6 @@ class FormatsTest extends TestCase
         $this->assertSame($json, $format);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\InvalidArgumentException
-     */
     public function testThrowWhenCantMatch()
     {
         $formats = new Formats(
@@ -276,6 +271,8 @@ class FormatsTest extends TestCase
                     )
                 )
         );
+
+        $this->expectException(InvalidArgumentException::class);
 
         $formats->matching('text/plain');
     }

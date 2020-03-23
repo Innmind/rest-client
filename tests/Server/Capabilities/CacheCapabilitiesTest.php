@@ -38,7 +38,7 @@ class CacheCapabilitiesTest extends TestCase
     private $definition;
     private $raw;
 
-    public function setUp()
+    public function setUp(): void
     {
         $denormalizeDefinition = new DenormalizeDefinition(new Types);
 

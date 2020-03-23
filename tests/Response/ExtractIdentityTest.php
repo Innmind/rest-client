@@ -36,7 +36,7 @@ class ExtractIdentityTest extends TestCase
     private $extract;
     private $definition;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->extract = new ExtractIdentity(
             new ResolveIdentity(

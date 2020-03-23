@@ -34,7 +34,7 @@ class ServerFactoryTest extends TestCase
     private $make;
     private $capabilities;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->make = new ServerFactory(
             $this->createMock(Transport::class),

@@ -7,6 +7,7 @@ use Innmind\Rest\Client\{
     Link,
     Link\Parameter,
     Identity,
+    Exception\DomainException,
 };
 use Innmind\Immutable\{
     MapInterface,
@@ -66,12 +67,11 @@ class LinkTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException TypeError
-     * @expectedExceptionMessage Argument 4 must be of type MapInterface<string, Innmind\Rest\Client\Link\Parameter>
-     */
     public function testThrowWhenInvalidParameterMap()
     {
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('Argument 4 must be of type MapInterface<string, Innmind\Rest\Client\Link\Parameter>');
+
         new Link(
             'foo',
             $this->createMock(Identity::class),
@@ -80,11 +80,10 @@ class LinkTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenEmptyDefinition()
     {
+        $this->expectException(DomainException::class);
+
         new Link(
             '',
             $this->createMock(Identity::class),
@@ -93,11 +92,10 @@ class LinkTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenEmptyRelationship()
     {
+        $this->expectException(DomainException::class);
+
         new Link(
             'foo',
             $this->createMock(Identity::class),

@@ -3,9 +3,12 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\Translator\Specification;
 
-use Innmind\Rest\Client\Translator\{
-    Specification\SpecificationTranslator,
-    SpecificationTranslator as SpecificationTranslatorInterface,
+use Innmind\Rest\Client\{
+    Translator\Specification\SpecificationTranslator,
+    Translator\SpecificationTranslator as SpecificationTranslatorInterface,
+    Exception\OnlyEqualityCanBeTranslated,
+    Exception\OnlyAndCompositionCanBeTranslated,
+    Exception\SpecificationCantBeTranslated,
 };
 use Innmind\Specification\{
     Comparator,
@@ -48,9 +51,6 @@ class SpecificationTranslatorTest extends TestCase
         $this->assertSame('bar=baz', $query);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\OnlyEqualityCanBeTranslated
-     */
     public function testThrowWhenUnsupportedComparison()
     {
         $spec = $this->createMock(Comparator::class);
@@ -64,6 +64,8 @@ class SpecificationTranslatorTest extends TestCase
         $spec
             ->expects($this->never())
             ->method('value');
+
+        $this->expectException(OnlyEqualityCanBeTranslated::class);
 
         (new SpecificationTranslator)($spec);
     }
@@ -115,9 +117,6 @@ class SpecificationTranslatorTest extends TestCase
         $this->assertSame('bar=baz&foo=foobar', $query);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\OnlyAndCompositionCanBeTranslated
-     */
     public function testThrowWhenUnsupportedComposite()
     {
         $spec = $this->createMock(Composite::class);
@@ -132,24 +131,24 @@ class SpecificationTranslatorTest extends TestCase
             ->method('operator')
             ->willReturn(Operator::or());
 
+        $this->expectException(OnlyAndCompositionCanBeTranslated::class);
+
         (new SpecificationTranslator)($spec);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\SpecificationCantBeTranslated
-     */
     public function testThrowWhenTranslatingNegativeSpecification()
     {
+        $this->expectException(SpecificationCantBeTranslated::class);
+
         (new SpecificationTranslator)(
             $this->createMock(Not::class)
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\SpecificationCantBeTranslated
-     */
     public function testThrowWhenTranslatingUnknownSpecification()
     {
+        $this->expectException(SpecificationCantBeTranslated::class);
+
         (new SpecificationTranslator)(
             $this->createMock(Specification::class)
         );

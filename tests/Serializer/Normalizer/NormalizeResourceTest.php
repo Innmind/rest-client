@@ -11,6 +11,7 @@ use Innmind\Rest\Client\{
     Definition\HttpResource as ResourceDefinition,
     Definition\Access,
     Definition\Types,
+    Exception\MissingProperty,
 };
 use Innmind\Immutable\{
     Set,
@@ -23,7 +24,7 @@ class NormalizeResourceTest extends TestCase
     private $normalize;
     private $definition;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->normalize = new NormalizeResource;
         $this->definition = (new DenormalizeDefinition(new Types))(
@@ -129,12 +130,11 @@ class NormalizeResourceTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\MissingProperty
-     * @expectedExceptionMessage Missing property "onCreate"
-     */
     public function testThrowWhenNormalizingWithMissingProperty()
     {
+        $this->expectException(MissingProperty::class);
+        $this->expectExceptionMessage('Missing property "onCreate"');
+
         ($this->normalize)(
             HttpResource::of('foo'),
             $this->definition,

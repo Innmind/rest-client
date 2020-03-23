@@ -11,6 +11,7 @@ use Innmind\Rest\Client\{
     Link,
     Link\Parameter,
     Identity as IdentityInterface,
+    Exception\DomainException,
 };
 use Innmind\Url\UrlInterface;
 use Innmind\Immutable\{
@@ -43,11 +44,10 @@ class HttpResourceTest extends TestCase
         $this->assertTrue($resource->isRangeable());
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenEmptyName()
     {
+        $this->expectException(DomainException::class);
+
         new HttpResource(
             '',
             $this->createMock(UrlInterface::class),
@@ -59,12 +59,11 @@ class HttpResourceTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException TypeError
-     * @expectedExceptionMessage Argument 4 must be of type MapInterface<string, Innmind\Rest\Client\Definition\Property>
-     */
     public function testThrowWhenInvalidPropertyMap()
     {
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('Argument 4 must be of type MapInterface<string, Innmind\Rest\Client\Definition\Property>');
+
         new HttpResource(
             'foo',
             $this->createMock(UrlInterface::class),
@@ -76,12 +75,11 @@ class HttpResourceTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException TypeError
-     * @expectedExceptionMessage Argument 5 must be of type MapInterface<scalar, variable>
-     */
     public function testThrowWhenInvalidMetaMap()
     {
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('Argument 5 must be of type MapInterface<scalar, variable>');
+
         new HttpResource(
             'foo',
             $this->createMock(UrlInterface::class),
@@ -93,12 +91,11 @@ class HttpResourceTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException TypeError
-     * @expectedExceptionMessage Argument 6 must be of type SetInterface<Innmind\Rest\Client\Definition\AllowedLink>
-     */
     public function testThrowWhenInvalidLinkMap()
     {
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('Argument 6 must be of type SetInterface<Innmind\Rest\Client\Definition\AllowedLink>');
+
         new HttpResource(
             'foo',
             $this->createMock(UrlInterface::class),

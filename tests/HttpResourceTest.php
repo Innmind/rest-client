@@ -6,6 +6,7 @@ namespace Tests\Innmind\Rest\Client;
 use Innmind\Rest\Client\{
     HttpResource,
     HttpResource\Property,
+    Exception\DomainException,
 };
 use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;
@@ -33,23 +34,21 @@ class HttpResourceTest extends TestCase
         $this->assertSame(42, $resource->properties()->get('bar')->value());
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenEmptyName()
     {
+        $this->expectException(DomainException::class);
+
         new HttpResource(
             '',
             new Map('string', Property::class)
         );
     }
 
-    /**
-     * @expectedException TypeError
-     * @expectedExceptionMessage Argument 2 must be of type MapInterface<string, Innmind\Rest\Client\HttpResource\Property>
-     */
     public function testThrowWhenInvalidProperties()
     {
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('Argument 2 must be of type MapInterface<string, Innmind\Rest\Client\HttpResource\Property>');
+
         new HttpResource(
             'foo',
             new Map('string', 'variable')

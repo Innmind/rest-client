@@ -16,7 +16,7 @@ class ClientTest extends TestCase
     private $client;
     private $factory;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->client = new Client(
             $this->factory = $this->createMock(Factory::class)

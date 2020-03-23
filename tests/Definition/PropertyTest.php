@@ -3,21 +3,21 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\Definition;
 
-use Innmind\Rest\Client\Definition\{
-    Property,
-    Type,
-    Access,
+use Innmind\Rest\Client\{
+    Definition\Property,
+    Definition\Type,
+    Definition\Access,
+    Exception\DomainException,
 };
 use Innmind\Immutable\Set;
 use PHPUnit\Framework\TestCase;
 
 class PropertyTest extends TestCase
 {
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenEmptyName()
     {
+        $this->expectException(DomainException::class);
+
         new Property(
             '',
             $this->createMock(Type::class),
@@ -27,12 +27,11 @@ class PropertyTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException TypeError
-     * @expectedExceptionMessage Argument 4 must be of type SetInterface<string>
-     */
     public function testThrowWhenInvalidVariants()
     {
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('Argument 4 must be of type SetInterface<string>');
+
         new Property(
             'foo',
             $this->createMock(Type::class),

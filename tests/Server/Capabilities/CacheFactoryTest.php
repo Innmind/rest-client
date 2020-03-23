@@ -24,7 +24,7 @@ class CacheFactoryTest extends TestCase
     private $make;
     private $inner;
 
-    public function setUp()
+    public function setUp(): void
     {
         $types = new Types(...Types::defaults());
 

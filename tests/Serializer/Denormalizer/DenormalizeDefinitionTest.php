@@ -15,7 +15,7 @@ class DenormalizeDefinitionTest extends TestCase
     private $denormalize;
     private $raw;
 
-    public function setUp()
+    public function setUp(): void
     {
         $types = new Types(...Types::defaults());
 

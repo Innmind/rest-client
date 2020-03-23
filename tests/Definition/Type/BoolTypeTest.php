@@ -3,10 +3,11 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\Definition\Type;
 
-use Innmind\Rest\Client\Definition\{
-    Type\BoolType,
-    Types,
-    Type,
+use Innmind\Rest\Client\{
+    Definition\Type\BoolType,
+    Definition\Types,
+    Definition\Type,
+    Exception\DomainException,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -27,11 +28,10 @@ class BoolTypeTest extends TestCase
         $this->assertInstanceOf(BoolType::class, $type);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenBuildInvalidType()
     {
+        $this->expectException(DomainException::class);
+
         BoolType::fromString('int', new Types);
     }
 

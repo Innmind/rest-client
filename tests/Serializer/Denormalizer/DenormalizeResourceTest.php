@@ -11,6 +11,7 @@ use Innmind\Rest\Client\{
     Definition\HttpResource as ResourceDefinition,
     Definition\Access,
     Definition\Types,
+    Exception\MissingProperty,
 };
 use Innmind\Immutable\{
     Set,
@@ -23,7 +24,7 @@ class DenormalizeResourceTest extends TestCase
     private $denormalize;
     private $definition;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->denormalize = new DenormalizeResource;
         $this->definition = (new DenormalizeDefinition(new Types))(
@@ -114,12 +115,11 @@ class DenormalizeResourceTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\MissingProperty
-     * @expectedExceptionMessage Missing property "uuid"
-     */
     public function testThrowWhenDenormalizingWithMissingProperty()
     {
+        $this->expectException(MissingProperty::class);
+        $this->expectExceptionMessage('Missing property "uuid"');
+
         ($this->denormalize)(
             [
                 'resource' => [],

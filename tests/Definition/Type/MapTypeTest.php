@@ -3,12 +3,15 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\Definition\Type;
 
-use Innmind\Rest\Client\Definition\{
-    Type\MapType,
-    Type\DateType,
-    Type\IntType,
-    Types,
-    Type,
+use Innmind\Rest\Client\{
+    Definition\Type\MapType,
+    Definition\Type\DateType,
+    Definition\Type\IntType,
+    Definition\Types,
+    Definition\Type,
+    Exception\DomainException,
+    Exception\NormalizationException,
+    Exception\DenormalizationException,
 };
 use Innmind\Immutable\{
     MapInterface,
@@ -47,11 +50,10 @@ class MapTypeTest extends TestCase
         $this->assertInstanceOf(MapType::class, $type);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenBuildInvalidType()
     {
+        $this->expectException(DomainException::class);
+
         MapType::fromString('map<,>', new Types);
     }
 
@@ -85,12 +87,11 @@ class MapTypeTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\NormalizationException
-     * @expectedExceptionMessage The value must be an instance of Innmind\Immutable\MapInterface
-     */
     public function testThrowWhenNormalizingInvalidData()
     {
+        $this->expectException(NormalizationException::class);
+        $this->expectExceptionMessage('The value must be an instance of Innmind\Immutable\MapInterface');
+
         (new MapType(new IntType, new DateType('c')))->normalize(new \stdClass);
     }
 
@@ -106,23 +107,21 @@ class MapTypeTest extends TestCase
         $this->assertSame('2016-01-30', $value->get(2)->format('Y-m-d'));
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DenormalizationException
-     * @expectedExceptionMessage The value must be an array
-     */
     public function testThrowWhenDenormalizingInvalidData()
     {
+        $this->expectException(DenormalizationException::class);
+        $this->expectExceptionMessage('The value must be an array');
+
         (new MapType(new IntType, new DateType('c')))->denormalize(new \stdClass);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DenormalizationException
-     * @expectedExceptionMessage The value must be a valid map
-     */
     public function testThrowWhenDenormalizingInvalidDateString()
     {
         $values = new \SplObjectStorage;
         $values->attach(new \stdClass, 'foo');
+
+        $this->expectException(DenormalizationException::class);
+        $this->expectExceptionMessage('The value must be a valid map');
 
         (new MapType(new IntType, new DateType('c')))->denormalize($values);
     }

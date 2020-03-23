@@ -9,6 +9,7 @@ use Innmind\Rest\Client\{
     Definition\HttpResource,
     Serializer\Denormalizer\DenormalizeDefinition,
     Serializer\Decode\Json,
+    Exception\DomainException,
 };
 use Innmind\Http\{
     Message\Response,
@@ -27,7 +28,7 @@ class DefinitionFactoryTest extends TestCase
 {
     private $make;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->make = new DefinitionFactory(
             new DenormalizeDefinition(new Types),
@@ -35,9 +36,6 @@ class DefinitionFactoryTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenResponseNotSuccessful()
     {
         $response = $this->createMock(Response::class);
@@ -46,12 +44,11 @@ class DefinitionFactoryTest extends TestCase
             ->method('statusCode')
             ->willReturn(new StatusCode(404));
 
+        $this->expectException(DomainException::class);
+
         ($this->make)('foo', Url::fromString('/'), $response);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenResponseHasNoContentType()
     {
         $response = $this->createMock(Response::class);
@@ -66,12 +63,11 @@ class DefinitionFactoryTest extends TestCase
                 new Headers
             );
 
+        $this->expectException(DomainException::class);
+
         ($this->make)('foo', Url::fromString('/'), $response);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenResponseHasNotJson()
     {
         $response = $this->createMock(Response::class);
@@ -92,6 +88,8 @@ class DefinitionFactoryTest extends TestCase
                     )
                 )
             );
+
+        $this->expectException(DomainException::class);
 
         ($this->make)('foo', Url::fromString('/'), $response);
     }

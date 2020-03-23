@@ -3,10 +3,13 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\Definition\Type;
 
-use Innmind\Rest\Client\Definition\{
-    Type\IntType,
-    Types,
-    Type,
+use Innmind\Rest\Client\{
+    Definition\Type\IntType,
+    Definition\Types,
+    Definition\Type,
+    Exception\DomainException,
+    Exception\NormalizationException,
+    Exception\DenormalizationException,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -27,11 +30,10 @@ class IntTypeTest extends TestCase
         $this->assertInstanceOf(IntType::class, $type);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenBuildInvalidType()
     {
+        $this->expectException(DomainException::class);
+
         IntType::fromString('float', new Types);
     }
 
@@ -44,12 +46,11 @@ class IntTypeTest extends TestCase
         $this->assertSame(1, (new IntType)->normalize('1.2'));
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\NormalizationException
-     * @expectedExceptionMessage The value must be an integer
-     */
     public function testThrowWhenNormalizingInvalidData()
     {
+        $this->expectException(NormalizationException::class);
+        $this->expectExceptionMessage('The value must be an integer');
+
         (new IntType)->normalize(new \stdClass);
     }
 
@@ -62,12 +63,11 @@ class IntTypeTest extends TestCase
         $this->assertSame(1, (new IntType)->denormalize('1.2'));
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DenormalizationException
-     * @expectedExceptionMessage The value must be an integer
-     */
     public function testThrowWhenDenormalizingInvalidData()
     {
+        $this->expectException(DenormalizationException::class);
+        $this->expectExceptionMessage('The value must be an integer');
+
         (new IntType)->denormalize(new \stdClass);
     }
 

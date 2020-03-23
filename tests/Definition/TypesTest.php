@@ -14,17 +14,17 @@ use Innmind\Rest\Client\{
     Definition\Type\SetType,
     Definition\Type\StringType,
     Exception\DomainException,
+    Exception\UnknownType,
 };
 use Innmind\Immutable\SetInterface;
 use PHPUnit\Framework\TestCase;
 
 class TypesTest extends TestCase
 {
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenRegisteringInvalidType()
     {
+        $this->expectException(DomainException::class);
+
         new Types('stdClass');
     }
 
@@ -84,11 +84,10 @@ class TypesTest extends TestCase
         $this->assertInstanceOf($class2, $build('type2'));
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\UnknownType
-     */
     public function testThrowWhenBuildingUnknownType()
     {
+        $this->expectException(UnknownType::class);
+
         (new Types)('type1');
     }
 

@@ -6,6 +6,7 @@ namespace Tests\Innmind\Rest\Client\Identity;
 use Innmind\Rest\Client\{
     Identity\Identity,
     Identity as IdentityInterface,
+    Exception\DomainException,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -19,11 +20,10 @@ class IdentityTest extends TestCase
         $this->assertSame('foo', (string) $identity);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenEmptyValue()
     {
+        $this->expectException(DomainException::class);
+
         new Identity('');
     }
 }

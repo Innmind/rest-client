@@ -30,6 +30,10 @@ use Innmind\Rest\Client\{
     Response\ExtractIdentity,
     Response\ExtractIdentities,
     Visitor\ResolveIdentity,
+    Exception\ResourceNotRangeable,
+    Exception\NormalizationException,
+    Exception\DomainException,
+    Exception\UnsupportedResponse,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\UrlResolver\UrlResolver;
@@ -69,7 +73,7 @@ class ServerTest extends TestCase
     private $capabilities;
     private $definition;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->server = new Server(
             $this->url = Url::fromString('http://example.com/'),
@@ -153,9 +157,6 @@ class ServerTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\ResourceNotRangeable
-     */
     public function testThrowWhenRangingOnNonRangeableResource()
     {
         $this
@@ -174,6 +175,8 @@ class ServerTest extends TestCase
                     false
                 )
             );
+
+        $this->expectException(ResourceNotRangeable::class);
 
         $this->server->all(
             'foo',
@@ -440,9 +443,6 @@ class ServerTest extends TestCase
         $this->assertSame('some-other-uuid', (string) $all->current());
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\UnsupportedResponse
-     */
     public function testThrowWhenReadResponseHasNoContentType()
     {
         $this
@@ -465,12 +465,11 @@ class ServerTest extends TestCase
                 new Headers
             );
 
+        $this->expectException(UnsupportedResponse::class);
+
         $this->server->read('foo', new Identity\Identity('uuid'));
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\UnsupportedResponse
-     */
     public function testThrowWhenReadResponseContentTypeNotSupported()
     {
         $this
@@ -499,6 +498,8 @@ class ServerTest extends TestCase
                     )
                 )
             );
+
+        $this->expectException(UnsupportedResponse::class);
 
         $this->server->read('foo', new Identity\Identity('uuid'));
     }
@@ -669,12 +670,11 @@ class ServerTest extends TestCase
         $this->assertSame($this->server, $return);
     }
 
-    /**
-     * @expectedException TypeError
-     * @expectedExceptionMessage Argument 3 must be of type SetInterface<Innmind\Rest\Client\Link>
-     */
     public function testThrowWhenInvalidSetOfLinks()
     {
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('Argument 3 must be of type SetInterface<Innmind\Rest\Client\Link>');
+
         $this->server->link(
             'foo',
             $this->createMock(Identity::class),
@@ -682,11 +682,10 @@ class ServerTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenEmptySetOfLinks()
     {
+        $this->expectException(DomainException::class);
+
         $this->server->link(
             'foo',
             $this->createMock(Identity::class),
@@ -694,9 +693,6 @@ class ServerTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\NormalizationException
-     */
     public function testThrowWhenLinkNotAllowedByDefinition()
     {
         $this
@@ -709,6 +705,8 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->never())
             ->method('__invoke');
+
+        $this->expectException(NormalizationException::class);
 
         $this->server->link(
             'foo',
@@ -769,12 +767,11 @@ class ServerTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException TypeError
-     * @expectedExceptionMessage Argument 3 must be of type SetInterface<Innmind\Rest\Client\Link>
-     */
     public function testThrowWhenInvalidSetOfLinksToUnlink()
     {
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('Argument 3 must be of type SetInterface<Innmind\Rest\Client\Link>');
+
         $this->server->unlink(
             'foo',
             $this->createMock(Identity::class),
@@ -782,11 +779,10 @@ class ServerTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenEmptySetOfLinksToUnlink()
     {
+        $this->expectException(DomainException::class);
+
         $this->server->unlink(
             'foo',
             $this->createMock(Identity::class),
@@ -794,9 +790,6 @@ class ServerTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\NormalizationException
-     */
     public function testThrowWhenUnlinkNotAllowedByDefinition()
     {
         $this
@@ -809,6 +802,8 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->never())
             ->method('__invoke');
+
+        $this->expectException(NormalizationException::class);
 
         $this->server->unlink(
             'foo',

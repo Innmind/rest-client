@@ -18,7 +18,7 @@ class RefreshLimitedFactoryTest extends TestCase
     private $make;
     private $inner;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->make = new RefreshLimitedFactory(
             $this->inner = $this->createMock(Factory::class)

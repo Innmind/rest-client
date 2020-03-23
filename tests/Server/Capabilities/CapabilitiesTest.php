@@ -44,7 +44,7 @@ class CapabilitiesTest extends TestCase
     private $capabilities;
     private $transport;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->capabilities = new Capabilities(
             $this->transport = $this->createMock(Transport::class),

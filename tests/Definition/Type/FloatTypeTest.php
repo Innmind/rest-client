@@ -3,10 +3,13 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Rest\Client\Definition\Type;
 
-use Innmind\Rest\Client\Definition\{
-    Type\FloatType,
-    Types,
-    Type,
+use Innmind\Rest\Client\{
+    Definition\Type\FloatType,
+    Definition\Types,
+    Definition\Type,
+    Exception\DomainException,
+    Exception\NormalizationException,
+    Exception\DenormalizationException,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -27,11 +30,10 @@ class FloatTypeTest extends TestCase
         $this->assertInstanceOf(FloatType::class, $type);
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DomainException
-     */
     public function testThrowWhenBuildInvalidType()
     {
+        $this->expectException(DomainException::class);
+
         FloatType::fromString('int', new Types);
     }
 
@@ -44,12 +46,11 @@ class FloatTypeTest extends TestCase
         $this->assertSame(1.2, (new FloatType)->normalize('1.2'));
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\NormalizationException
-     * @expectedExceptionMessage The value must be a float
-     */
     public function testThrowWhenNormalizingInvalidData()
     {
+        $this->expectException(NormalizationException::class);
+        $this->expectExceptionMessage('The value must be a float');
+
         (new FloatType)->normalize(new \stdClass);
     }
 
@@ -62,12 +63,11 @@ class FloatTypeTest extends TestCase
         $this->assertSame(1.2, (new FloatType)->denormalize('1.2'));
     }
 
-    /**
-     * @expectedException Innmind\Rest\Client\Exception\DenormalizationException
-     * @expectedExceptionMessage The value must be a float
-     */
     public function testThrowWhenDenormalizingInvalidData()
     {
+        $this->expectException(DenormalizationException::class);
+        $this->expectExceptionMessage('The value must be a float');
+
         (new FloatType)->denormalize(new \stdClass);
     }
 

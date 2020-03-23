@@ -16,7 +16,7 @@ class NormalizeDefinitionTest extends TestCase
     private $normalize;
     private $raw;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->normalize = new NormalizeDefinition;
         $this->raw = [
