@@ -1,10 +1,8 @@
 # RestClient
 
-| `master` | `develop` |
-|----------|-----------|
-| [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Innmind/rest-client/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Innmind/rest-client/?branch=master) | [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Innmind/rest-client/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/rest-client/?branch=develop) |
-| [![Code Coverage](https://scrutinizer-ci.com/g/Innmind/rest-client/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Innmind/rest-client/?branch=master) | [![Code Coverage](https://scrutinizer-ci.com/g/Innmind/rest-client/badges/coverage.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/rest-client/?branch=develop) |
-| [![Build Status](https://scrutinizer-ci.com/g/Innmind/rest-client/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Innmind/rest-client/build-status/master) | [![Build Status](https://scrutinizer-ci.com/g/Innmind/rest-client/badges/build.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/rest-client/build-status/develop) |
+[![Build Status](https://github.com/Innmind/rest-client/workflows/CI/badge.svg)](https://github.com/Innmind/rest-client/actions?query=workflow%3ACI)
+[![codecov](https://codecov.io/gh/Innmind/rest-client/branch/develop/graph/badge.svg)](https://codecov.io/gh/Innmind/rest-client)
+[![Type Coverage](https://shepherd.dev/github/Innmind/rest-client/coverage.svg)](https://shepherd.dev/github/Innmind/rest-client)
 
 
 This library is intended to consume APIs built with the [`RestServer`](https://github.com/Innmind/rest-server).
