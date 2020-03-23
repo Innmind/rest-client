@@ -49,9 +49,6 @@ final class SetType implements Type
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function normalize($data)
     {
         if (!$data instanceof Set) {
@@ -71,9 +68,6 @@ final class SetType implements Type
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function denormalize($data)
     {
         if (!\is_array($data)) {

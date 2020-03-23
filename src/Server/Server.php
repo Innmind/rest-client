@@ -100,9 +100,6 @@ final class Server implements ServerInterface
         $this->formats = $formats;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function all(
         string $name,
         Specification $specification = null,
@@ -263,9 +260,6 @@ final class Server implements ServerInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function link(string $name, Identity $identity, Set $links): void
     {
         assertSet(Link::class, $links, 3);
@@ -292,9 +286,6 @@ final class Server implements ServerInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function unlink(string $name, Identity $identity, Set $links): void
     {
         assertSet(Link::class, $links, 3);

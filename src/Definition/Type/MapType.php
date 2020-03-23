@@ -51,9 +51,6 @@ final class MapType implements Type
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function normalize($data)
     {
         if (!$data instanceof Map) {
@@ -78,9 +75,6 @@ final class MapType implements Type
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function denormalize($data)
     {
         if (!\is_array($data) && !$data instanceof \Traversable) {

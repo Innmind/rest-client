@@ -43,9 +43,6 @@ final class DateType implements Type
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function normalize($data)
     {
         if (\is_string($data)) {
@@ -65,9 +62,6 @@ final class DateType implements Type
         return $data->format($this->format);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function denormalize($data)
     {
         if (!\is_string($data)) {

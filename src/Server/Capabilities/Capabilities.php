@@ -64,9 +64,6 @@ final class Capabilities implements CapabilitiesInterface
         $this->definitions = Map::of('string', HttpResource::class);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function names(): Set
     {
         if ($this->names instanceof Set) {
@@ -160,9 +157,6 @@ final class Capabilities implements CapabilitiesInterface
         return $definition;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function definitions(): Map
     {
         $this->names()->foreach(function(string $name) {
@@ -172,9 +166,6 @@ final class Capabilities implements CapabilitiesInterface
         return $this->definitions;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function refresh(): void
     {
         $this->names = null;

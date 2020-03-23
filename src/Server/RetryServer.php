@@ -110,9 +110,6 @@ final class RetryServer implements ServerInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function link(string $name, Identity $identity, Set $links): void
     {
         try {
@@ -127,9 +124,6 @@ final class RetryServer implements ServerInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function unlink(string $name, Identity $identity, Set $links): void
     {
         try {

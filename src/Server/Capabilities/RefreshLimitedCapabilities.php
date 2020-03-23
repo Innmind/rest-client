@@ -22,9 +22,6 @@ final class RefreshLimitedCapabilities implements CapabilitiesInterface
         $this->capabilities = $capabilities;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function names(): Set
     {
         return $this->capabilities->names();
@@ -35,17 +32,11 @@ final class RefreshLimitedCapabilities implements CapabilitiesInterface
         return $this->capabilities->get($name);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function definitions(): Map
     {
         return $this->capabilities->definitions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function refresh(): void
     {
         if ($this->isFresh) {

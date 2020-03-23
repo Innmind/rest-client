@@ -17,9 +17,6 @@ use Innmind\Specification\{
     Sign,
 };
 
-/**
- * {@inheritdoc}
- */
 final class SpecificationTranslator implements SpecificationTranslatorInterface
 {
     public function __invoke(Specification $specification): string

@@ -20,17 +20,11 @@ final class BoolType implements Type
         return new self;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function normalize($data)
     {
         return (bool) $data;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function denormalize($data)
     {
         return (bool) $data;

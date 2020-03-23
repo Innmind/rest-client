@@ -22,9 +22,6 @@ final class IntType implements Type
         return new self;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function normalize($data)
     {
         try {
@@ -34,9 +31,6 @@ final class IntType implements Type
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function denormalize($data)
     {
         try {
