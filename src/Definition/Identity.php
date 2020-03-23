@@ -19,7 +19,7 @@ final class Identity
         $this->name = $name;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->name;
     }

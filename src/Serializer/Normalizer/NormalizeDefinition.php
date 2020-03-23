@@ -16,14 +16,14 @@ final class NormalizeDefinition
     {
         return [
             'url' => $definition->url()->toString(),
-            'identity' => (string) $definition->identity(),
+            'identity' => $definition->identity()->toString(),
             'properties' => $definition
                 ->properties()
                 ->reduce(
                     [],
                     function(array $properties, string $name, Property $property): array {
                         $properties[$name] = [
-                            'type' => (string) $property->type(),
+                            'type' => $property->type()->toString(),
                             'access' => unwrap($property->access()->mask()),
                             'variants' => unwrap($property->variants()),
                             'optional' => $property->isOptional(),

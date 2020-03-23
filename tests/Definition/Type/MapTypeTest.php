@@ -127,7 +127,7 @@ class MapTypeTest extends TestCase
     {
         $this->assertSame(
             'map<int, date<c>>',
-            (string) new MapType(new IntType, new DateType('c'))
+            (new MapType(new IntType, new DateType('c')))->toString()
         );
     }
 }

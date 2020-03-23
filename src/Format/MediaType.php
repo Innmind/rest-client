@@ -36,7 +36,7 @@ final class MediaType
         return $this->priority;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->mime->toString();
     }

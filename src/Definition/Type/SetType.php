@@ -94,8 +94,8 @@ final class SetType implements Type
         }
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
-        return 'set<'.$this->inner.'>';
+        return 'set<'.$this->inner->toString().'>';
     }
 }

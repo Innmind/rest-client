@@ -368,8 +368,7 @@ final class Server implements ServerInterface
         Url $url,
         Identity $identity
     ): Url {
-        $url = $url->toString();
-        $url = \rtrim($url, '/').'/'.$identity;
+        $url = \rtrim($url->toString(), '/').'/'.$identity->toString();
 
         return Url::of($url);
     }

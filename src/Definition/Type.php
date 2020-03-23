@@ -29,5 +29,5 @@ interface Type
      */
     public function normalize($data);
 
-    public function __toString(): string;
+    public function toString(): string;
 }

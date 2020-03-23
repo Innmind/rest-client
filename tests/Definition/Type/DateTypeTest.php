@@ -95,6 +95,6 @@ class DateTypeTest extends TestCase
 
     public function testCast()
     {
-        $this->assertSame('date<c>', (string) new DateType('c'));
+        $this->assertSame('date<c>', (new DateType('c'))->toString());
     }
 }

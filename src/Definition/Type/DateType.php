@@ -90,7 +90,7 @@ final class DateType implements Type
         }
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return 'date<'.$this->format.'>';
     }

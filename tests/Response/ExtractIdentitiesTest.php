@@ -105,8 +105,8 @@ class ExtractIdentitiesTest extends TestCase
         );
         $this->assertCount(2, $identities);
         $identities = unwrap($identities);
-        $this->assertSame('42', (string) \current($identities));
+        $this->assertSame('42', \current($identities)->toString());
         \next($identities);
-        $this->assertSame('66', (string) \current($identities));
+        $this->assertSame('66', \current($identities)->toString());
     }
 }

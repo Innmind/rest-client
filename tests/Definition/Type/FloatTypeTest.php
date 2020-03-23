@@ -73,6 +73,6 @@ class FloatTypeTest extends TestCase
 
     public function testCast()
     {
-        $this->assertSame('float', (string) new FloatType);
+        $this->assertSame('float', (new FloatType)->toString());
     }
 }

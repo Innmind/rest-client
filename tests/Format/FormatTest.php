@@ -25,7 +25,7 @@ class FormatTest extends TestCase
         );
 
         $this->assertSame('json', $format->name());
-        $this->assertSame('json', (string) $format);
+        $this->assertSame('json', $format->toString());
         $this->assertSame($types, $format->mediaTypes());
         $this->assertSame(24, $format->priority());
     }
@@ -44,7 +44,7 @@ class FormatTest extends TestCase
 
         $mime = $format->preferredMediaType();
         $this->assertInstanceOf(MediaType::class, $mime);
-        $this->assertSame('application/json', (string) $mime);
+        $this->assertSame('application/json', $mime->toString());
     }
 
     public function testThrowWhenInvalidMediaType()

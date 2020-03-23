@@ -17,7 +17,7 @@ class IdentityTest extends TestCase
         $identity = new Identity('foo');
 
         $this->assertInstanceOf(IdentityInterface::class, $identity);
-        $this->assertSame('foo', (string) $identity);
+        $this->assertSame('foo', $identity->toString());
     }
 
     public function testThrowWhenEmptyValue()

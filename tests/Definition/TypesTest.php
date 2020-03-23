@@ -49,7 +49,7 @@ class TypesTest extends TestCase
             {
             }
 
-            public function __toString(): string
+            public function toString(): string
             {
                 return 'type1';
             }
@@ -72,7 +72,7 @@ class TypesTest extends TestCase
             {
             }
 
-            public function __toString(): string
+            public function toString(): string
             {
                 return 'type2';
             }

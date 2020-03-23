@@ -73,6 +73,6 @@ class StringTypeTest extends TestCase
 
     public function testCast()
     {
-        $this->assertSame('string', (string) new StringType);
+        $this->assertSame('string', (new StringType)->toString());
     }
 }

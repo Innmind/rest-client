@@ -35,7 +35,7 @@ class HttpResourceTest extends TestCase
         );
 
         $this->assertSame('foo', $resource->name());
-        $this->assertSame('foo', (string) $resource);
+        $this->assertSame('foo', $resource->toString());
         $this->assertSame($url, $resource->url());
         $this->assertSame($identity, $resource->identity());
         $this->assertSame($properties, $resource->properties());

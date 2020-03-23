@@ -29,9 +29,9 @@ final class MapType implements Type
         $this->value = $value;
         $this->denormalized = Map::of(
             $key instanceof DateType ?
-                \DateTimeImmutable::class : (string) $key,
+                \DateTimeImmutable::class : $key->toString(),
             $value instanceof DateType ?
-                \DateTimeImmutable::class : (string) $value
+                \DateTimeImmutable::class : $value->toString()
         );
     }
 
@@ -98,8 +98,8 @@ final class MapType implements Type
         }
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
-        return 'map<'.$this->key.', '.$this->value.'>';
+        return 'map<'.$this->key->toString().', '.$this->value->toString().'>';
     }
 }

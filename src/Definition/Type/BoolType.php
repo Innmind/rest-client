@@ -36,7 +36,7 @@ final class BoolType implements Type
         return (bool) $data;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return 'bool';
     }

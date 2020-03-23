@@ -13,7 +13,7 @@ class MediaTypeTest extends TestCase
     {
         $mime = new MediaType($string = 'application/vnd.media-type+suffix', 42);
 
-        $this->assertSame($string, (string) $mime);
+        $this->assertSame($string, $mime->toString());
         $this->assertSame('application', $mime->topLevel());
         $this->assertSame('vnd.media-type', $mime->subType());
         $this->assertSame('suffix', $mime->suffix());

@@ -22,7 +22,7 @@ class IdentityTest extends TestCase
     {
         $this->assertSame(
             'foo',
-            (string) new Identity('foo')
+            (new Identity('foo'))->toString()
         );
     }
 }

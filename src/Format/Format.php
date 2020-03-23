@@ -59,7 +59,7 @@ final class Format
         return $this->priority;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->name;
     }

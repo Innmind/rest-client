@@ -105,7 +105,7 @@ class SetTypeTest extends TestCase
     {
         $this->assertSame(
             'set<date<c>>',
-            (string) new SetType(new DateType('c'))
+            (new SetType(new DateType('c')))->toString()
         );
     }
 }

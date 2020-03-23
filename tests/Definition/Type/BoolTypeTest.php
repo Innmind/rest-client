@@ -67,6 +67,6 @@ class BoolTypeTest extends TestCase
 
     public function testCast()
     {
-        $this->assertSame('bool', (string) new BoolType);
+        $this->assertSame('bool', (new BoolType)->toString());
     }
 }

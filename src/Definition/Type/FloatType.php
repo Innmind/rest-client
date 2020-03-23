@@ -46,7 +46,7 @@ final class FloatType implements Type
         }
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return 'float';
     }

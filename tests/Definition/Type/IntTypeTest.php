@@ -73,6 +73,6 @@ class IntTypeTest extends TestCase
 
     public function testCast()
     {
-        $this->assertSame('int', (string) new IntType);
+        $this->assertSame('int', (new IntType)->toString());
     }
 }

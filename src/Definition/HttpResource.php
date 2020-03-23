@@ -124,7 +124,7 @@ final class HttpResource
         return $this->rangeable;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->name;
     }

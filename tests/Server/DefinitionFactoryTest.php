@@ -133,14 +133,14 @@ class DefinitionFactoryTest extends TestCase
         $this->assertInstanceOf(HttpResource::class, $definition);
         $this->assertSame('foo', $definition->name());
         $this->assertSame('http://example.com/foo', $definition->url()->toString());
-        $this->assertSame('uuid', (string) $definition->identity());
+        $this->assertSame('uuid', $definition->identity()->toString());
         $this->assertSame(
             'uuid',
             $definition->properties()->get('uuid')->name()
         );
         $this->assertSame(
             'string',
-            (string) $definition->properties()->get('uuid')->type()
+            $definition->properties()->get('uuid')->type()->toString()
         );
         $this->assertSame(
             ['READ'],
@@ -159,7 +159,7 @@ class DefinitionFactoryTest extends TestCase
         );
         $this->assertSame(
             'string',
-            (string) $definition->properties()->get('url')->type()
+            $definition->properties()->get('url')->type()->toString()
         );
         $this->assertSame(
             ['READ', 'CREATE', 'UPDATE'],

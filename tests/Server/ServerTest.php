@@ -235,9 +235,9 @@ class ServerTest extends TestCase
         $this->assertSame(Identity::class, (string) $all->type());
         $this->assertCount(2, $all);
         $all = unwrap($all);
-        $this->assertSame('some-uuid', (string) \current($all));
+        $this->assertSame('some-uuid', \current($all)->toString());
         \next($all);
-        $this->assertSame('some-other-uuid', (string) \current($all));
+        $this->assertSame('some-other-uuid', \current($all)->toString());
     }
 
     public function testAllWithRange()
@@ -295,9 +295,9 @@ class ServerTest extends TestCase
         $this->assertSame(Identity::class, (string) $all->type());
         $this->assertCount(2, $all);
         $all = unwrap($all);
-        $this->assertSame('some-uuid', (string) \current($all));
+        $this->assertSame('some-uuid', \current($all)->toString());
         \next($all);
-        $this->assertSame('some-other-uuid', (string) \current($all));
+        $this->assertSame('some-other-uuid', \current($all)->toString());
     }
 
     public function testAllWithQuery()
@@ -366,9 +366,9 @@ class ServerTest extends TestCase
         $this->assertSame(Identity::class, (string) $all->type());
         $this->assertCount(2, $all);
         $all = unwrap($all);
-        $this->assertSame('some-uuid', (string) \current($all));
+        $this->assertSame('some-uuid', \current($all)->toString());
         \next($all);
-        $this->assertSame('some-other-uuid', (string) \current($all));
+        $this->assertSame('some-other-uuid', \current($all)->toString());
     }
 
     public function testAllWithQueryAndRange()
@@ -439,9 +439,9 @@ class ServerTest extends TestCase
         $this->assertSame(Identity::class, (string) $all->type());
         $this->assertCount(2, $all);
         $all = unwrap($all);
-        $this->assertSame('some-uuid', (string) \current($all));
+        $this->assertSame('some-uuid', \current($all)->toString());
         \next($all);
-        $this->assertSame('some-other-uuid', (string) \current($all));
+        $this->assertSame('some-other-uuid', \current($all)->toString());
     }
 
     public function testThrowWhenReadResponseHasNoContentType()
@@ -603,7 +603,7 @@ class ServerTest extends TestCase
             )
         );
 
-        $this->assertSame('some-uuid', (string) $identity);
+        $this->assertSame('some-uuid', $identity->toString());
     }
 
     public function testUpdate()

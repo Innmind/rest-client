@@ -107,6 +107,6 @@ class ExtractIdentityTest extends TestCase
         $identity = ($this->extract)($response, $this->definition);
 
         $this->assertInstanceOf(IdentityInterface::class, $identity);
-        $this->assertSame('42', (string) $identity);
+        $this->assertSame('42', $identity->toString());
     }
 }
