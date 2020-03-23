@@ -16,7 +16,7 @@ final class Range
             $firstPosition < 0 ||
             $lastPosition < $firstPosition
         ) {
-            throw new DomainException;
+            throw new DomainException("$firstPosition-$lastPosition");
         }
 
         $this->firstPosition = $firstPosition;

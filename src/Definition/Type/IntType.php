@@ -16,7 +16,7 @@ final class IntType implements Type
     public static function of(string $type, Types $build): Type
     {
         if ($type !== 'int') {
-            throw new DomainException;
+            throw new DomainException($type);
         }
 
         return new self;

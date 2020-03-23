@@ -34,7 +34,7 @@ final class Types
         /** @var class-string<Type> $type */
         foreach ($types as $type) {
             if (!\is_a($type, Type::class, true)) {
-                throw new DomainException;
+                throw new DomainException($type);
             }
         }
 
@@ -53,7 +53,7 @@ final class Types
             }
         }
 
-        throw new UnknownType;
+        throw new UnknownType($type);
     }
 
     /**

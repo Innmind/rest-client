@@ -40,7 +40,7 @@ final class MapType implements Type
         $type = Str::of($type);
 
         if (!$type->matches(self::PATTERN)) {
-            throw new DomainException;
+            throw new DomainException($type->toString());
         }
 
         $matches = $type->capture(self::PATTERN);

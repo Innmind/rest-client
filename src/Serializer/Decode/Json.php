@@ -15,7 +15,7 @@ final class Json implements Decode
     public function __invoke(string $format, Readable $content): array
     {
         if ($format !== 'json') {
-            throw new LogicException;
+            throw new LogicException($format);
         }
 
         /** @var array */

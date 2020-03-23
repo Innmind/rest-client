@@ -16,7 +16,7 @@ final class StringType implements Type
     public static function of(string $type, Types $build): Type
     {
         if ($type !== 'string') {
-            throw new DomainException;
+            throw new DomainException($type);
         }
 
         return new self;

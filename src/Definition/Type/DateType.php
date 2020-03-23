@@ -32,7 +32,7 @@ final class DateType implements Type
         $type = Str::of($type);
 
         if (!$type->matches(self::PATTERN)) {
-            throw new DomainException;
+            throw new DomainException($type->toString());
         }
 
         return new self(
