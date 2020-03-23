@@ -8,7 +8,7 @@ use Innmind\Url\UrlInterface;
 
 final class RetryServerFactory implements Factory
 {
-    private $make;
+    private Factory $make;
 
     public function __construct(Factory $make)
     {

@@ -11,8 +11,8 @@ use Innmind\Immutable\Str;
 
 final class Parameter implements ParameterInterface
 {
-    private $key;
-    private $value;
+    private string $key;
+    private string $value;
 
     public function __construct(string $key, string $value)
     {

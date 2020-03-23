@@ -14,8 +14,8 @@ use Innmind\Immutable\{
 
 final class RefreshLimitedCapabilities implements CapabilitiesInterface
 {
-    private $capabilities;
-    private $isFresh = false;
+    private CapabilitiesInterface $capabilities;
+    private bool $isFresh = false;
 
     public function __construct(CapabilitiesInterface $capabilities)
     {

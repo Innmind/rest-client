@@ -17,8 +17,8 @@ use Innmind\Url\UrlInterface;
 
 final class DefinitionFactory
 {
-    private $denormalize;
-    private $decode;
+    private DenormalizeDefinition $denormalize;
+    private Decode $decode;
 
     public function __construct(
         DenormalizeDefinition $denormalize,

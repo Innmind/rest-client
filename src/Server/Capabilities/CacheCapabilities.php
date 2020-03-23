@@ -28,16 +28,16 @@ use Innmind\Immutable\{
 
 final class CacheCapabilities implements CapabilitiesInterface
 {
-    private $capabilities;
-    private $filesystem;
-    private $decode;
-    private $encode;
-    private $denormalizeNames;
-    private $denormalizeDefinition;
-    private $normalizeDefinition;
-    private $directory;
-    private $names;
-    private $definitions;
+    private CapabilitiesInterface $capabilities;
+    private Adapter $filesystem;
+    private Decode $decode;
+    private Encode $encode;
+    private DenormalizeCapabilitiesNames $denormalizeNames;
+    private DenormalizeDefinition $denormalizeDefinition;
+    private NormalizeDefinition $normalizeDefinition;
+    private string $directory;
+    private ?SetInterface $names = null;
+    private Map $definitions;
 
     public function __construct(
         CapabilitiesInterface $capabilities,

@@ -19,9 +19,9 @@ use Negotiation\Negotiator;
 
 final class Formats
 {
-    private $formats;
-    private $negotiator;
-    private $types;
+    private MapInterface $formats;
+    private Negotiator $negotiator;
+    private ?SetInterface $types = null;
 
     public function __construct(MapInterface $formats)
     {

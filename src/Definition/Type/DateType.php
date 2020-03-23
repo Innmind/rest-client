@@ -16,7 +16,7 @@ final class DateType implements Type
 {
     const PATTERN = '~date<(?<format>.+)>~';
 
-    private $format;
+    private string $format;
 
     public function __construct(string $format)
     {

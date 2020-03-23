@@ -15,8 +15,8 @@ use Innmind\Immutable\{
 
 final class HttpResource
 {
-    private $name;
-    private $properties;
+    private string $name;
+    private MapInterface $properties;
 
     public function __construct(string $name, MapInterface $properties)
     {

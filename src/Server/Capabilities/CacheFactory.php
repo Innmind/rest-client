@@ -16,13 +16,13 @@ use Innmind\Filesystem\Adapter;
 
 final class CacheFactory implements Factory
 {
-    private $filesystem;
-    private $decode;
-    private $encode;
-    private $denormalizeNames;
-    private $denormalizeDefinition;
-    private $normalizeDefinition;
-    private $make;
+    private Adapter $filesystem;
+    private Decode $decode;
+    private Encode $encode;
+    private DenormalizeCapabilitiesNames $denormalizeNames;
+    private DenormalizeDefinition $denormalizeDefinition;
+    private NormalizeDefinition $normalizeDefinition;
+    private Factory $make;
 
     public function __construct(
         Adapter $filesystem,

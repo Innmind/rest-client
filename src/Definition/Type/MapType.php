@@ -20,9 +20,9 @@ final class MapType implements Type
 {
     const PATTERN = '~map<(?<key>.+), ?(?<value>.+)>~';
 
-    private $key;
-    private $value;
-    private $denormalized;
+    private Type $key;
+    private Type $value;
+    private Map $denormalized;
 
     public function __construct(Type $key, Type $value)
     {

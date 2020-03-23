@@ -19,7 +19,7 @@ use Innmind\Immutable\{
 
 final class DenormalizeDefinition
 {
-    private $build;
+    private Types $build;
 
     public function __construct(Types $build)
     {

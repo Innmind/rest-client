@@ -7,8 +7,8 @@ use Innmind\Filesystem\MediaType\MediaType as FilesystemMediaType;
 
 final class MediaType
 {
-    private $mime;
-    private $priority;
+    private FilesystemMediaType $mime;
+    private int $priority;
 
     public function __construct(string $mime, int $priority)
     {

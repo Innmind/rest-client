@@ -15,7 +15,7 @@
         "issues": "http://github.com/Innmind/rest-client/issues"
     },
     "require": {
-        "php": "~7.2",
+        "php": "~7.4",
         "innmind/immutable": "~2.12",
         "innmind/specification": "~2.0",
         "innmind/http": "~3.8",

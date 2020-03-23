@@ -36,15 +36,15 @@ use Innmind\Immutable\{
 
 final class Capabilities implements CapabilitiesInterface
 {
-    private $fulfill;
-    private $host;
-    private $resolver;
-    private $make;
-    private $formats;
-    private $optionsUrl;
-    private $names;
-    private $paths;
-    private $definitions;
+    private Transport $fulfill;
+    private UrlInterface $host;
+    private ResolverInterface $resolver;
+    private DefinitionFactory $make;
+    private Formats $formats;
+    private UrlInterface $optionsUrl;
+    private ?SetInterface $names = null;
+    private Map $paths;
+    private Map $definitions;
 
     public function __construct(
         Transport $fulfill,

@@ -15,10 +15,10 @@ use Innmind\Immutable\{
 
 final class Link
 {
-    private $definition;
-    private $identity;
-    private $relationship;
-    private $parameters;
+    private string $definition;
+    private Identity $identity;
+    private string $relationship;
+    private MapInterface $parameters;
 
     public function __construct(
         string $definition,

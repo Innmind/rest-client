@@ -20,17 +20,17 @@ use Innmind\UrlResolver\ResolverInterface;
 
 final class ServerFactory implements Factory
 {
-    private $transport;
-    private $resolver;
-    private $extractIdentity;
-    private $extractIdentities;
-    private $denormalizeResource;
-    private $normalizeResource;
-    private $encode;
-    private $decode;
-    private $translator;
-    private $formats;
-    private $capabilities;
+    private Transport $transport;
+    private ResolverInterface $resolver;
+    private ExtractIdentity $extractIdentity;
+    private ExtractIdentities $extractIdentities;
+    private DenormalizeResource $denormalizeResource;
+    private NormalizeResource $normalizeResource;
+    private Encode $encode;
+    private Decode $decode;
+    private SpecificationTranslator $translator;
+    private Formats $formats;
+    private Capabilities\Factory $capabilities;
 
     public function __construct(
         Transport $transport,

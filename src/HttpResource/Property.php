@@ -8,7 +8,7 @@ use Innmind\Immutable\Str;
 
 final class Property
 {
-    private $name;
+    private string $name;
     private $value;
 
     public function __construct(string $name, $value)

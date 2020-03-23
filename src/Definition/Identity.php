@@ -8,7 +8,7 @@ use Innmind\Immutable\Str;
 
 final class Identity
 {
-    private $name;
+    private string $name;
 
     public function __construct(string $name)
     {

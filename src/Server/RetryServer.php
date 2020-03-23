@@ -24,7 +24,7 @@ use Innmind\Specification\Specification;
  */
 final class RetryServer implements ServerInterface
 {
-    private $server;
+    private ServerInterface $server;
 
     public function __construct(ServerInterface $server)
     {

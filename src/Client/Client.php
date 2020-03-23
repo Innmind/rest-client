@@ -13,8 +13,8 @@ use Innmind\Immutable\Map;
 
 final class Client implements ClientInterface
 {
-    private $make;
-    private $servers;
+    private Factory $make;
+    private Map $servers;
 
     public function __construct(Factory $make)
     {

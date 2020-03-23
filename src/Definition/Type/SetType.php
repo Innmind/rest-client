@@ -20,8 +20,8 @@ final class SetType implements Type
 {
     const PATTERN = '~set<(?<inner>.+)>~';
 
-    private $inner;
-    private $denormalized;
+    private Type $inner;
+    private Set $denormalized;
 
     public function __construct(Type $inner)
     {

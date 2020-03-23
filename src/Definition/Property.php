@@ -11,11 +11,11 @@ use Innmind\Immutable\{
 
 final class Property
 {
-    private $name;
-    private $type;
-    private $access;
-    private $variants;
-    private $optional;
+    private string $name;
+    private Type $type;
+    private Access $access;
+    private SetInterface $variants;
+    private bool $optional;
 
     public function __construct(
         string $name,

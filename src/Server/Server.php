@@ -58,18 +58,18 @@ use Innmind\Specification\Specification;
 
 final class Server implements ServerInterface
 {
-    private $url;
-    private $fulfill;
-    private $capabilities;
-    private $resolver;
-    private $extractIdentity;
-    private $extractIdentities;
-    private $denormalizeResource;
-    private $normalizeResource;
-    private $encode;
-    private $decode;
-    private $translate;
-    private $formats;
+    private UrlInterface $url;
+    private Transport $fulfill;
+    private Capabilities $capabilities;
+    private ResolverInterface $resolver;
+    private ExtractIdentity $extractIdentity;
+    private ExtractIdentities $extractIdentities;
+    private DenormalizeResource $denormalizeResource;
+    private NormalizeResource $normalizeResource;
+    private Encode $encode;
+    private Decode $decode;
+    private SpecificationTranslator $translate;
+    private Formats $formats;
 
     public function __construct(
         UrlInterface $url,

@@ -8,9 +8,9 @@ use Innmind\Immutable\SetInterface;
 
 final class AllowedLink
 {
-    private $resourcePath;
-    private $relationship;
-    private $parameters;
+    private string $resourcePath;
+    private string $relationship;
+    private SetInterface $parameters;
 
     public function __construct(
         string $resourcePath,

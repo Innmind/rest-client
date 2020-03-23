@@ -11,7 +11,7 @@ use Innmind\Immutable\Str;
 
 class Identity implements IdentityInterface
 {
-    private $value;
+    private string $value;
 
     public function __construct(string $value)
     {

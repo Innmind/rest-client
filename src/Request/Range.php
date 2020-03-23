@@ -7,8 +7,8 @@ use Innmind\Rest\Client\Exception\DomainException;
 
 final class Range
 {
-    private $firstPosition;
-    private $lastPosition;
+    private int $firstPosition;
+    private int $lastPosition;
 
     public function __construct(int $firstPosition, int $lastPosition)
     {

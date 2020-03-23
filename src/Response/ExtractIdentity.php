@@ -17,7 +17,7 @@ use Innmind\Url\Url;
 
 final class ExtractIdentity
 {
-    private $resolveIdentity;
+    private ResolveIdentity $resolveIdentity;
 
     public function __construct(ResolveIdentity $resolveIdentity)
     {

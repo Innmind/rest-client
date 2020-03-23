@@ -21,7 +21,7 @@ use Innmind\Immutable\{
 
 final class ExtractIdentities
 {
-    private $resolveIdentity;
+    private ResolveIdentity $resolveIdentity;
 
     public function __construct(ResolveIdentity $resolveIdentity)
     {

@@ -16,10 +16,10 @@ use Innmind\HttpTransport\Transport;
 
 final class Factory implements FactoryInterface
 {
-    private $transport;
-    private $resolver;
-    private $definitionFactory;
-    private $formats;
+    private Transport $transport;
+    private ResolverInterface $resolver;
+    private DefinitionFactory $definitionFactory;
+    private Formats $formats;
 
     public function __construct(
         Transport $transport,

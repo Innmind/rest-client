@@ -8,7 +8,7 @@ use Innmind\Url\UrlInterface;
 
 final class ResolveIdentity
 {
-    private $resolver;
+    private ResolverInterface $resolver;
 
     public function __construct(ResolverInterface $resolver)
     {

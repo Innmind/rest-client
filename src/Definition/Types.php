@@ -21,8 +21,8 @@ use Innmind\Immutable\{
 
 final class Types
 {
-    private static $defaults;
-    private $types = [];
+    private static ?Set $defaults = null;
+    private array $types = [];
 
     public function __construct(string ...$types)
     {
@@ -63,7 +63,7 @@ final class Types
      */
     public static function defaults(): SetInterface
     {
-        return self::$defaults ?? self::$defaults = Set::of(
+        return self::$defaults ??= Set::of(
             'string',
             BoolType::class,
             DateType::class,
