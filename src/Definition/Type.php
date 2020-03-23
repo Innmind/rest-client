@@ -3,6 +3,11 @@ declare(strict_types = 1);
 
 namespace Innmind\Rest\Client\Definition;
 
+use Innmind\Rest\Client\Exception\{
+    DenormalizationException,
+    NormalizationException,
+};
+
 interface Type
 {
     public static function of(string $type, Types $build): self;

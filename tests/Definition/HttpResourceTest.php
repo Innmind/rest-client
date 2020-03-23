@@ -29,7 +29,7 @@ class HttpResourceTest extends TestCase
             $url = Url::of('http://example.com/'),
             $identity = new Identity('uuid'),
             $properties = Map::of('string', Property::class),
-            $metas = Map::of('scalar', 'variable'),
+            $metas = Map::of('scalar', 'scalar|array'),
             $links = Set::of(AllowedLink::class),
             true
         );
@@ -53,7 +53,7 @@ class HttpResourceTest extends TestCase
             Url::of('http://example.com/'),
             new Identity('uuid'),
             Map::of('string', Property::class),
-            Map::of('scalar', 'variable'),
+            Map::of('scalar', 'scalar|array'),
             Set::of(AllowedLink::class),
             true
         );
@@ -69,7 +69,7 @@ class HttpResourceTest extends TestCase
             Url::of('http://example.com/'),
             new Identity('uuid'),
             Map::of('int', Property::class),
-            Map::of('scalar', 'variable'),
+            Map::of('scalar', 'scalar|array'),
             Set::of(AllowedLink::class),
             true
         );
@@ -78,7 +78,7 @@ class HttpResourceTest extends TestCase
     public function testThrowWhenInvalidMetaMap()
     {
         $this->expectException(\TypeError::class);
-        $this->expectExceptionMessage('Argument 5 must be of type Map<scalar, variable>');
+        $this->expectExceptionMessage('Argument 5 must be of type Map<scalar, scalar|array>');
 
         new HttpResource(
             'foo',
@@ -101,7 +101,7 @@ class HttpResourceTest extends TestCase
             Url::of('http://example.com/'),
             new Identity('uuid'),
             Map::of('string', Property::class),
-            Map::of('scalar', 'variable'),
+            Map::of('scalar', 'scalar|array'),
             Set::of('string'),
             true
         );
@@ -114,7 +114,7 @@ class HttpResourceTest extends TestCase
             Url::of('http://example.com/'),
             new Identity('uuid'),
             Map::of('string', Property::class),
-            Map::of('scalar', 'variable'),
+            Map::of('scalar', 'scalar|array'),
             Set::of(
                 AllowedLink::class,
                 new AllowedLink(

@@ -46,6 +46,7 @@ final class NormalizeResource
             function(array $properties, string $name, Property $property) use ($resource): array {
                 $usedName = $this->resolveName($property, $resource);
 
+                /** @psalm-suppress MixedAssignment */
                 $properties[$name] = $property
                     ->type()
                     ->normalize(

@@ -17,8 +17,12 @@ final class Link
     private string $definition;
     private Identity $identity;
     private string $relationship;
+    /** @var Map<string, Parameter> */
     private Map $parameters;
 
+    /**
+     * @param Map<string, Parameter>|null $parameters
+     */
     public function __construct(
         string $definition,
         Identity $identity,
@@ -56,6 +60,7 @@ final class Link
         string $relationship,
         Parameter ...$parameters
     ): self {
+        /** @var Map<string, Parameter> */
         $map = Map::of('string', Parameter::class);
 
         foreach ($parameters as $parameter) {

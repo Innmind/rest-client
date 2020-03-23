@@ -9,10 +9,14 @@ use Innmind\Immutable\Set;
 final class Format
 {
     private string $name;
+    /** @var Set<MediaType> */
     private Set $types;
     private int $priority;
     private MediaType $preferredType;
 
+    /**
+     * @param Set<MediaType> $types
+     */
     public function __construct(string $name, Set $types, int $priority)
     {
         if ((string) $types->type() !== MediaType::class) {
@@ -30,8 +34,8 @@ final class Format
         $this->types = $types;
         $this->priority = $priority;
         $this->preferredType = $types
-            ->sort(function(MediaType $a, MediaType $b): bool {
-                return $a->priority() < $b->priority();
+            ->sort(function(MediaType $a, MediaType $b): int {
+                return (int) ($a->priority() < $b->priority());
             })
             ->first();
     }

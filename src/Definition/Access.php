@@ -12,6 +12,7 @@ final class Access
     const CREATE = 'CREATE';
     const UPDATE = 'UPDATE';
 
+    /** @var Set<string> */
     private Set $mask;
 
     public function __construct(string ...$mask)

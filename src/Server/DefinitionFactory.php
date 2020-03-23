@@ -44,6 +44,7 @@ final class DefinitionFactory
             throw new DomainException;
         }
 
+        /** @var array{metas: array<scalar, scalar|array>, properties: array<string, array{variants: list<string>, type: string, access: list<string>, optional: bool}>, linkable_to: list<array{resource_path: string, relationship: string, parameters: list<string>}>, identity: string, rangeable: bool} */
         $data = ($this->decode)('json', $response->body());
         $data['url'] = $url->toString();
 

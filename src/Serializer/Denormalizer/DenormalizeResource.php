@@ -20,6 +20,7 @@ final class DenormalizeResource
         ResourceDefinition $definition,
         Access $access
     ): HttpResource {
+        /** @var array */
         $data = $data['resource'];
 
         $properties = $definition
@@ -41,9 +42,11 @@ final class DenormalizeResource
             }
         });
 
+        /** @var Map<string, Property> */
         $properties = $properties->reduce(
             Map::of('string', Property::class),
             function(Map $properties, string $name, PropertyDefinition $property) use ($data): Map {
+                /** @psalm-suppress MixedArrayAccess */
                 return $properties->put(
                     $name,
                     new Property(

@@ -7,8 +7,13 @@ use Innmind\Immutable\Set;
 
 final class DenormalizeCapabilitiesNames
 {
+    /**
+     * @param list<string> $data
+     *
+     * @return Set<string>
+     */
     public function __invoke(array $data): Set
     {
-        return Set::of('string', ...\array_values($data));
+        return Set::strings(...\array_values($data));
     }
 }

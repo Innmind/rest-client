@@ -65,7 +65,12 @@ final class MapType implements Type
         return $data->reduce(
             [],
             function(array $values, $key, $value): array {
+                /** @psalm-suppress MixedAssignment */
                 $key = $this->key->normalize($key);
+                /**
+                 * @psalm-suppress MixedAssignment
+                 * @psalm-suppress MixedArrayOffset
+                 */
                 $values[$key] = $this->value->normalize($value);
 
                 return $values;
@@ -85,6 +90,7 @@ final class MapType implements Type
         $map = $this->denormalized;
 
         try {
+            /** @psalm-suppress MixedAssignment */
             foreach ($data as $key => $value) {
                 $map = $map->put(
                     $this->key->denormalize($key),

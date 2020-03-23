@@ -38,8 +38,11 @@ final class Capabilities implements CapabilitiesInterface
     private DefinitionFactory $make;
     private Formats $formats;
     private Url $optionsUrl;
+    /** @var Set<string>|null */
     private ?Set $names = null;
+    /** @var Map<string, Url> */
     private Map $paths;
+    /** @var Map<string, HttpResource> */
     private Map $definitions;
 
     public function __construct(
@@ -55,7 +58,9 @@ final class Capabilities implements CapabilitiesInterface
         $this->make = $make;
         $this->formats = $formats;
         $this->optionsUrl = $resolve($host, Url::of('/*'));
+        /** @var Map<string, Url> */
         $this->paths = Map::of('string', Url::class);
+        /** @var Map<string, HttpResource> */
         $this->definitions = Map::of('string', HttpResource::class);
     }
 
@@ -82,23 +87,25 @@ final class Capabilities implements CapabilitiesInterface
             return $this->names = Set::strings();
         }
 
-        return $this->names = $headers
+        /** @var Set<LinkValue> */
+        $links = $headers
             ->get('Link')
             ->values()
             ->filter(function(Value $value): bool {
                 return $value instanceof LinkValue;
-            })
-            ->reduce(
-                Set::strings(),
-                function(Set $names, LinkValue $link): Set {
-                    $this->paths = $this->paths->put(
-                        $link->relationship(),
-                        $link->url()
-                    );
+            });
 
-                    return $names->add($link->relationship());
-                }
-            );
+        return $this->names = $links->mapTo(
+            'string',
+            function(LinkValue $link): string {
+                $this->paths = $this->paths->put(
+                    $link->relationship(),
+                    $link->url()
+                );
+
+                return $link->relationship();
+            },
+        );
     }
 
     public function get(string $name): HttpResource
@@ -126,8 +133,8 @@ final class Capabilities implements CapabilitiesInterface
                             ->formats
                             ->all()
                             ->values()
-                            ->sort(function(Format $a, Format $b): bool {
-                                return $a->priority() < $b->priority();
+                            ->sort(static function(Format $a, Format $b): int {
+                                return (int) ($a->priority() < $b->priority());
                             })
                             ->reduce(
                                 Set::of(Value::class),

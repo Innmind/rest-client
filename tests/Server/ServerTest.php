@@ -167,7 +167,7 @@ class ServerTest extends TestCase
                     Url::of('http://example.com'),
                     new IdentityDefinition('uuid'),
                     Map::of('string', PropertyDefinition::class),
-                    Map::of('scalar', 'variable'),
+                    Map::of('scalar', 'scalar|array'),
                     Set::of(AllowedLink::class),
                     false
                 )
@@ -195,7 +195,7 @@ class ServerTest extends TestCase
                     Url::of('http://example.com/foo'),
                     new IdentityDefinition('uuid'),
                     Map::of('string', PropertyDefinition::class),
-                    Map::of('scalar', 'variable'),
+                    Map::of('scalar', 'scalar|array'),
                     Set::of(AllowedLink::class),
                     false
                 )
@@ -253,7 +253,7 @@ class ServerTest extends TestCase
                     Url::of('http://example.com/foo'),
                     new IdentityDefinition('uuid'),
                     Map::of('string', PropertyDefinition::class),
-                    Map::of('scalar', 'variable'),
+                    Map::of('scalar', 'scalar|array'),
                     Set::of(AllowedLink::class),
                     true
                 )
@@ -313,7 +313,7 @@ class ServerTest extends TestCase
                     Url::of('http://example.com/foo'),
                     new IdentityDefinition('uuid'),
                     Map::of('string', PropertyDefinition::class),
-                    Map::of('scalar', 'variable'),
+                    Map::of('scalar', 'scalar|array'),
                     Set::of(AllowedLink::class),
                     false
                 )
@@ -384,7 +384,7 @@ class ServerTest extends TestCase
                     Url::of('http://example.com/foo'),
                     new IdentityDefinition('uuid'),
                     Map::of('string', PropertyDefinition::class),
-                    Map::of('scalar', 'variable'),
+                    Map::of('scalar', 'scalar|array'),
                     Set::of(AllowedLink::class),
                     true
                 )

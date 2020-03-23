@@ -25,6 +25,9 @@ final class ExtractIdentities
         $this->resolveIdentity = $resolveIdentity;
     }
 
+    /**
+     * @return Set<Identity>
+     */
     public function __invoke(Response $response, HttpResource $definition): Set
     {
         $headers = $response->headers();
@@ -33,27 +36,27 @@ final class ExtractIdentities
             return Set::of(Identity::class);
         }
 
-        return $headers
+        /** @var Set<LinkValue> */
+        $links = $headers
             ->get('Link')
             ->values()
             ->filter(function(Value $link): bool {
                 return $link instanceof LinkValue;
-            })
+            });
+
+        /** @var Set<Identity> */
+        return $links
             ->filter(function(LinkValue $link): bool {
                 return $link->relationship() === 'resource';
             })
-            ->reduce(
-                Set::of(Identity::class),
-                function(Set $identities, LinkValue $link) use ($definition): Set {
-                    return $identities->add(
-                        new Identity\Identity(
-                            ($this->resolveIdentity)(
-                                $definition->url(),
-                                $link->url()
-                            )
-                        )
-                    );
-                }
+            ->mapTo(
+                Identity::class,
+                fn(LinkValue $link): Identity => new Identity\Identity(
+                    ($this->resolveIdentity)(
+                        $definition->url(),
+                        $link->url()
+                    )
+                ),
             );
     }
 }

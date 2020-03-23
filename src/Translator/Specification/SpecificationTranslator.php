@@ -30,6 +30,7 @@ final class SpecificationTranslator implements SpecificationTranslatorInterface
                     throw new OnlyEqualityCanBeTranslated;
                 }
 
+                /** @psalm-suppress MixedArgument */
                 return \sprintf(
                     '%s=%s',
                     $specification->property(),

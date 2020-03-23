@@ -15,8 +15,12 @@ use Innmind\Immutable\{
 final class HttpResource
 {
     private string $name;
+    /** @var Map<string, Property> */
     private Map $properties;
 
+    /**
+     * @param Map<string, Property> $properties
+     */
     public function __construct(string $name, Map $properties)
     {
         if (Str::of($name)->empty()) {
@@ -37,8 +41,9 @@ final class HttpResource
         $this->properties = $properties;
     }
 
-    public static function of(string $name, Property ...$properties)
+    public static function of(string $name, Property ...$properties): self
     {
+        /** @var Map<string, Property> */
         $map = Map::of('string', Property::class);
 
         foreach ($properties as $property) {

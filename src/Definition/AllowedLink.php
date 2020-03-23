@@ -10,8 +10,12 @@ final class AllowedLink
 {
     private string $resourcePath;
     private string $relationship;
+    /** @var Set<string> */
     private Set $parameters;
 
+    /**
+     * @param Set<string> $parameters
+     */
     public function __construct(
         string $resourcePath,
         string $relationship,

@@ -113,14 +113,16 @@ final class Server implements ServerInterface
             throw new ResourceNotRangeable;
         }
 
+        $url = $definition->url();
+
         if ($specification !== null) {
             $query = Url::of('?'.($this->translate)($specification));
+            $url = ($this->resolve)(
+                $definition->url(),
+                $query,
+            );
         }
 
-        $url = ($this->resolve)(
-            $definition->url(),
-            $query ?? $definition->url()
-        );
         $headers = Headers::of();
 
         if ($range !== null) {
@@ -380,8 +382,8 @@ final class Server implements ServerInterface
                 ->formats
                 ->all()
                 ->values()
-                ->sort(function(Format $a, Format $b): bool {
-                    return $a->priority() < $b->priority();
+                ->sort(function(Format $a, Format $b): int {
+                    return (int) ($a->priority() < $b->priority());
                 })
                 ->reduce(
                     Set::of(Value::class),
@@ -408,20 +410,22 @@ final class Server implements ServerInterface
                             ->url(),
                         $link->identity()
                     );
+                    /** @var Set<HeaderParameter> */
+                    $parameters = $link
+                        ->parameters()
+                        ->toSetOf(
+                            HeaderParameter::class,
+                            static fn(string $name, Parameter $parameter): \Generator => yield new HeaderParameter\Parameter(
+                                $parameter->key(),
+                                $parameter->value(),
+                            ),
+                        );
 
                     return $carry->add(
                         new LinkValue(
                             Url::of($url->path()->toString()),
                             $link->relationship(),
-                            ...unwrap($link
-                                ->parameters()
-                                ->toSetOf(
-                                    HeaderParameter::class,
-                                    static fn(string $name, Parameter $parameter): \Generator => yield new HeaderParameter\Parameter(
-                                        $parameter->key(),
-                                        $parameter->value(),
-                                    ),
-                                ))
+                            ...unwrap($parameters)
                         )
                     );
                 }

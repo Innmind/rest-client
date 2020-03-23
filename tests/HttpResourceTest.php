@@ -51,7 +51,7 @@ class HttpResourceTest extends TestCase
 
         new HttpResource(
             'foo',
-            Map::of('string', 'variable')
+            Map::of('string', 'scalar|array')
         );
     }
 }

@@ -20,14 +20,19 @@ use function Innmind\Immutable\unwrap;
 final class Types
 {
     private static ?Set $defaults = null;
+    /** @var list<class-string<Type>> */
     private array $types = [];
 
+    /**
+     * @param list<class-string<Type>> $types
+     */
     public function __construct(string ...$types)
     {
         if (\count($types) === 0) {
             $types = unwrap(self::defaults());
         }
 
+        /** @var class-string<Type> $type */
         foreach ($types as $type) {
             $refl = new \ReflectionClass($type);
 
@@ -36,6 +41,7 @@ final class Types
             }
         }
 
+        /** @var list<class-string<Type>> */
         $this->types = $types;
     }
 
@@ -43,6 +49,7 @@ final class Types
     {
         foreach ($this->types as $builder) {
             try {
+                /** @var Type */
                 return call_user_func(
                     [$builder, 'of'],
                     $type,
@@ -61,15 +68,15 @@ final class Types
      */
     public static function defaults(): Set
     {
-        return self::$defaults ??= Set::of(
-            'string',
+        /** @var Set<string> */
+        return self::$defaults ??= Set::strings(
             BoolType::class,
             DateType::class,
             FloatType::class,
             IntType::class,
             MapType::class,
             SetType::class,
-            StringType::class
+            StringType::class,
         );
     }
 }

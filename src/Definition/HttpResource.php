@@ -19,11 +19,19 @@ final class HttpResource
     private string $name;
     private Url $url;
     private Identity $identity;
+    /** @var Map<string, Property> */
     private Map $properties;
+    /** @var Map<scalar, scalar|array> */
     private Map $metas;
+    /** @var Set<AllowedLink> */
     private Set $links;
     private bool $rangeable;
 
+    /**
+     * @param Map<string, Property> $properties
+     * @param Map<scalar, scalar|array> $metas
+     * @param Set<AllowedLink> $links
+     */
     public function __construct(
         string $name,
         Url $url,
@@ -49,9 +57,9 @@ final class HttpResource
 
         if (
             (string) $metas->keyType() !== 'scalar' ||
-            (string) $metas->valueType() !== 'variable'
+            (string) $metas->valueType() !== 'scalar|array'
         ) {
-            throw new \TypeError('Argument 5 must be of type Map<scalar, variable>');
+            throw new \TypeError('Argument 5 must be of type Map<scalar, scalar|array>');
         }
 
         if ((string) $links->type() !== AllowedLink::class) {
@@ -94,7 +102,7 @@ final class HttpResource
     }
 
     /**
-     * @return Map<scalar, variable>
+     * @return Map<scalar, scalar|array>
      */
     public function metas(): Map
     {

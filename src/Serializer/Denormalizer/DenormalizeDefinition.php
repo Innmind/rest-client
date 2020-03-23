@@ -26,10 +26,16 @@ final class DenormalizeDefinition
         $this->build = $build;
     }
 
+    /**
+     * @param array{metas: array<scalar, scalar|array>, properties: array<string, array{variants: list<string>, type: string, access: list<string>, optional: bool}>, linkable_to: list<array{resource_path: string, relationship: string, parameters: list<string>}>, url: string, identity: string, rangeable: bool} $definition
+     */
     public function __invoke(array $definition, string $name): HttpResource
     {
+        /** @var Map<string, Property> */
         $properties = Map::of('string', Property::class);
-        $metas = Map::of('scalar', 'variable');
+        /** @var Map<scalar, scalar|array> */
+        $metas = Map::of('scalar', 'scalar|array');
+        /** @var Set<AllowedLink> */
         $links = Set::of(AllowedLink::class);
 
         foreach ($definition['metas'] as $key => $value) {
@@ -59,9 +65,12 @@ final class DenormalizeDefinition
         );
     }
 
+    /**
+     * @param array{variants: list<string>, type: string, access: list<string>, optional: bool} $definition
+     */
     private function buildProperty(string $name, array $definition): Property
     {
-        $variants = Set::of('string', ...\array_values($definition['variants']));
+        $variants = Set::strings(...\array_values($definition['variants']));
 
         return new Property(
             $name,
@@ -72,12 +81,15 @@ final class DenormalizeDefinition
         );
     }
 
+    /**
+     * @param array{resource_path: string, relationship: string, parameters: list<string>} $link
+     */
     private function buildLink(array $link): AllowedLink
     {
         return new AllowedLink(
             $link['resource_path'],
             $link['relationship'],
-            Set::of('string', ...$link['parameters'])
+            Set::strings(...$link['parameters'])
         );
     }
 }

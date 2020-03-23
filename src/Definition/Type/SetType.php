@@ -63,6 +63,7 @@ final class SetType implements Type
         return $data->reduce(
             [],
             function(array $values, $value): array {
+                /** @psalm-suppress MixedAssignment */
                 $values[] = $this->inner->normalize($value);
 
                 return $values;
@@ -82,6 +83,7 @@ final class SetType implements Type
         $set = $this->denormalized;
 
         try {
+            /** @psalm-suppress MixedAssignment */
             foreach ($data as $value) {
                 $set = $set->add(
                     $this->inner->denormalize($value)

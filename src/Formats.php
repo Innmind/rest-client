@@ -17,10 +17,15 @@ use Negotiation\Negotiator;
 
 final class Formats
 {
+    /** @var Map<string, Format> */
     private Map $formats;
     private Negotiator $negotiator;
+    /** @var Set<MediaType>|null */
     private ?Set $types = null;
 
+    /**
+     * @param Map<string, Format> $formats
+     */
     public function __construct(Map $formats)
     {
         if (
@@ -43,8 +48,9 @@ final class Formats
 
     public static function of(Format $first, Format ...$formats): self
     {
-        $map = Map::of('string', Format::class)
-            ($first->name(), $first);
+        /** @var Map<string, Format> */
+        $map = Map::of('string', Format::class);
+        \array_unshift($formats, $first);
 
         foreach ($formats as $format) {
             $map = $map->put($format->name(), $format);
@@ -72,6 +78,7 @@ final class Formats
     public function mediaTypes(): Set
     {
         if ($this->types === null) {
+            /** @var Set<MediaType> */
             $this->types = $this
                 ->formats
                 ->reduce(
@@ -82,6 +89,7 @@ final class Formats
                 );
         }
 
+        /** @var Set<MediaType> */
         return $this->types;
     }
 
@@ -132,6 +140,7 @@ final class Formats
             throw new InvalidArgumentException;
         }
 
+        /** @psalm-suppress UndefinedInterfaceMethod */
         return $this->best($best->getBasePart().'/'.$best->getSubPart());
     }
 
@@ -141,8 +150,8 @@ final class Formats
             return $this
                 ->formats
                 ->values()
-                ->sort(function(Format $a, Format $b): bool {
-                    return $a->priority() > $b->priority();
+                ->sort(function(Format $a, Format $b): int {
+                    return (int) ($a->priority() > $b->priority());
                 })
                 ->first();
         }

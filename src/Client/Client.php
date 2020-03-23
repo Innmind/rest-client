@@ -14,11 +14,13 @@ use Innmind\Immutable\Map;
 final class Client implements ClientInterface
 {
     private Factory $make;
+    /** @var Map<string, Server> */
     private Map $servers;
 
     public function __construct(Factory $make)
     {
         $this->make = $make;
+        /** @var Map<string, Server> */
         $this->servers = Map::of('string', Server::class);
     }
 

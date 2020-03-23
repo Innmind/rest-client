@@ -14,6 +14,12 @@ final class NormalizeDefinition
 {
     public function __invoke(HttpResource $definition): array
     {
+        /** @psalm-suppress InvalidScalarArgument */
+        $metas = \array_combine(
+            unwrap($definition->metas()->keys()),
+            unwrap($definition->metas()->values()),
+        );
+
         return [
             'url' => $definition->url()->toString(),
             'identity' => $definition->identity()->toString(),
@@ -32,10 +38,7 @@ final class NormalizeDefinition
                         return $properties;
                     }
                 ),
-            'metas' => array_combine(
-                unwrap($definition->metas()->keys()),
-                unwrap($definition->metas()->values()),
-            ),
+            'metas' => $metas,
             'linkable_to' => $definition
                 ->links()
                 ->reduce(

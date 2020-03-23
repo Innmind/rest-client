@@ -47,7 +47,7 @@ class ExtractIdentityTest extends TestCase
             Url::of('http://example.com/foo'),
             new Identity('uuid'),
             Map::of('string', Property::class),
-            Map::of('scalar', 'variable'),
+            Map::of('scalar', 'scalar|array'),
             Set::of(AllowedLink::class),
             false
         );

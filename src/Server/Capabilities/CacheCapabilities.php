@@ -36,7 +36,9 @@ final class CacheCapabilities implements CapabilitiesInterface
     private DenormalizeDefinition $denormalizeDefinition;
     private NormalizeDefinition $normalizeDefinition;
     private Name $directory;
+    /** @var Set<string>|null */
     private ?Set $names = null;
+    /** @var Map<string, HttpResource> */
     private Map $definitions;
 
     public function __construct(
@@ -57,6 +59,7 @@ final class CacheCapabilities implements CapabilitiesInterface
         $this->denormalizeDefinition = $denormalizeDefinition;
         $this->normalizeDefinition = $normalizeDefinition;
         $this->directory = new Name(\md5($host->toString()));
+        /** @var Map<string, HttpResource> */
         $this->definitions = Map::of('string', HttpResource::class);
     }
 
@@ -71,8 +74,11 @@ final class CacheCapabilities implements CapabilitiesInterface
 
         try {
             $file = $this->load('.names');
+            /** @var list<string> */
+            $names = ($this->decode)('json', $file->content());
+
             return $this->names = ($this->denormalizeNames)(
-                ($this->decode)('json', $file->content())
+                $names
             );
         } catch (FileNotFound $e) {
             $this->names = $this->capabilities->names();
@@ -90,8 +96,10 @@ final class CacheCapabilities implements CapabilitiesInterface
 
         try {
             $file = $this->load($name);
+            /** @var array{metas: array<scalar, scalar|array>, properties: array<string, array{variants: list<string>, type: string, access: list<string>, optional: bool}>, linkable_to: list<array{resource_path: string, relationship: string, parameters: list<string>}>, url: string, identity: string, rangeable: bool} */
+            $definition = ($this->decode)('json', $file->content());
             $definition = ($this->denormalizeDefinition)(
-                ($this->decode)('json', $file->content()),
+                $definition,
                 $name
             );
         } catch (FileNotFound $e) {
@@ -159,6 +167,7 @@ final class CacheCapabilities implements CapabilitiesInterface
     private function persist(string $name, array $data): self
     {
         if ($this->filesystem->contains($this->directory)) {
+            /** @var Directory */
             $directory = $this->filesystem->get($this->directory);
         } else {
             $directory = new Directory\Directory($this->directory);
