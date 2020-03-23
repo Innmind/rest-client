@@ -16,12 +16,16 @@ composer require innmind/rest-client
 ## Usage
 
 ```php
+use Innmind\OperatingSystem\Factory;
+use Innmind\Url\Path;
+use Innmind\UrlResolver\UrlResolver;
 use function Innmind\Rest\Client\bootstrap;
 
+$os = Factory::build();
 $client = bootstrap(
-    /* instance of Innmind\HttpTransport\Transport */,
-    /* instance of Innmind\UrlResolver\ResolverInterface */,
-    /* instance of Innmind\Filesystem\Adapter */
+    $os->remote()->http(),
+    new UrlResolver,
+    $os->filesystem()->mount(Path::of('/somewhere/to/cache/data')),
 );
 
 $client
