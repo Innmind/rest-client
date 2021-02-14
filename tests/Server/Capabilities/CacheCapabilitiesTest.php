@@ -228,16 +228,13 @@ class CacheCapabilitiesTest extends TestCase
             );
         $this
             ->inner
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('get')
-            ->with('foo')
-            ->willReturn($this->definition);
-        $this
-            ->inner
-            ->expects($this->at(2))
-            ->method('get')
-            ->with('bar')
-            ->willReturn($bar = clone $this->definition);
+            ->withConsecutive(['foo'], ['bar'])
+            ->will($this->onConsecutiveCalls(
+                $this->definition,
+                $bar = clone $this->definition
+            ));
 
         $definitions = $this->capabilities->definitions();
 

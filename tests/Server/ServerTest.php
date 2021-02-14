@@ -728,15 +728,9 @@ class ServerTest extends TestCase
     {
         $this
             ->capabilities
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('get')
-            ->with('foo')
-            ->willReturn($this->definition);
-        $this
-            ->capabilities
-            ->expects($this->at(1))
-            ->method('get')
-            ->with('bar')
+            ->withConsecutive(['foo'], ['bar'])
             ->willReturn($this->definition);
         $this
             ->transport
@@ -824,15 +818,9 @@ class ServerTest extends TestCase
     {
         $this
             ->capabilities
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('get')
-            ->with('foo')
-            ->willReturn($this->definition);
-        $this
-            ->capabilities
-            ->expects($this->at(1))
-            ->method('get')
-            ->with('bar')
+            ->withConsecutive(['foo'], ['bar'])
             ->willReturn($this->definition);
         $this
             ->transport

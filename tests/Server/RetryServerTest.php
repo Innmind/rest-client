@@ -74,15 +74,16 @@ class RetryServerTest extends TestCase
         $range = new Range(0, 42);
         $this
             ->inner
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('all')
             ->with('foo', $specification, $range)
-            ->will(
-                $this->throwException($e)
-            );
+            ->will($this->onConsecutiveCalls(
+                $this->throwException($e),
+                $expected = Set::of(Identity::class),
+            ));
         $this
             ->inner
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('capabilities')
             ->willReturn(
                 $capabilities = $this->createMock(Capabilities::class)
@@ -90,12 +91,6 @@ class RetryServerTest extends TestCase
         $capabilities
             ->expects($this->once())
             ->method('refresh');
-        $this
-            ->inner
-            ->expects($this->at(2))
-            ->method('all')
-            ->with('foo', $specification, $range)
-            ->willReturn($expected = Set::of(Identity::class));
 
         $identities = $this->server->all('foo', $specification, $range);
 
@@ -149,15 +144,16 @@ class RetryServerTest extends TestCase
         $identity = $this->createMock(Identity::class);
         $this
             ->inner
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('read')
             ->with('foo', $identity)
-            ->will(
-                $this->throwException($e)
-            );
+            ->will($this->onConsecutiveCalls(
+                $this->throwException($e),
+                $expected = HttpResource::of('foo'),
+            ));
         $this
             ->inner
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('capabilities')
             ->willReturn(
                 $capabilities = $this->createMock(Capabilities::class)
@@ -165,14 +161,6 @@ class RetryServerTest extends TestCase
         $capabilities
             ->expects($this->once())
             ->method('refresh');
-        $this
-            ->inner
-            ->expects($this->at(2))
-            ->method('read')
-            ->with('foo', $identity)
-            ->willReturn(
-                $expected = HttpResource::of('foo')
-            );
 
         $resource = $this->server->read('foo', $identity);
 
@@ -225,15 +213,16 @@ class RetryServerTest extends TestCase
         $resource = HttpResource::of('foo');
         $this
             ->inner
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('create')
             ->with($resource)
-            ->will(
-                $this->throwException($e)
-            );
+            ->will($this->onConsecutiveCalls(
+                $this->throwException($e),
+                $expected = $this->createMock(Identity::class),
+            ));
         $this
             ->inner
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('capabilities')
             ->willReturn(
                 $capabilities = $this->createMock(Capabilities::class)
@@ -241,14 +230,6 @@ class RetryServerTest extends TestCase
         $capabilities
             ->expects($this->once())
             ->method('refresh');
-        $this
-            ->inner
-            ->expects($this->at(2))
-            ->method('create')
-            ->with($resource)
-            ->willReturn(
-                $expected = $this->createMock(Identity::class)
-            );
 
         $identity = $this->server->create($resource);
 
@@ -300,15 +281,15 @@ class RetryServerTest extends TestCase
         $resource = HttpResource::of('foo');
         $this
             ->inner
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('update')
             ->with($identity, $resource)
-            ->will(
+            ->will($this->onConsecutiveCalls(
                 $this->throwException($e)
-            );
+            ));
         $this
             ->inner
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('capabilities')
             ->willReturn(
                 $capabilities = $this->createMock(Capabilities::class)
@@ -316,11 +297,6 @@ class RetryServerTest extends TestCase
         $capabilities
             ->expects($this->once())
             ->method('refresh');
-        $this
-            ->inner
-            ->expects($this->at(2))
-            ->method('update')
-            ->with($identity, $resource);
 
         $return = $this->server->update($identity, $resource);
 
@@ -371,15 +347,15 @@ class RetryServerTest extends TestCase
         $identity = $this->createMock(Identity::class);
         $this
             ->inner
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('remove')
             ->with('foo', $identity)
-            ->will(
+            ->will($this->onConsecutiveCalls(
                 $this->throwException($e)
-            );
+            ));
         $this
             ->inner
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('capabilities')
             ->willReturn(
                 $capabilities = $this->createMock(Capabilities::class)
@@ -387,11 +363,6 @@ class RetryServerTest extends TestCase
         $capabilities
             ->expects($this->once())
             ->method('refresh');
-        $this
-            ->inner
-            ->expects($this->at(2))
-            ->method('remove')
-            ->with('foo', $identity);
 
         $return = $this->server->remove('foo', $identity);
 
@@ -475,13 +446,13 @@ class RetryServerTest extends TestCase
         $links = Set::of(Link::class);
         $this
             ->inner
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('link')
             ->with('foo', $identity, $links)
-            ->will($this->throwException($e));
+            ->will($this->onConsecutiveCalls($this->throwException($e)));
         $this
             ->inner
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('capabilities')
             ->willReturn(
                 $capabilities = $this->createMock(Capabilities::class)
@@ -489,11 +460,6 @@ class RetryServerTest extends TestCase
         $capabilities
             ->expects($this->once())
             ->method('refresh');
-        $this
-            ->inner
-            ->expects($this->at(2))
-            ->method('link')
-            ->with('foo', $identity, $links);
 
         $this->assertNull(
             $this->server->link('foo', $identity, $links)
@@ -544,13 +510,13 @@ class RetryServerTest extends TestCase
         $links = Set::of(Link::class);
         $this
             ->inner
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('unlink')
             ->with('foo', $identity, $links)
-            ->will($this->throwException($e));
+            ->will($this->onConsecutiveCalls($this->throwException($e)));
         $this
             ->inner
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('capabilities')
             ->willReturn(
                 $capabilities = $this->createMock(Capabilities::class)
@@ -558,11 +524,6 @@ class RetryServerTest extends TestCase
         $capabilities
             ->expects($this->once())
             ->method('refresh');
-        $this
-            ->inner
-            ->expects($this->at(2))
-            ->method('unlink')
-            ->with('foo', $identity, $links);
 
         $this->assertNull(
             $this->server->unlink('foo', $identity, $links)
