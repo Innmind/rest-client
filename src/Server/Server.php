@@ -349,6 +349,9 @@ final class Server implements ServerInterface
         );
     }
 
+    /**
+     * @param Set<Link> $links
+     */
     private function generateLinkHeader(Set $links): LinkHeader
     {
         return new LinkHeader(
