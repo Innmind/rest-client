@@ -15,9 +15,13 @@ final class Property
     private string $name;
     private Type $type;
     private Access $access;
+    /** @var Set<string> */
     private Set $variants;
     private bool $optional;
 
+    /**
+     * @param Set<string> $variants
+     */
     public function __construct(
         string $name,
         Type $type,
@@ -53,6 +57,9 @@ final class Property
         return $this->access;
     }
 
+    /**
+     * @return Set<string>
+     */
     public function variants(): Set
     {
         return $this->variants;

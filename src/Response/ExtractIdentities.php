@@ -40,13 +40,13 @@ final class ExtractIdentities
         $links = $headers
             ->get('Link')
             ->values()
-            ->filter(function(Value $link): bool {
+            ->filter(static function(Value $link): bool {
                 return $link instanceof LinkValue;
             });
 
         /** @var Set<Identity> */
         return $links
-            ->filter(function(LinkValue $link): bool {
+            ->filter(static function(LinkValue $link): bool {
                 return $link->relationship() === 'resource';
             })
             ->mapTo(

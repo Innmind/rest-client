@@ -120,7 +120,7 @@ class ServerTest extends TestCase
                         'access' => ['READ', 'CREATE', 'UPDATE'],
                         'variants' => [],
                         'optional' => true,
-                    ]
+                    ],
                 ],
                 'metas' => [
                     'foo' => ['bar' => 'baz'],
@@ -204,7 +204,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/foo' &&
                     $request->method()->toString() === 'GET' &&
                     $request->headers()->count() === 0 &&
@@ -262,7 +262,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/foo' &&
                     $request->method()->toString() === 'GET' &&
                     $request->headers()->count() === 1 &&
@@ -322,7 +322,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/foo?bar=baz' &&
                     $request->method()->toString() === 'GET' &&
                     $request->headers()->count() === 0 &&
@@ -393,7 +393,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/foo?bar=baz' &&
                     $request->method()->toString() === 'GET' &&
                     $request->headers()->count() === 1 &&
@@ -517,7 +517,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/foo/bar' &&
                     $request->method()->toString() === 'GET' &&
                     $request->headers()->count() === 1 &&
@@ -574,7 +574,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/foo' &&
                     $request->method()->toString() === 'POST' &&
                     $request->headers()->count() === 2 &&
@@ -618,7 +618,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/foo/some-uuid' &&
                     $request->method()->toString() === 'PUT' &&
                     $request->headers()->count() === 2 &&
@@ -653,7 +653,7 @@ class ServerTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/foo/some-uuid' &&
                     $request->method()->toString() === 'DELETE' &&
                     $request->headers()->count() === 0 &&
@@ -728,21 +728,15 @@ class ServerTest extends TestCase
     {
         $this
             ->capabilities
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('get')
-            ->with('foo')
-            ->willReturn($this->definition);
-        $this
-            ->capabilities
-            ->expects($this->at(1))
-            ->method('get')
-            ->with('bar')
+            ->withConsecutive(['foo'], ['bar'])
             ->willReturn($this->definition);
         $this
             ->transport
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/foo/some-uuid' &&
                     $request->method()->toString() === 'LINK' &&
                     $request->headers()->get('Accept')->toString() === 'Accept: application/json, text/xml' &&
@@ -824,21 +818,15 @@ class ServerTest extends TestCase
     {
         $this
             ->capabilities
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('get')
-            ->with('foo')
-            ->willReturn($this->definition);
-        $this
-            ->capabilities
-            ->expects($this->at(1))
-            ->method('get')
-            ->with('bar')
+            ->withConsecutive(['foo'], ['bar'])
             ->willReturn($this->definition);
         $this
             ->transport
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/foo/some-uuid' &&
                     $request->method()->toString() === 'UNLINK' &&
                     $request->headers()->get('Accept')->toString() === 'Accept: application/json, text/xml' &&

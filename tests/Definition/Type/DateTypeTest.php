@@ -44,7 +44,7 @@ class DateTypeTest extends TestCase
         $this->assertSame('30/01/2016', $date->normalize('2016-01-30'));
         $this->assertSame(
             '30/01/2016',
-            $date->normalize(new \DateTime('2016-01-30'))
+            $date->normalize(new \DateTimeImmutable('2016-01-30'))
         );
         $this->assertSame(
             '30/01/2016',

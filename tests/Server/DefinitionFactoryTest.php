@@ -21,7 +21,6 @@ use Innmind\Http\{
 };
 use Innmind\Stream\Readable\Stream;
 use Innmind\Url\Url;
-use Innmind\Immutable\Map;
 use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
 

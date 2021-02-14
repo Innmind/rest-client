@@ -20,7 +20,7 @@ final class NormalizeResource
     ): array {
         $properties = $definition
             ->properties()
-            ->filter(function(string $name, Property $property) use ($access): bool {
+            ->filter(static function(string $name, Property $property) use ($access): bool {
                 return $property->access()->matches($access);
             })
             ->filter(function(string $name, Property $property) use ($resource): bool {
@@ -71,7 +71,7 @@ final class NormalizeResource
             ->variants()
             ->reduce(
                 $property->name(),
-                function(string $usedName, string $variant) use ($resource): string {
+                static function(string $usedName, string $variant) use ($resource): string {
                     if ($resource->properties()->contains($variant)) {
                         return $variant;
                     }

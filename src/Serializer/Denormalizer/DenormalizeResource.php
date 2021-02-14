@@ -25,10 +25,10 @@ final class DenormalizeResource
 
         $properties = $definition
             ->properties()
-            ->filter(function(string $name, PropertyDefinition $property) use ($access): bool {
+            ->filter(static function(string $name, PropertyDefinition $property) use ($access): bool {
                 return $property->access()->matches($access);
             })
-            ->filter(function(string $name, PropertyDefinition $property) use ($data): bool {
+            ->filter(static function(string $name, PropertyDefinition $property) use ($data): bool {
                 if (!$property->isOptional()) {
                     return true;
                 }
@@ -36,7 +36,7 @@ final class DenormalizeResource
                 return isset($data[$name]);
             });
 
-        $properties->foreach(function(string $name) use ($data) {
+        $properties->foreach(static function(string $name) use ($data) {
             if (!isset($data[$name])) {
                 throw new MissingProperty($name);
             }

@@ -82,7 +82,7 @@ class CapabilitiesTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/*' &&
                     $request->method()->toString() === 'OPTIONS';
             }))
@@ -110,7 +110,7 @@ class CapabilitiesTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/*' &&
                     $request->method()->toString() === 'OPTIONS';
             }))
@@ -148,16 +148,25 @@ class CapabilitiesTest extends TestCase
     {
         $this
             ->transport
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
-                return $request->url()->toString() === 'http://example.com/*' &&
-                    $request->method()->toString() === 'OPTIONS';
-            }))
-            ->willReturn(
-                $response = $this->createMock(Response::class)
-            );
-        $response
+            ->withConsecutive(
+                [$this->callback(static function(Request $request): bool {
+                    return $request->url()->toString() === 'http://example.com/*' &&
+                        $request->method()->toString() === 'OPTIONS';
+                })],
+                [$this->callback(static function(Request $request): bool {
+                    return $request->url()->toString() === 'http://example.com/foo' &&
+                        $request->method()->toString() === 'OPTIONS' &&
+                        $request->headers()->contains('Accept') &&
+                        $request->headers()->get('Accept')->toString() === 'Accept: application/json, text/xml';
+                })],
+            )
+            ->will($this->onConsecutiveCalls(
+                $response1 = $this->createMock(Response::class),
+                $response2 = $this->createMock(Response::class),
+            ));
+        $response1
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
@@ -174,20 +183,7 @@ class CapabilitiesTest extends TestCase
                     )
                 )
             );
-        $this
-            ->transport
-            ->expects($this->at(1))
-            ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
-                return $request->url()->toString() === 'http://example.com/foo' &&
-                    $request->method()->toString() === 'OPTIONS' &&
-                    $request->headers()->contains('Accept') &&
-                    $request->headers()->get('Accept')->toString() === 'Accept: application/json, text/xml';
-            }))
-            ->willReturn(
-                $response = $this->createMock(Response::class)
-            );
-        $response
+        $response2
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
@@ -200,11 +196,11 @@ class CapabilitiesTest extends TestCase
                     )
                 )
             );
-        $response
+        $response2
             ->expects($this->once())
             ->method('statusCode')
             ->willReturn(new StatusCode(200));
-        $response
+        $response2
             ->expects($this->once())
             ->method('body')
             ->willReturn(Stream::ofContent('{"url":"http://example.com/foo","identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"linkable_to":[],"rangeable":true}'));
@@ -221,16 +217,28 @@ class CapabilitiesTest extends TestCase
     {
         $this
             ->transport
-            ->expects($this->at(0))
+            ->expects($this->exactly(3))
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
-                return $request->url()->toString() === 'http://example.com/*' &&
-                    $request->method()->toString() === 'OPTIONS';
-            }))
-            ->willReturn(
-                $response = $this->createMock(Response::class)
-            );
-        $response
+            ->withConsecutive(
+                [$this->callback(static function(Request $request): bool {
+                    return $request->url()->toString() === 'http://example.com/*' &&
+                        $request->method()->toString() === 'OPTIONS';
+                })],
+                [$this->callback(static function(Request $request): bool {
+                    return $request->url()->toString() === 'http://example.com/foo' &&
+                        $request->method()->toString() === 'OPTIONS';
+                })],
+                [$this->callback(static function(Request $request): bool {
+                    return $request->url()->toString() === 'http://example.com/bar' &&
+                        $request->method()->toString() === 'OPTIONS';
+                })],
+            )
+            ->will($this->onConsecutiveCalls(
+                $response1 = $this->createMock(Response::class),
+                $response2 = $this->createMock(Response::class),
+                $response3 = $this->createMock(Response::class),
+            ));
+        $response1
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
@@ -247,18 +255,7 @@ class CapabilitiesTest extends TestCase
                     )
                 )
             );
-        $this
-            ->transport
-            ->expects($this->at(1))
-            ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
-                return $request->url()->toString() === 'http://example.com/foo' &&
-                    $request->method()->toString() === 'OPTIONS';
-            }))
-            ->willReturn(
-                $response = $this->createMock(Response::class)
-            );
-        $response
+        $response2
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
@@ -271,26 +268,15 @@ class CapabilitiesTest extends TestCase
                     )
                 )
             );
-        $response
+        $response2
             ->expects($this->once())
             ->method('statusCode')
             ->willReturn(new StatusCode(200));
-        $response
+        $response2
             ->expects($this->once())
             ->method('body')
             ->willReturn(Stream::ofContent('{"url":"http://example.com/foo","identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false},"url":{"type":"string","access":["READ","CREATE","UPDATE"],"variants":[],"optional":false}},"metas":[],"linkable_to":[],"rangeable":true}'));
-        $this
-            ->transport
-            ->expects($this->at(2))
-            ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
-                return $request->url()->toString() === 'http://example.com/bar' &&
-                    $request->method()->toString() === 'OPTIONS';
-            }))
-            ->willReturn(
-                $response = $this->createMock(Response::class)
-            );
-        $response
+        $response3
             ->expects($this->once())
             ->method('headers')
             ->willReturn(
@@ -303,11 +289,11 @@ class CapabilitiesTest extends TestCase
                     )
                 )
             );
-        $response
+        $response3
             ->expects($this->once())
             ->method('statusCode')
             ->willReturn(new StatusCode(200));
-        $response
+        $response3
             ->expects($this->once())
             ->method('body')
             ->willReturn(Stream::ofContent('{"url":"http://example.com/foo","identity":"uuid","properties":{"uuid":{"type":"string","access":["READ"],"variants":[],"optional":false}},"metas":[],"linkable_to":[],"rangeable":true}'));
@@ -331,7 +317,7 @@ class CapabilitiesTest extends TestCase
             ->transport
             ->expects($this->exactly(2))
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/*' &&
                     $request->method()->toString() === 'OPTIONS';
             }))
