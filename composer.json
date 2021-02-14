@@ -21,7 +21,7 @@
         "innmind/http": "~4.2",
         "innmind/operating-system": "~2.0",
         "innmind/url-resolver": "~4.0",
-        "willdurand/negotiation": "^2.2",
+        "willdurand/negotiation": "~3.0",
         "innmind/json": "^1.1"
     },
     "autoload": {
