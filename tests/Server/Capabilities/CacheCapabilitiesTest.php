@@ -53,7 +53,7 @@ class CacheCapabilitiesTest extends TestCase
             $this->normalizeDefinition = new NormalizeDefinition,
             Url::of('http://example.com/')
         );
-        $this->directory = md5('http://example.com/');
+        $this->directory = \md5('http://example.com/');
         $this->raw = [
             'url' => 'http://example.com/foo',
             'identity' => 'uuid',
@@ -162,7 +162,7 @@ class CacheCapabilitiesTest extends TestCase
             $this->filesystem->get(new Name($this->directory))->contains(new Name('foo.json'))
         );
         $this->assertSame(
-            json_encode($this->raw),
+            \json_encode($this->raw),
             $this
                 ->filesystem
                 ->get(new Name($this->directory))

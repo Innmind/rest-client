@@ -42,7 +42,6 @@ final class DenormalizeDefinition
             $metas = ($metas)($key, $value);
         }
 
-
         foreach ($definition['properties'] as $property => $value) {
             $properties = ($properties)(
                 $property,

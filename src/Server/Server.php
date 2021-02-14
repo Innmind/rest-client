@@ -342,7 +342,7 @@ final class Server implements ServerInterface
                 ->formats
                 ->all()
                 ->values()
-                ->sort(function(Format $a, Format $b): int {
+                ->sort(static function(Format $a, Format $b): int {
                     return (int) ($a->priority() < $b->priority());
                 })
                 ->mapTo(
@@ -399,7 +399,7 @@ final class Server implements ServerInterface
      */
     private function validateLinks(Definition $definition, Set $links): void
     {
-        $links->foreach(function(Link $link) use ($definition): void {
+        $links->foreach(static function(Link $link) use ($definition): void {
             if (!$definition->allowsLink($link)) {
                 throw new NormalizationException;
             }

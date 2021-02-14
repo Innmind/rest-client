@@ -72,7 +72,7 @@ class MapTypeTest extends TestCase
             [2 => '30/01/2016'],
             $date->normalize(
                 Map::of('string', \DateTimeInterface::class)
-                    ('2', new \DateTime('2016-01-30'))
+                    ('2', new \DateTimeImmutable('2016-01-30'))
             )
         );
         $this->assertSame(

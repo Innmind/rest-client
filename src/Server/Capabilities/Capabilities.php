@@ -78,7 +78,7 @@ final class Capabilities implements CapabilitiesInterface
                     new ProtocolVersion(1, 1),
                 ),
             )
-            ->headers();
+                ->headers();
 
         if (!$headers->contains('Link')) {
             return $this->names = Set::strings();
@@ -88,7 +88,7 @@ final class Capabilities implements CapabilitiesInterface
         $links = $headers
             ->get('Link')
             ->values()
-            ->filter(function(Value $value): bool {
+            ->filter(static function(Value $value): bool {
                 return $value instanceof LinkValue;
             });
 

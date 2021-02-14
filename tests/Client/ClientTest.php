@@ -38,10 +38,10 @@ class ClientTest extends TestCase
             ->expects($this->exactly(2))
             ->method('__invoke')
             ->withConsecutive(
-                [$this->callback(function($url): bool {
+                [$this->callback(static function($url): bool {
                     return $url->toString() === 'http://example.com/';
                 })],
-                [$this->callback(function($url): bool {
+                [$this->callback(static function($url): bool {
                     return $url->toString() === 'http://example.com/api/';
                 })],
             );

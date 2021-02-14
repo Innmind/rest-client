@@ -82,7 +82,7 @@ class CapabilitiesTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/*' &&
                     $request->method()->toString() === 'OPTIONS';
             }))
@@ -110,7 +110,7 @@ class CapabilitiesTest extends TestCase
             ->transport
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/*' &&
                     $request->method()->toString() === 'OPTIONS';
             }))
@@ -151,11 +151,11 @@ class CapabilitiesTest extends TestCase
             ->expects($this->exactly(2))
             ->method('__invoke')
             ->withConsecutive(
-                [$this->callback(function(Request $request): bool {
+                [$this->callback(static function(Request $request): bool {
                     return $request->url()->toString() === 'http://example.com/*' &&
                         $request->method()->toString() === 'OPTIONS';
                 })],
-                [$this->callback(function(Request $request): bool {
+                [$this->callback(static function(Request $request): bool {
                     return $request->url()->toString() === 'http://example.com/foo' &&
                         $request->method()->toString() === 'OPTIONS' &&
                         $request->headers()->contains('Accept') &&
@@ -220,15 +220,15 @@ class CapabilitiesTest extends TestCase
             ->expects($this->exactly(3))
             ->method('__invoke')
             ->withConsecutive(
-                [$this->callback(function(Request $request): bool {
+                [$this->callback(static function(Request $request): bool {
                     return $request->url()->toString() === 'http://example.com/*' &&
                         $request->method()->toString() === 'OPTIONS';
                 })],
-                [$this->callback(function(Request $request): bool {
+                [$this->callback(static function(Request $request): bool {
                     return $request->url()->toString() === 'http://example.com/foo' &&
                         $request->method()->toString() === 'OPTIONS';
                 })],
-                [$this->callback(function(Request $request): bool {
+                [$this->callback(static function(Request $request): bool {
                     return $request->url()->toString() === 'http://example.com/bar' &&
                         $request->method()->toString() === 'OPTIONS';
                 })],
@@ -317,7 +317,7 @@ class CapabilitiesTest extends TestCase
             ->transport
             ->expects($this->exactly(2))
             ->method('__invoke')
-            ->with($this->callback(function(Request $request): bool {
+            ->with($this->callback(static function(Request $request): bool {
                 return $request->url()->toString() === 'http://example.com/*' &&
                     $request->method()->toString() === 'OPTIONS';
             }))

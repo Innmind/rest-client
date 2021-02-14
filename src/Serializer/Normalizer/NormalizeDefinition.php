@@ -27,7 +27,7 @@ final class NormalizeDefinition
                 ->properties()
                 ->reduce(
                     [],
-                    function(array $properties, string $name, Property $property): array {
+                    static function(array $properties, string $name, Property $property): array {
                         $properties[$name] = [
                             'type' => $property->type()->toString(),
                             'access' => unwrap($property->access()->mask()),

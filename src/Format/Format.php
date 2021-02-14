@@ -30,7 +30,7 @@ final class Format
         $this->types = $types;
         $this->priority = $priority;
         $this->preferredType = $types
-            ->sort(function(MediaType $a, MediaType $b): int {
+            ->sort(static function(MediaType $a, MediaType $b): int {
                 return (int) ($a->priority() < $b->priority());
             })
             ->first();

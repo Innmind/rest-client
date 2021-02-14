@@ -42,6 +42,7 @@
         "phpunit/phpunit": "~9.0",
         "innmind/cli": "~2.0",
         "innmind/object-graph": "~2.0",
-        "vimeo/psalm": "~4.4"
+        "vimeo/psalm": "~4.4",
+        "innmind/coding-standard": "^1.1"
     }
 }
