@@ -124,6 +124,7 @@ final class Server implements ServerInterface
         $headers = Headers::of();
 
         if ($range !== null) {
+            /** @psalm-suppress InvalidArgument */
             $headers = Headers::of(
                 new RangeHeader(
                     new RangeValue(
@@ -150,6 +151,7 @@ final class Server implements ServerInterface
     public function read(string $name, Identity $identity): HttpResource
     {
         $definition = $this->capabilities->get($name);
+        /** @psalm-suppress InvalidArgument */
         $response = ($this->fulfill)(
             new Request(
                 $this->resolveUrl(
@@ -197,6 +199,7 @@ final class Server implements ServerInterface
     public function create(HttpResource $resource): Identity
     {
         $definition = $this->capabilities->get($resource->name());
+        /** @psalm-suppress InvalidArgument */
         $response = ($this->fulfill)(
             new Request(
                 $definition->url(),
@@ -222,6 +225,7 @@ final class Server implements ServerInterface
     public function update(Identity $identity, HttpResource $resource): void
     {
         $definition = $this->capabilities->get($resource->name());
+        /** @psalm-suppress InvalidArgument */
         ($this->fulfill)(
             new Request(
                 $this->resolveUrl(
@@ -270,6 +274,7 @@ final class Server implements ServerInterface
 
         $definition = $this->capabilities->get($name);
         $this->validateLinks($definition, $links);
+        /** @psalm-suppress InvalidArgument */
         ($this->fulfill)(
             new Request(
                 $this->resolveUrl(
@@ -296,6 +301,7 @@ final class Server implements ServerInterface
 
         $definition = $this->capabilities->get($name);
         $this->validateLinks($definition, $links);
+        /** @psalm-suppress InvalidArgument */
         ($this->fulfill)(
             new Request(
                 $this->resolveUrl(

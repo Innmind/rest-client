@@ -119,6 +119,7 @@ final class Capabilities implements CapabilitiesInterface
             $this->host,
             $this->paths->get($name),
         );
+        /** @psalm-suppress InvalidArgument */
         $response = ($this->fulfill)(
             new Request(
                 $url,
